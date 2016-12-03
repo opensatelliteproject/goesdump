@@ -1,0 +1,15 @@
+﻿<Properties StartupItem="goesdump/GOES Dumper.csproj" RefactoringSettings.EnableRefactorings="True">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/ChannelDecoder/Demuxer.cs">
+    <Files>
+      <File FileName="goesdump/Main.cs" Line="1" Column="1" />
+      <File FileName="goesdump/UIComponents/CurrentFrameData.cs" Line="50" Column="19" />
+      <File FileName="goesdump/ChannelDecoder/MSDU.cs" Line="99" Column="13" />
+      <File FileName="goesdump/ChannelDecoder/Demuxer.cs" Line="81" Column="22" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
