@@ -81,7 +81,7 @@ namespace OpenSatelliteProject {
 
         private void statisticsLoop() {
             UIConsole.GlobalConsole.Log("Statistics Thread Started");
-            byte[] buffer = new byte[4160];
+            byte[] buffer = new byte[4164];
 
             IPHostEntry ipHostInfo = Dns.GetHostEntry("localhost");
             IPAddress ipAddress = ipHostInfo.AddressList[0];

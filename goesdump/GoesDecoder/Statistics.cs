@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace OpenSatelliteProject {
     
     //[StructLayout(LayoutKind.Explicit)] // , Size = 4160, Pack = 1
-    [StructLayout(LayoutKind.Sequential, Size = 4160, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Size = 4164, Pack = 1)]
     public struct Statistics_st {
         
         //[FieldOffset(0)]
@@ -24,7 +24,7 @@ namespace OpenSatelliteProject {
 
         //[FieldOffset(14)]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public UInt32[] rsErrors;
+        public Int32[] rsErrors;
 
         //[FieldOffset(30)]
         public byte signalQuality;
@@ -61,6 +61,10 @@ namespace OpenSatelliteProject {
 
         //[FieldOffset(4156)]
         public UInt32 startTime;
+
+        //[FieldOffset(4160)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public byte[] syncWord;
 
         public static Statistics_st fromByteArray(byte[] data) {
             GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
