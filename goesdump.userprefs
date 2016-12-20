@@ -1,14 +1,17 @@
 ﻿<Properties StartupItem="goesdump/GOES Dumper.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/UIComponents/CurrentFrameData.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/ChannelDecoder/MSDU.cs">
     <Files>
       <File FileName="goesdump/Main.cs" Line="1" Column="1" />
-      <File FileName="goesdump/UIComponents/CurrentFrameData.cs" Line="17" Column="3" />
+      <File FileName="goesdump/UIComponents/CurrentFrameData.cs" Line="1" Column="1" />
       <File FileName="goesdump/ChannelDecoder/Demuxer.cs" Line="1" Column="1" />
       <File FileName="goesdump/GoesDecoder/PacketManager.cs" Line="1" Column="1" />
       <File FileName="goesdump/ChannelDecoder/DemuxManager.cs" Line="1" Column="1" />
       <File FileName="goesdump/UIComponents/UIConsole.cs" Line="1" Column="1" />
       <File FileName="goesdump/UIComponents/ConsoleMessage.cs" Line="1" Column="1" />
+      <File FileName="goesdump/GoesDecoder/Statistics.cs" Line="1" Column="1" />
+      <File FileName="goesdump/GoesDecoder/Connector.cs" Line="1" Column="1" />
+      <File FileName="goesdump/ChannelDecoder/MSDU.cs" Line="67" Column="47" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

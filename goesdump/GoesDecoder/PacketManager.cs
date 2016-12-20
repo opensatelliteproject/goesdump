@@ -2,11 +2,78 @@
 using System.Linq;
 using System.IO;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace OpenSatelliteProject {
     public static class PacketManager {
 
         private static readonly int MAX_RUNS = 20;
+
+        private static readonly string DCSRgex = @"DCSdat(.*)";
+        private static readonly string XXRgex = @"gos(.*)XX(.*).lrit";
+        private static readonly string FDRgex = @"(.*)FD(.*).lrit";
+        private static readonly string GOSRgex = @"gos(.*).lrit";
+        private static readonly string ChartRgex = @"NWSchrt(.*).lrit";
+        private static readonly string TextRgex = @"(.*)TEXTdat(.*).lrit";
+
+        private static readonly string DCSFolder = "DCS";
+        private static readonly string FullDiskFolder = "FullDisk";
+        private static readonly string XXFolder = "XX";
+        private static readonly string ImagesFolder = "Images";
+        private static readonly string TextFolder = "Text";
+        private static readonly string ChartFolder = "Charts";
+
+        private static Regex dcsRegex = new Regex(DCSRgex, RegexOptions.IgnoreCase);
+        private static Regex xxRegex = new Regex(XXRgex, RegexOptions.IgnoreCase);
+        private static Regex fdRegex = new Regex(FDRgex, RegexOptions.IgnoreCase);
+        private static Regex chartRegex = new Regex(ChartRgex, RegexOptions.IgnoreCase);
+        private static Regex gosRegex = new Regex(GOSRgex, RegexOptions.IgnoreCase);
+        private static Regex textRegex = new Regex(TextRgex, RegexOptions.IgnoreCase);
+
+        private static string FixFileFolder(string dir, string filename) {
+            string filef = filename;
+            string basedir = new DirectoryInfo(dir).Parent.FullName;
+
+            if (dcsRegex.IsMatch(filename)) {
+                dir = Path.Combine(basedir, DCSFolder);
+                if (!Directory.Exists(dir)) {
+                    Directory.CreateDirectory(dir);
+                }
+                filef = Path.Combine(dir, filename);
+            } else if (xxRegex.IsMatch(filename)) {
+                dir = Path.Combine(basedir, XXFolder);
+                if (!Directory.Exists(dir)) {
+                    Directory.CreateDirectory(dir);
+                }
+                filef = Path.Combine(dir, filename);
+            } else if (fdRegex.IsMatch(filename)) { 
+                dir = Path.Combine(basedir, FullDiskFolder);
+                if (!Directory.Exists(dir)) {
+                    Directory.CreateDirectory(dir);
+                }
+                filef = Path.Combine(dir, filename);
+            } else if (chartRegex.IsMatch(filename)) {
+                dir = Path.Combine(basedir, ChartFolder);
+                if (!Directory.Exists(dir)) {
+                    Directory.CreateDirectory(dir);
+                }
+                filef = Path.Combine(dir, filename);
+            } else if (gosRegex.IsMatch(filename)) {
+                dir = Path.Combine(basedir, ImagesFolder);
+                if (!Directory.Exists(dir)) {
+                    Directory.CreateDirectory(dir);
+                }
+                filef = Path.Combine(dir, filename);
+            } else if (textRegex.IsMatch(filename)) {
+                dir = Path.Combine(basedir, TextFolder);
+                if (!Directory.Exists(dir)) {
+                    Directory.CreateDirectory(dir);
+                }
+                filef = Path.Combine(dir, filename);
+            }
+
+            return filef;
+        }
 
         public static void ManageFile(string filename) {
             FileStream fs = File.OpenRead(filename);
@@ -39,9 +106,10 @@ namespace OpenSatelliteProject {
                 //Console.WriteLine("Cannot find filename for {0}", filename);
             } else {
                 string dir = Path.GetDirectoryName(filename);
+                string f = FixFileFolder(dir, fname);
                 UIConsole.GlobalConsole.Log(String.Format("New file {0}", fname));
                 //Console.WriteLine("Renaming {0} to {1}", filename, Path.Combine(dir, fname));
-                File.Move(filename, Path.Combine(dir, fname));
+                File.Move(filename, f);
             }
         }
 
