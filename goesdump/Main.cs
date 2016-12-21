@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.Input;
 using System.Threading;
+using System.IO;
 
 namespace OpenSatelliteProject {
     /// <summary>
@@ -20,6 +21,9 @@ namespace OpenSatelliteProject {
         DemuxManager demuxManager;
         Mutex mtx;
         Statistics_st statistics;
+
+        int lastPhaseCorrection = -1;
+        int desyncCount = 0;
 
         public Main() {
             graphics = new GraphicsDeviceManager(this);
@@ -45,6 +49,11 @@ namespace OpenSatelliteProject {
                 mtx.WaitOne();
                 statistics = data;
                 mtx.ReleaseMutex();
+                if (data.phaseCorrection != lastPhaseCorrection && lastPhaseCorrection != -1) {
+                    UIConsole.GlobalConsole.Error(String.Format("Costas Loop Desync! Phase correction was {0} and now is {1}.", lastPhaseCorrection, data.phaseCorrection));
+                    desyncCount++;
+                }
+                lastPhaseCorrection = data.phaseCorrection;
             };
             cn.ChannelDataAvailable += (byte[] data) => demuxManager.parseBytes(data);
             statistics = new Statistics_st();

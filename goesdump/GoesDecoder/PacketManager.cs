@@ -113,6 +113,41 @@ namespace OpenSatelliteProject {
             }
         }
 
+        public static string Decompressor(string filename, int pixels) {
+            try {
+                Process decompressor = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                startInfo.FileName = "wine";
+                startInfo.Arguments = String.Format("Decompress.exe {0} {1} a", pixels, filename);
+                startInfo.RedirectStandardError = true;
+                startInfo.RedirectStandardOutput = true;
+                startInfo.CreateNoWindow = true;
+                startInfo.UseShellExecute = false;
+                startInfo.EnvironmentVariables.Add("WINEDEBUG", "fixme-all,err-winediag");
+
+                decompressor.StartInfo = startInfo;
+
+                UIConsole.GlobalConsole.Debug(String.Format("Calling {0}", startInfo.Arguments));
+                decompressor.Start();
+                decompressor.WaitForExit();
+
+                if (decompressor.ExitCode != 0) {
+                    string stderr = decompressor.StandardError.ReadToEnd();
+                    UIConsole.GlobalConsole.Error(String.Format("Error Decompressing: {0}", stderr));
+                } else {
+                    UIConsole.GlobalConsole.Debug(String.Format("Decompress sucessful to {0}", String.Format("{0}_decomp.lrit", filename)));
+                }
+
+            } catch (Exception e) {
+                UIConsole.GlobalConsole.Error(String.Format("Error running decompressor: {0}", e));
+            }
+
+
+            return String.Format("{0}_decomp.lrit", filename);
+        }
+
+
         public static string Decompressor(string prefix, int pixels, int startnum, int endnum) {
             try {
                 Process decompressor = new Process();
@@ -195,6 +230,7 @@ namespace OpenSatelliteProject {
                 UInt16 size = BitConverter.ToUInt16(cb, 0);
                 if (type == 129) {
                     //4sHHHB
+                    // 4 + 6 = 10
                     return data[13] > 0;
                 } else if (type == 1) {
                     //>BHHB

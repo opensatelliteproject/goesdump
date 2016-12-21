@@ -90,10 +90,12 @@ namespace OpenSatelliteProject {
                     UIConsole.GlobalConsole.Debug(String.Format("\t\tTotal Size: {0} Current Size: {1}", msdu.PacketLength + 2, msdu.Data.Length)); 
                 }
 
-                if (msdu.Sequence == SequenceType.FIRST_SEGMENT) {
+                if (msdu.Sequence == SequenceType.FIRST_SEGMENT || msdu.Sequence == SequenceType.FIRST_SEGMENT) {
                     isCompressed = PacketManager.IsCompressed(msdu.Data.Skip(10).ToArray());
                     pixels = PacketManager.GetPixels(msdu.Data.Skip(10).ToArray());
-                    startnum = msdu.PacketNumber;
+                    if (msdu.Sequence == SequenceType.FIRST_SEGMENT) {
+                        startnum = msdu.PacketNumber;
+                    }
                 } else if (msdu.Sequence == SequenceType.LAST_SEGMENT) {
                     endnum = msdu.PacketNumber;
 
@@ -126,7 +128,12 @@ namespace OpenSatelliteProject {
 
                 if (msdu.Sequence == SequenceType.LAST_SEGMENT || msdu.Sequence == SequenceType.SINGLE_DATA) {
                     if (isCompressed) {
-                        string decompressed = PacketManager.Decompressor(String.Format("channels/{0}/{1}_{2}_", channelId, msdu.APID, msdu.Version), pixels, startnum, endnum);
+                        string decompressed;
+                        if (msdu.Sequence == SequenceType.SINGLE_DATA) {
+                            decompressed = PacketManager.Decompressor(filename, pixels);
+                        } else {
+                            decompressed = PacketManager.Decompressor(String.Format("channels/{0}/{1}_{2}_", channelId, msdu.APID, msdu.Version), pixels, startnum, endnum);
+                        }
                         PacketManager.ManageFile(decompressed);
                         startnum = -1;
                         endnum = -1;
