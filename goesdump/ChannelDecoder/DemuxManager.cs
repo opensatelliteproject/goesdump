@@ -14,6 +14,10 @@ namespace OpenSatelliteProject {
         public void parseBytes(byte[] data) {
             int vcid = (data[1] & 0x3F);
             if (vcid != FILL_VCID) {
+                if (vcid == 0 || vcid == 1) {
+                    // Skip DCS and EMWIN
+                    return;
+                }
                 if (!demuxers.ContainsKey(vcid)) {
                     UIConsole.GlobalConsole.Log(String.Format("I don't have a demuxer for VCID {0}. Creating...", vcid));
                     demuxers.Add(vcid, new Demuxer());

@@ -19,7 +19,6 @@ namespace OpenSatelliteProject {
         #region Drawable implementation
 
         public void draw(SpriteBatch spriteBatch, Microsoft.Xna.Framework.GameTime gameTime) {
-            //spriteBatch.Draw(cursor, position, Color.White);
             spriteBatch.Draw(cursor, position, Color.White);
         }
 
