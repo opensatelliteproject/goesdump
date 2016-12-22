@@ -70,6 +70,8 @@
     <Compile Include="PacketData\AncillaryText.cs" />
     <Compile Include="UIComponents\UIConsole.cs" />
     <Compile Include="UIComponents\ConsoleMessage.cs" />
+    <Compile Include="UIComponents\UILed.cs" />
+    <Compile Include="UIComponents\MouseCursor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.png" />

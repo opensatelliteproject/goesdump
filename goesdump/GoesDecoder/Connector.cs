@@ -54,6 +54,13 @@ namespace OpenSatelliteProject {
 
         #endregion
 
+        #region Properties
+
+        public bool StatisticsConnected { get; set; }
+        public bool DataConnected { get; set; }
+
+        #endregion
+
         #region Methods
 
         public void Stop() {
@@ -116,6 +123,8 @@ namespace OpenSatelliteProject {
                             UIConsole.GlobalConsole.Error(String.Format("Unexpected exception : {0}", e.ToString()));
                             isConnected = false;
                         }
+
+                        StatisticsConnected = isConnected;
 
                         if (!statisticsThreadRunning) {
                             break;
@@ -185,6 +194,8 @@ namespace OpenSatelliteProject {
                             UIConsole.GlobalConsole.Error(String.Format("Unexpected exception : {0}", e.ToString()));
                             isConnected = false;
                         }
+
+                        DataConnected = isConnected;
 
                         if (!channelDataThreadRunning) {
                             break;

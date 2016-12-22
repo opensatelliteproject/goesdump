@@ -21,9 +21,15 @@ namespace OpenSatelliteProject {
         DemuxManager demuxManager;
         Mutex mtx;
         Statistics_st statistics;
+        UILed satelliteBusyLed;
+        UILed heartBeatLed;
+        UILed statisticsSocketLed;
+        UILed dataSocketLed;
+        MouseCursor cursor;
 
         int lastPhaseCorrection = -1;
         int desyncCount = 0;
+        int heartBeatCount = 0;
 
         public Main() {
             graphics = new GraphicsDeviceManager(this);
@@ -49,15 +55,20 @@ namespace OpenSatelliteProject {
                 mtx.WaitOne();
                 statistics = data;
                 mtx.ReleaseMutex();
+
                 if (data.phaseCorrection != lastPhaseCorrection && lastPhaseCorrection != -1) {
                     UIConsole.GlobalConsole.Error(String.Format("Costas Loop Desync! Phase correction was {0} and now is {1}.", lastPhaseCorrection, data.phaseCorrection));
                     desyncCount++;
                 }
                 lastPhaseCorrection = data.phaseCorrection;
+                satelliteBusyLed.Color = data.vcid != 63 ? Color.Lime : Color.Red;
+                if (heartBeatLed.Color != Color.Lime) {
+                    heartBeatLed.Color = Color.Lime;
+                    heartBeatCount = 0;
+                }
             };
             cn.ChannelDataAvailable += (byte[] data) => demuxManager.parseBytes(data);
             statistics = new Statistics_st();
-
         }
 
         /// <summary>
@@ -72,6 +83,24 @@ namespace OpenSatelliteProject {
             UIConsole.GlobalConsole.Position = new Vector2(20, GraphicsDevice.Viewport.Height - UIConsole.GlobalConsole.MaxHeight - 20);
             cfd = new CurrentFrameData(font);
             cfd.Position = new Vector2(20, 20);
+            satelliteBusyLed = new UILed(GraphicsDevice, font);
+            satelliteBusyLed.Position = new Vector2(20, 220);
+            satelliteBusyLed.Text = "Satellite Busy";
+            heartBeatLed = new UILed(GraphicsDevice, font);
+            heartBeatLed.Position = new Vector2(20, 250);
+            heartBeatLed.Text = "Heart Beat";
+
+            statisticsSocketLed = new UILed(GraphicsDevice, font);
+            dataSocketLed = new UILed(GraphicsDevice, font);
+
+            statisticsSocketLed.Text = "Statistics Connected";
+            dataSocketLed.Text = "Data Connected";
+
+            statisticsSocketLed.Position = new Vector2(20, 280);
+            dataSocketLed.Position = new Vector2(20, 310);
+
+            Texture2D mouseCursor = Content.Load<Texture2D>("arrow");
+            cursor = new MouseCursor(mouseCursor);
         }
 
         /// <summary>
@@ -83,6 +112,7 @@ namespace OpenSatelliteProject {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape)) {
                 Console.WriteLine("Closing app");
                 Exit();
+                return;
             }
 
             mtx.WaitOne();
@@ -91,6 +121,22 @@ namespace OpenSatelliteProject {
 
             cfd.update(gameTime);
             UIConsole.GlobalConsole.update(gameTime);
+            satelliteBusyLed.update(gameTime);
+            heartBeatLed.update(gameTime);
+
+            if (heartBeatCount == 10) {
+                heartBeatLed.Color = Color.Red;
+            } else {
+                heartBeatCount++;
+            }
+
+            statisticsSocketLed.Color = cn.StatisticsConnected ? Color.Lime : Color.Red;
+            dataSocketLed.Color = cn.DataConnected ? Color.Lime : Color.Red;
+
+            statisticsSocketLed.update(gameTime);
+            dataSocketLed.update(gameTime);
+            cursor.update(gameTime);
+
             base.Update(gameTime);
         }
 
@@ -104,10 +150,15 @@ namespace OpenSatelliteProject {
 
             cfd.draw(spriteBatch, gameTime);
             UIConsole.GlobalConsole.draw(spriteBatch, gameTime);
+            satelliteBusyLed.draw(spriteBatch, gameTime);
+            heartBeatLed.draw(spriteBatch, gameTime);
+            statisticsSocketLed.draw(spriteBatch, gameTime);
+            dataSocketLed.draw(spriteBatch, gameTime);
 
+
+            cursor.draw(spriteBatch, gameTime);
             spriteBatch.End();
-            //TODO: Add your drawing code here
-            
+
             base.Draw(gameTime);
         }
 
