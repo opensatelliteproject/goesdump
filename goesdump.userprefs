@@ -7,7 +7,7 @@
       <File FileName="goesdump/GoesDecoder/PacketManager.cs" Line="1" Column="1" />
       <File FileName="goesdump/ChannelDecoder/Demuxer.cs" Line="1" Column="1" />
       <File FileName="goesdump/UIComponents/UILed.cs" Line="12" Column="55" />
-      <File FileName="goesdump/ChannelDecoder/DemuxManager.cs" Line="26" Column="49" />
+      <File FileName="goesdump/ChannelDecoder/DemuxManager.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
