@@ -25,6 +25,7 @@ namespace OpenSatelliteProject {
         UILed heartBeatLed;
         UILed statisticsSocketLed;
         UILed dataSocketLed;
+        UILed frameLockLed;
         MouseCursor cursor;
 
         int lastPhaseCorrection = -1;
@@ -38,6 +39,10 @@ namespace OpenSatelliteProject {
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
             graphics.PreferMultiSampling = true;
+
+            this.Exiting += (object sender, EventArgs e) => {
+                //cn.Stop();
+            };
         }
 
         /// <summary>
@@ -60,8 +65,9 @@ namespace OpenSatelliteProject {
                     UIConsole.GlobalConsole.Error(String.Format("Costas Loop Desync! Phase correction was {0} and now is {1}.", lastPhaseCorrection, data.phaseCorrection));
                     desyncCount++;
                 }
+                frameLockLed.Color = data.frameLock == 1 ? Color.Lime : Color.Red;
                 lastPhaseCorrection = data.phaseCorrection;
-                satelliteBusyLed.Color = data.vcid != 63 ? Color.Lime : Color.Red;
+                satelliteBusyLed.Color = data.vcid != 63 && data.frameLock == 1 ? Color.Lime : Color.Red;
                 if (heartBeatLed.Color != Color.Lime) {
                     heartBeatLed.Color = Color.Lime;
                     heartBeatCount = 0;
@@ -83,21 +89,28 @@ namespace OpenSatelliteProject {
             UIConsole.GlobalConsole.Position = new Vector2(20, GraphicsDevice.Viewport.Height - UIConsole.GlobalConsole.MaxHeight - 20);
             cfd = new CurrentFrameData(font);
             cfd.Position = new Vector2(20, 20);
+
+
             satelliteBusyLed = new UILed(GraphicsDevice, font);
+            heartBeatLed = new UILed(GraphicsDevice, font);
+            statisticsSocketLed = new UILed(GraphicsDevice, font);
+            dataSocketLed = new UILed(GraphicsDevice, font);
+            frameLockLed = new UILed(GraphicsDevice, font);
+
             satelliteBusyLed.Position = new Vector2(20, 220);
             satelliteBusyLed.Text = "Satellite Busy";
-            heartBeatLed = new UILed(GraphicsDevice, font);
+
             heartBeatLed.Position = new Vector2(20, 250);
             heartBeatLed.Text = "Heart Beat";
 
-            statisticsSocketLed = new UILed(GraphicsDevice, font);
-            dataSocketLed = new UILed(GraphicsDevice, font);
-
             statisticsSocketLed.Text = "Statistics Connected";
-            dataSocketLed.Text = "Data Connected";
-
             statisticsSocketLed.Position = new Vector2(20, 280);
+
+            dataSocketLed.Text = "Data Connected";
             dataSocketLed.Position = new Vector2(20, 310);
+
+            frameLockLed.Text = "Frame Lock";
+            frameLockLed.Position = new Vector2(20, 340);
 
             Texture2D mouseCursor = Content.Load<Texture2D>("arrow");
             cursor = new MouseCursor(mouseCursor);
@@ -112,7 +125,6 @@ namespace OpenSatelliteProject {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape)) {
                 Console.WriteLine("Closing app");
                 Exit();
-                return;
             }
 
             mtx.WaitOne();
@@ -135,6 +147,7 @@ namespace OpenSatelliteProject {
 
             statisticsSocketLed.update(gameTime);
             dataSocketLed.update(gameTime);
+            frameLockLed.update(gameTime);
             cursor.update(gameTime);
 
             base.Update(gameTime);
@@ -154,7 +167,7 @@ namespace OpenSatelliteProject {
             heartBeatLed.draw(spriteBatch, gameTime);
             statisticsSocketLed.draw(spriteBatch, gameTime);
             dataSocketLed.draw(spriteBatch, gameTime);
-
+            frameLockLed.draw(spriteBatch, gameTime);
 
             cursor.draw(spriteBatch, gameTime);
             spriteBatch.End();
@@ -165,6 +178,7 @@ namespace OpenSatelliteProject {
         protected override void OnExiting(object sender, EventArgs args) {
             base.OnExiting(sender, args);
             cn.Stop();
+            Environment.Exit(Environment.ExitCode);
         }
     }
 }

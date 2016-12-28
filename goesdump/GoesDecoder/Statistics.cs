@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace OpenSatelliteProject {
     
     //[StructLayout(LayoutKind.Explicit)] // , Size = 4160, Pack = 1
-    [StructLayout(LayoutKind.Sequential, Size = 4164, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Size = 4165, Pack = 1)]
     public struct Statistics_st {
         
         //[FieldOffset(0)]
@@ -65,6 +65,8 @@ namespace OpenSatelliteProject {
         //[FieldOffset(4160)]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public byte[] syncWord;
+
+        public byte frameLock;
 
         public static Statistics_st fromByteArray(byte[] data) {
             GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);

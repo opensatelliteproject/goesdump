@@ -1,12 +1,12 @@
 ﻿<Properties StartupItem="goesdump/GOES Dumper.csproj" RefactoringSettings.EnableRefactorings="True">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Release|x86" />
   <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/UIComponents/UILed.cs">
     <Files>
       <File FileName="goesdump/Main.cs" Line="1" Column="1" />
       <File FileName="goesdump/GoesDecoder/Connector.cs" Line="1" Column="1" />
       <File FileName="goesdump/GoesDecoder/PacketManager.cs" Line="1" Column="1" />
       <File FileName="goesdump/ChannelDecoder/Demuxer.cs" Line="1" Column="1" />
-      <File FileName="goesdump/UIComponents/UILed.cs" Line="12" Column="55" />
+      <File FileName="goesdump/UIComponents/UILed.cs" Line="14" Column="37" />
       <File FileName="goesdump/ChannelDecoder/DemuxManager.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>

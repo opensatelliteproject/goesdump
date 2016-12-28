@@ -41,6 +41,9 @@ namespace OpenSatelliteProject {
             statisticsThread = new Thread(new ThreadStart(statisticsLoop));
             channelDataThread = new Thread(new ThreadStart(channelDataLoop));
 
+            statisticsThread.IsBackground = true;
+            channelDataThread.IsBackground = true;
+
             statisticsThreadRunning = true;
             channelDataThreadRunning = true;
 
@@ -88,7 +91,7 @@ namespace OpenSatelliteProject {
 
         private void statisticsLoop() {
             UIConsole.GlobalConsole.Log("Statistics Thread Started");
-            byte[] buffer = new byte[4164];
+            byte[] buffer = new byte[4165];
 
             IPHostEntry ipHostInfo = Dns.GetHostEntry("localhost");
             IPAddress ipAddress = ipHostInfo.AddressList[0];
@@ -132,6 +135,7 @@ namespace OpenSatelliteProject {
                     }
 
                     sender.Shutdown(SocketShutdown.Both);
+                    sender.Disconnect(false);
                     sender.Close();
 
                 } catch (ArgumentNullException ane) {
@@ -151,6 +155,7 @@ namespace OpenSatelliteProject {
             try {
                 if (sender != null) {
                     sender.Shutdown(SocketShutdown.Both);
+                    sender.Disconnect(false);
                     sender.Close();
                 }
             } catch (Exception e) {
@@ -203,6 +208,7 @@ namespace OpenSatelliteProject {
                     }
 
                     sender.Shutdown(SocketShutdown.Both);
+                    sender.Disconnect(false);
                     sender.Close();
 
                 } catch (ArgumentNullException ane) {
@@ -222,6 +228,7 @@ namespace OpenSatelliteProject {
             try {
                 if (sender != null) {
                     sender.Shutdown(SocketShutdown.Both);
+                    sender.Disconnect(false);
                     sender.Close();
                 }
             } catch (Exception e) {
