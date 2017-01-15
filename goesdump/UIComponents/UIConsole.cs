@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
+using System.Text;
+using System.Globalization;
 
 namespace OpenSatelliteProject {
     public class UIConsole: Drawable, Updatable {
@@ -20,6 +22,20 @@ namespace OpenSatelliteProject {
 
         private List<ConsoleMessage> messages;
         private Mutex messageMutex;
+
+        private static string RemoveDiacritics(string text) {
+          var normalizedString = text.Normalize(NormalizationForm.FormD);
+          var stringBuilder = new StringBuilder();
+
+          foreach (var c in normalizedString) {
+            var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+            if (unicodeCategory != UnicodeCategory.NonSpacingMark) {
+              stringBuilder.Append(c);
+            }
+          }
+
+          return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+        }
 
         static UIConsole() {
             GlobalConsole = new UIConsole();
@@ -67,7 +83,6 @@ namespace OpenSatelliteProject {
         }
 
         #endregion
-
         private void addMessage(ConsoleMessage message) {
             string[] lines = message.Message.Split('\n');
             int totalLines = messages.Count + lines.Length;
@@ -76,7 +91,7 @@ namespace OpenSatelliteProject {
                 totalLines--;
             }
             if (lines.Length == 1) {
-                message.Message = message.Message.Replace('\n', ' ').Replace('\r', ' ').Trim();
+                message.Message = RemoveDiacritics(message.Message.Replace('\n', ' ').Replace('\r', ' ').Trim());
                 if (message.Message.Length > 0) {
                     messages.Add(message);
                 }
@@ -84,7 +99,7 @@ namespace OpenSatelliteProject {
                 foreach (string l in lines.ToList()) {
                     ConsoleMessage m = new ConsoleMessage(message.Priority, l);
                     m.TimeStamp = message.TimeStamp;
-                    m.Message = m.Message.Replace('\n', ' ').Replace('\r', ' ').Trim();;
+                    m.Message = RemoveDiacritics(m.Message.Replace('\n', ' ').Replace('\r', ' ').Trim());
                     if (m.Message.Length > 0) {
                         messages.Add(m);
                     }
