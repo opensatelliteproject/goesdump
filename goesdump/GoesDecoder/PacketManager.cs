@@ -75,6 +75,50 @@ namespace OpenSatelliteProject {
             return filef;
         }
 
+        public static void ManageJPGFile(string filename, string internalname, int headersize) {
+            string dir = Path.GetDirectoryName(filename);
+            string f = FixFileFolder(dir, internalname);
+            f = f.Replace(".lrit", ".jpg");
+            UIConsole.GlobalConsole.Log(String.Format("New JPEG file {0}", internalname));
+            //Console.WriteLine("Renaming {0} to {1}", filename, Path.Combine(dir, fname));
+            FileStream fs = File.OpenRead(filename);
+            fs.Seek(headersize, SeekOrigin.Begin);
+            FileStream os = File.OpenWrite(f);
+
+            byte[] buffer = new Byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = fs.Read(buffer, 0, 1024)) > 0) {
+                os.Write(buffer, 0, bytesRead);
+            }
+
+            fs.Close();
+            os.Close();
+            File.Delete(filename);
+        }
+
+        public static void ManageGIFFile(string filename, string internalname, int headersize) {
+            string dir = Path.GetDirectoryName(filename);
+            string f = FixFileFolder(dir, internalname);
+            f = f.Replace(".lrit", ".gif");
+            UIConsole.GlobalConsole.Log(String.Format("New GIF file {0}", internalname));
+            //Console.WriteLine("Renaming {0} to {1}", filename, Path.Combine(dir, fname));
+            FileStream fs = File.OpenRead(filename);
+            fs.Seek(headersize, SeekOrigin.Begin);
+            FileStream os = File.OpenWrite(f);
+
+            byte[] buffer = new Byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = fs.Read(buffer, 0, 1024)) > 0) {
+                os.Write(buffer, 0, bytesRead);
+            }
+
+            fs.Close();
+            os.Close();
+            File.Delete(filename);
+        }
+
         public static void ManageFile(string filename) {
             FileStream fs = File.OpenRead(filename);
             byte[] szb = new byte[3];
@@ -101,9 +145,14 @@ namespace OpenSatelliteProject {
             fs.Close();
 
             string fname = GetFilename(szb);
+            int compression = IsCompressed(szb);
 
             if (fname == "--") {
                 //Console.WriteLine("Cannot find filename for {0}", filename);
+            } else if (compression == 2) { // JPG Files
+                ManageJPGFile(filename, fname, hsize);
+            } else if (compression == 5) { // GIF Files
+                ManageGIFFile(filename, fname, hsize);
             } else {
                 string dir = Path.GetDirectoryName(filename);
                 string f = FixFileFolder(dir, fname);
@@ -215,10 +264,10 @@ namespace OpenSatelliteProject {
             return filename;
         }
 
-        public static bool IsCompressed(byte[] data) {
+        public static int IsCompressed(byte[] data) {
             bool IsCompressed = false;
+            int NOAACompression = -1;
             int runs = 0;
-
             while (true) {
                 byte type = data[0];
                 byte[] cb = data.Skip(1).Take(2).ToArray();
@@ -231,10 +280,10 @@ namespace OpenSatelliteProject {
                 if (type == 129) {
                     //4sHHHB
                     // 4 + 6 = 10
-                    return data[13] > 0;
+                    NOAACompression = data[13];
                 } else if (type == 1) {
                     //>BHHB
-                    return data[5] > 0;
+                    IsCompressed = data[5] > 0;
                 }
 
                 data = data.Skip(size).ToArray();
@@ -246,9 +295,10 @@ namespace OpenSatelliteProject {
                 if (runs >= MAX_RUNS) {
                     break;
                 }
+
             }
 
-            return IsCompressed;
+            return NOAACompression > -1 ? NOAACompression : (IsCompressed ? 1 : 0);
         }
 
         public static int GetPixels(byte[] data) {

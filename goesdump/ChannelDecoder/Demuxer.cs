@@ -18,7 +18,7 @@ namespace OpenSatelliteProject {
         private int endnum = -1;
         private string filename;
         private int channelId;
-        private bool isCompressed;
+        private int compressionFlag;
         private int pixels;
 
         private byte[] buffer;
@@ -91,7 +91,7 @@ namespace OpenSatelliteProject {
                 }
 
                 if (msdu.Sequence == SequenceType.FIRST_SEGMENT || msdu.Sequence == SequenceType.FIRST_SEGMENT) {
-                    isCompressed = PacketManager.IsCompressed(msdu.Data.Skip(10).ToArray());
+                    compressionFlag = PacketManager.IsCompressed(msdu.Data.Skip(10).ToArray());
                     pixels = PacketManager.GetPixels(msdu.Data.Skip(10).ToArray());
                     if (msdu.Sequence == SequenceType.FIRST_SEGMENT) {
                         startnum = msdu.PacketNumber;
@@ -113,13 +113,16 @@ namespace OpenSatelliteProject {
                     Directory.CreateDirectory(path);
                 }
 
-                if (isCompressed) {
-                    filename = String.Format("channels/{0}/{1}_{2}_{3}.lrit", channelId, msdu.APID, msdu.Version, msdu.PacketNumber);
-                } else {
-                    filename = String.Format("channels/{0}/{1}_{2}.lrit", channelId, msdu.APID, msdu.Version);
+                switch (compressionFlag) {
+                    case 1: // RICE
+                        filename = String.Format("channels/{0}/{1}_{2}_{3}.lrit", channelId, msdu.APID, msdu.Version, msdu.PacketNumber);
+                        break;
+                    default: // For 0, 2, 5 runs the default
+                        filename = String.Format("channels/{0}/{1}_{2}.lrit", channelId, msdu.APID, msdu.Version);
+                        break;
                 }
 
-                using (FileStream fs = new FileStream(filename, firstOrSinglePacket || isCompressed ? FileMode.Create : FileMode.Append, FileAccess.Write)) {
+                using (FileStream fs = new FileStream(filename, firstOrSinglePacket || compressionFlag == 1 ? FileMode.Create : FileMode.Append, FileAccess.Write)) {
                     using (BinaryWriter sw = new BinaryWriter(fs)) {
                         byte[] dataToSave = msdu.Data.Skip(firstOrSinglePacket ? 10 : 0).Take(firstOrSinglePacket ? msdu.PacketLength - 10 : msdu.PacketLength).ToArray(); 
                         sw.Write(dataToSave);
@@ -127,7 +130,7 @@ namespace OpenSatelliteProject {
                 }
 
                 if (msdu.Sequence == SequenceType.LAST_SEGMENT || msdu.Sequence == SequenceType.SINGLE_DATA) {
-                    if (isCompressed) {
+                    if (compressionFlag == 1) { // # Rice
                         string decompressed;
                         if (msdu.Sequence == SequenceType.SINGLE_DATA) {
                             decompressed = PacketManager.Decompressor(filename, pixels);

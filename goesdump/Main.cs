@@ -62,8 +62,8 @@ namespace OpenSatelliteProject {
                 mtx.ReleaseMutex();
 
                 if (data.phaseCorrection != lastPhaseCorrection && lastPhaseCorrection != -1) {
-                    UIConsole.GlobalConsole.Error(String.Format("Costas Loop Desync! Phase correction was {0} and now is {1}.", lastPhaseCorrection, data.phaseCorrection));
-                    desyncCount++;
+                    //UIConsole.GlobalConsole.Error(String.Format("Costas Loop Desync! Phase correction was {0} and now is {1}.", lastPhaseCorrection, data.phaseCorrection));
+                    //desyncCount++;
                 }
                 frameLockLed.Color = data.frameLock == 1 ? Color.Lime : Color.Red;
                 lastPhaseCorrection = data.phaseCorrection;
