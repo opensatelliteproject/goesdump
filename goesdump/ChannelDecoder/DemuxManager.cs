@@ -14,8 +14,11 @@ namespace OpenSatelliteProject {
         public void parseBytes(byte[] data) {
             int vcid = (data[1] & 0x3F);
             if (vcid != FILL_VCID) {
-                if (vcid == 0 || vcid == 1) {
+                /*if (vcid == 0 || vcid == 1) {
                     // Skip DCS and EMWIN
+                    return;
+                }*/
+                if (vcid == 31) { // Skip DCS for HRIT
                     return;
                 }
                 if (!demuxers.ContainsKey(vcid)) {
