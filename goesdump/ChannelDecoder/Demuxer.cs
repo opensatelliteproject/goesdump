@@ -19,8 +19,6 @@ namespace OpenSatelliteProject {
         private int endnum = -1;
         private string filename;
         private int channelId;
-        //private int compressionFlag;
-        //private int pixels;
         private XRITHeader fileHeader;
 
         private byte[] buffer;

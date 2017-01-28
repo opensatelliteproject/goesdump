@@ -18,9 +18,9 @@ namespace OpenSatelliteProject {
                     // Skip DCS and EMWIN
                     return;
                 }*/
-                /*if (vcid == 31) { // Skip DCS for HRIT
+                if (vcid == 31) { // Skip DCS for HRIT
                     return;
-                }*/
+                }
                 if (!demuxers.ContainsKey(vcid)) {
                     UIConsole.GlobalConsole.Log(String.Format("I don't have a demuxer for VCID {0}. Creating...", vcid));
                     demuxers.Add(vcid, new Demuxer());

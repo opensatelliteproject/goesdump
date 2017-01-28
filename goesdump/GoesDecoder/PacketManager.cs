@@ -143,7 +143,28 @@ namespace OpenSatelliteProject {
             string dir = Path.GetDirectoryName(filename);
             string f = FixFileFolder(dir, fileHeader.Filename, fileHeader.Product, fileHeader.SubProduct);
             f = f.Replace(".lrit", ".jpg");
-            UIConsole.GlobalConsole.Log(String.Format("New JPEG file {0}", fileHeader.Filename));
+
+            if (File.Exists(f)) {
+                string timestamp = DateTime.Now.ToString("yyyyMMddHHmmssffff");
+                string append = String.Format("-{0}.jpg", timestamp);
+                f = f.Replace(".jpg", append);
+            }
+
+            if (!String.Equals(Path.GetFileName(f), fileHeader.Filename)) {
+                if (fileHeader.SubProduct.Name != "Unknown") {
+                    UIConsole.GlobalConsole.Log(String.Format("New {0} - {1} ({2}) saved as {3}", fileHeader.Product.Name, fileHeader.SubProduct.Name, fileHeader.Filename, Path.GetFileName(f)));
+                } else {
+                    UIConsole.GlobalConsole.Log(String.Format("New {0} ({1}) saved as {2}", fileHeader.Product.Name, fileHeader.Filename, Path.GetFileName(f)));
+                }
+            } else {
+                if (fileHeader.SubProduct.Name != "Unknown") {
+                    UIConsole.GlobalConsole.Log(String.Format("New {0} - {1} ({2})", fileHeader.Product.Name, fileHeader.SubProduct.Name, fileHeader.Filename));
+                } else {
+                    UIConsole.GlobalConsole.Log(String.Format("New {0} ({1})", fileHeader.Product.Name, fileHeader.Filename));
+                }
+            }
+
+            //UIConsole.GlobalConsole.Log(String.Format("New JPEG file {0}", fileHeader.Filename));
             Console.WriteLine("Renaming {0} to {1}", filename, f);
             FileStream fs = File.OpenRead(filename);
             fs.Seek(fileHeader.PrimaryHeader.HeaderLength, SeekOrigin.Begin);
@@ -167,7 +188,29 @@ namespace OpenSatelliteProject {
             string dir = Path.GetDirectoryName(filename);
             string f = FixFileFolder(dir, fileHeader.Filename, fileHeader.Product, fileHeader.SubProduct);
             f = f.Replace(".lrit", ".gif");
-            UIConsole.GlobalConsole.Log(String.Format("New GIF file {0}", fileHeader.Filename));
+
+            if (File.Exists(f)) {
+                string timestamp = DateTime.Now.ToString("yyyyMMddHHmmssffff");
+                string append = String.Format("-{0}.gif", timestamp);
+                f = f.Replace(".gif", append);
+            }
+
+            if (!String.Equals(Path.GetFileName(f), fileHeader.Filename)) {
+                if (fileHeader.SubProduct.Name != "Unknown") {
+                    UIConsole.GlobalConsole.Log(String.Format("New {0} - {1} ({2}) saved as {3}", fileHeader.Product.Name, fileHeader.SubProduct.Name, fileHeader.Filename, Path.GetFileName(f)));
+                } else {
+                    UIConsole.GlobalConsole.Log(String.Format("New {0} ({1}) saved as {2}", fileHeader.Product.Name, fileHeader.Filename, Path.GetFileName(f)));
+                }
+            } else {
+                if (fileHeader.SubProduct.Name != "Unknown") {
+                    UIConsole.GlobalConsole.Log(String.Format("New {0} - {1} ({2})", fileHeader.Product.Name, fileHeader.SubProduct.Name, fileHeader.Filename));
+                } else {
+                    UIConsole.GlobalConsole.Log(String.Format("New {0} ({1})", fileHeader.Product.Name, fileHeader.Filename));
+                }
+            }
+
+
+            //UIConsole.GlobalConsole.Log(String.Format("New GIF file {0}", fileHeader.Filename));
             Console.WriteLine("Renaming {0} to {1}", filename, f);
             FileStream fs = File.OpenRead(filename);
             fs.Seek(fileHeader.PrimaryHeader.HeaderLength, SeekOrigin.Begin);
@@ -201,9 +244,33 @@ namespace OpenSatelliteProject {
                     default:
                         string dir = Path.GetDirectoryName(filename);
                         string f = FixFileFolder(dir, fileHeader.Filename, fileHeader.Product, fileHeader.SubProduct);
-                        UIConsole.GlobalConsole.Log(String.Format("New file {0}", fileHeader.Filename));
                         //Console.WriteLine("Renaming {0} to {1}", filename, Path.Combine(dir, fname));
-                        File.Move(filename, f);
+
+                        if (File.Exists(f)) {
+                            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmssffff");
+                            string append = String.Format("-{0}.lrit", timestamp);
+                            f = f.Replace(".lrit", append);
+                        }
+
+                        if (!String.Equals(Path.GetFileName(f), fileHeader.Filename)) {
+                            if (fileHeader.SubProduct.Name != "Unknown") {
+                                UIConsole.GlobalConsole.Log(String.Format("New {0} - {1} ({2}) saved as {3}", fileHeader.Product.Name, fileHeader.SubProduct.Name, fileHeader.Filename, Path.GetFileName(f)));
+                            } else {
+                                UIConsole.GlobalConsole.Log(String.Format("New {0} ({1}) saved as {2}", fileHeader.Product.Name, fileHeader.Filename, Path.GetFileName(f)));
+                            }
+                        } else {
+                            if (fileHeader.SubProduct.Name != "Unknown") {
+                                UIConsole.GlobalConsole.Log(String.Format("New {0} - {1} ({2})", fileHeader.Product.Name, fileHeader.SubProduct.Name, fileHeader.Filename));
+                            } else {
+                                UIConsole.GlobalConsole.Log(String.Format("New {0} ({1})", fileHeader.Product.Name, fileHeader.Filename));
+                            }
+                        }
+
+                        try {
+                            File.Move(filename, f);
+                        } catch (IOException e) {
+                            UIConsole.GlobalConsole.Error(String.Format("Error moving file {0} to {1}: {2}", filename, f, e));
+                        }
                         break;
                 }
             }
@@ -333,7 +400,7 @@ namespace OpenSatelliteProject {
                 tmp = data.Take(size).ToArray();
 
                 if (tmp.Length < size) {
-                    Console.WriteLine("Not enough data for unpack header.");
+                    Console.WriteLine("Not enough data for unpack header: Expected {0} got {1}", size, tmp.Length);
                     break;
                 }
 
