@@ -3,7 +3,7 @@ using OpenSatelliteProject.PacketData.Structs;
 using OpenSatelliteProject.PacketData.Enums;
 
 namespace OpenSatelliteProject.PacketData {
-    public class ImageNavigationHeader: XRitBaseHeader {
+    public class ImageNavigationHeader: XRITBaseHeader {
         
         public string ProjectionName { get; set; }
         public UInt32 ColumnScalingFactor { get; set; }

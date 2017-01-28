@@ -3,7 +3,7 @@ using OpenSatelliteProject.PacketData.Structs;
 using OpenSatelliteProject.PacketData.Enums;
 
 namespace OpenSatelliteProject.PacketData {
-    public class RiceCompressionHeader: XRitBaseHeader {
+    public class RiceCompressionHeader: XRITBaseHeader {
         public UInt16 Flags;
         public byte Pixel;
         public byte Line;

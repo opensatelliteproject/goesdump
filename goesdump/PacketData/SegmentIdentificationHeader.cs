@@ -3,7 +3,7 @@ using OpenSatelliteProject.PacketData.Enums;
 using OpenSatelliteProject.PacketData.Structs;
 
 namespace OpenSatelliteProject.PacketData {
-    public class SegmentIdentificationHeader: XRitBaseHeader {
+    public class SegmentIdentificationHeader: XRITBaseHeader {
 
         public UInt16 ImageID { get; set; }
         public UInt16 Sequence { get; set; }

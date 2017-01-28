@@ -3,7 +3,7 @@ using OpenSatelliteProject.PacketData.Structs;
 using OpenSatelliteProject.PacketData.Enums;
 
 namespace OpenSatelliteProject.PacketData {
-    public class HeaderStructuredHeader: XRitBaseHeader {
+    public class HeaderStructuredHeader: XRITBaseHeader {
 
         public string Data { get; set;}
 

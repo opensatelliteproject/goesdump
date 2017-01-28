@@ -3,7 +3,7 @@ using OpenSatelliteProject.PacketData.Enums;
 using OpenSatelliteProject.PacketData.Structs;
 
 namespace OpenSatelliteProject.PacketData {
-    public class TimestampHeader: XRitBaseHeader {
+    public class TimestampHeader: XRITBaseHeader {
 
         public DateTime DateTime { get; set; }
 

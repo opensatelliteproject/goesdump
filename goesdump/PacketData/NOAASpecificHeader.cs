@@ -3,7 +3,7 @@ using OpenSatelliteProject.PacketData.Structs;
 using OpenSatelliteProject.PacketData.Enums;
 
 namespace OpenSatelliteProject.PacketData {
-    public class NOAASpecificHeader: XRitBaseHeader {
+    public class NOAASpecificHeader: XRITBaseHeader {
 
         public string Signature { get; set; }
         public NOAAProduct Product { get; set; }

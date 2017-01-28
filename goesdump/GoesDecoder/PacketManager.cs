@@ -339,23 +339,39 @@ namespace OpenSatelliteProject {
             return pixels;
         }
 
-        public static List<XRitBaseHeader> GetHeaderData(byte[] data) {
-            List<XRitBaseHeader> headers = new List<XRitBaseHeader>();
-            int length = data.Length;
-            while (length > 0) {
+        public static XRITHeader GetHeader(byte[] data) {
+            List<XRITBaseHeader> headers = GetHeaderData(data);
+            return new XRITHeader(headers);
+        }
+
+        public static List<XRITBaseHeader> GetHeaderData(byte[] data) {
+            List<XRITBaseHeader> headers = new List<XRITBaseHeader>();
+            int maxLength = data.Length; // Initial Guess
+            int c = 0;
+
+            while (c < maxLength) {
                 int type = data[0];
                 byte[] tmp = data.Skip(1).Take(2).ToArray();
+
                 if (BitConverter.IsLittleEndian) {
                     Array.Reverse(tmp);
                 }
+
                 int size = BitConverter.ToUInt16(tmp, 0);
                 tmp = data.Take(size).ToArray();
-                XRitBaseHeader h;
+
+                if (tmp.Length < size) {
+                    Console.WriteLine("Not enough data for unpack header.");
+                    break;
+                }
+
+                XRITBaseHeader h;
                 switch (type) {
                     case HeaderType.PrimaryHeader:
                         PrimaryRecord fh = Tools.ByteArrayToStruct<PrimaryRecord>(tmp);
                         fh = Tools.StructToSystemEndian(fh);
                         h = new PrimaryHeader(fh);
+                        maxLength = fh.HeaderLength; // Set the correct size
                         break;
                     case HeaderType.ImageStructureRecord:
                         ImageStructureRecord isr = Tools.ByteArrayToStruct<ImageStructureHeader>(tmp);
@@ -397,7 +413,7 @@ namespace OpenSatelliteProject {
                         h = new AncillaryHeader(at);
                         break;
                     case HeaderType.KeyRecord:
-                        h = new XRitBaseHeader(HeaderType.KeyRecord, tmp);
+                        h = new XRITBaseHeader(HeaderType.KeyRecord, tmp);
                         break;
                     case HeaderType.SegmentIdentificationRecord:
                         SegmentIdentificationRecord sir = Tools.ByteArrayToStruct<SegmentIdentificationRecord>(tmp);
@@ -431,13 +447,13 @@ namespace OpenSatelliteProject {
                         h = new DCSFilenameHeader(dfr);
                         break;
                     default:
-                        h = new XRitBaseHeader();
+                        h = new XRITBaseHeader();
                         h.Type = HeaderType.Unknown;
                 }
 
                 h.RawData = tmp;
                 headers.Add(h);
-                length -= size;
+                c += size;
                 data = data.Skip(size).ToArray();
             }
 

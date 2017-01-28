@@ -3,7 +3,7 @@ using OpenSatelliteProject.PacketData.Structs;
 using OpenSatelliteProject.PacketData.Enums;
 
 namespace OpenSatelliteProject.PacketData {
-    public class ImageStructureHeader: XRitBaseHeader {
+    public class ImageStructureHeader: XRITBaseHeader {
 
         public byte BitsPerPixel { get; set; }
         public UInt16 Columns { get; set; } 

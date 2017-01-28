@@ -3,7 +3,7 @@ using OpenSatelliteProject.PacketData.Structs;
 using OpenSatelliteProject.PacketData.Enums;
 
 namespace OpenSatelliteProject.PacketData {
-    public class PrimaryHeader: XRitBaseHeader {
+    public class PrimaryHeader: XRITBaseHeader {
         
         public FileTypeCode FileType { get; set; }
         public UInt32 HeaderLength;

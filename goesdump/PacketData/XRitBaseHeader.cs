@@ -2,16 +2,16 @@
 using OpenSatelliteProject.PacketData.Enums;
 
 namespace OpenSatelliteProject.PacketData {
-    public class XRitBaseHeader {
+    public class XRITBaseHeader {
         public HeaderType Type { get; set; }
         public byte[] RawData { get; set; }
 
-        public XRitBaseHeader() {
+        public XRITBaseHeader() {
             Type = HeaderType.Unknown;
             RawData = new byte[0];
         }
 
-        public XRitBaseHeader(HeaderType type, byte[] rawData) {
+        public XRITBaseHeader(HeaderType type, byte[] rawData) {
             Type = type;
             RawData = rawData;
         }
