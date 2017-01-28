@@ -96,21 +96,21 @@ namespace OpenSatelliteProject {
             statisticsSocketLed = new UILed(GraphicsDevice, font);
             dataSocketLed = new UILed(GraphicsDevice, font);
             frameLockLed = new UILed(GraphicsDevice, font);
-
-            satelliteBusyLed.Position = new Vector2(20, 220);
+            int firstLed = 260;
+            satelliteBusyLed.Position = new Vector2(20, firstLed);
             satelliteBusyLed.Text = "Satellite Busy";
 
-            heartBeatLed.Position = new Vector2(20, 250);
+            heartBeatLed.Position = new Vector2(20, firstLed + 30);
             heartBeatLed.Text = "Heart Beat";
 
             statisticsSocketLed.Text = "Statistics Connected";
-            statisticsSocketLed.Position = new Vector2(20, 280);
+            statisticsSocketLed.Position = new Vector2(20, firstLed + 60);
 
             dataSocketLed.Text = "Data Connected";
-            dataSocketLed.Position = new Vector2(20, 310);
+            dataSocketLed.Position = new Vector2(20, firstLed + 90);
 
             frameLockLed.Text = "Frame Lock";
-            frameLockLed.Position = new Vector2(20, 340);
+            frameLockLed.Position = new Vector2(20, firstLed + 120);
 
             Texture2D mouseCursor = Content.Load<Texture2D>("arrow");
             cursor = new MouseCursor(mouseCursor);

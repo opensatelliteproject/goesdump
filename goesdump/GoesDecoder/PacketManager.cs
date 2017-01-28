@@ -3,6 +3,10 @@ using System.Linq;
 using System.IO;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using OpenSatelliteProject.PacketData;
+using OpenSatelliteProject.PacketData.Enums;
+using OpenSatelliteProject.PacketData.Structs;
 
 namespace OpenSatelliteProject {
     public static class PacketManager {
@@ -80,7 +84,7 @@ namespace OpenSatelliteProject {
             string f = FixFileFolder(dir, internalname);
             f = f.Replace(".lrit", ".jpg");
             UIConsole.GlobalConsole.Log(String.Format("New JPEG file {0}", internalname));
-            //Console.WriteLine("Renaming {0} to {1}", filename, Path.Combine(dir, fname));
+            Console.WriteLine("Renaming {0} to {1}", filename, f);
             FileStream fs = File.OpenRead(filename);
             fs.Seek(headersize, SeekOrigin.Begin);
             FileStream os = File.OpenWrite(f);
@@ -94,7 +98,7 @@ namespace OpenSatelliteProject {
 
             fs.Close();
             os.Close();
-            File.Delete(filename);
+            //File.Delete(filename);
         }
 
         public static void ManageGIFFile(string filename, string internalname, int headersize) {
@@ -102,7 +106,7 @@ namespace OpenSatelliteProject {
             string f = FixFileFolder(dir, internalname);
             f = f.Replace(".lrit", ".gif");
             UIConsole.GlobalConsole.Log(String.Format("New GIF file {0}", internalname));
-            //Console.WriteLine("Renaming {0} to {1}", filename, Path.Combine(dir, fname));
+            Console.WriteLine("Renaming {0} to {1}", filename, f);
             FileStream fs = File.OpenRead(filename);
             fs.Seek(headersize, SeekOrigin.Begin);
             FileStream os = File.OpenWrite(f);
@@ -116,7 +120,7 @@ namespace OpenSatelliteProject {
 
             fs.Close();
             os.Close();
-            File.Delete(filename);
+            //File.Delete(filename);
         }
 
         public static void ManageFile(string filename) {
@@ -334,6 +338,112 @@ namespace OpenSatelliteProject {
             }
             return pixels;
         }
+
+        public static List<XRitBaseHeader> GetHeaderData(byte[] data) {
+            List<XRitBaseHeader> headers = new List<XRitBaseHeader>();
+            int length = data.Length;
+            while (length > 0) {
+                int type = data[0];
+                byte[] tmp = data.Skip(1).Take(2).ToArray();
+                if (BitConverter.IsLittleEndian) {
+                    Array.Reverse(tmp);
+                }
+                int size = BitConverter.ToUInt16(tmp, 0);
+                tmp = data.Take(size).ToArray();
+                XRitBaseHeader h;
+                switch (type) {
+                    case HeaderType.PrimaryHeader:
+                        PrimaryRecord fh = Tools.ByteArrayToStruct<PrimaryRecord>(tmp);
+                        fh = Tools.StructToSystemEndian(fh);
+                        h = new PrimaryHeader(fh);
+                        break;
+                    case HeaderType.ImageStructureRecord:
+                        ImageStructureRecord isr = Tools.ByteArrayToStruct<ImageStructureHeader>(tmp);
+                        isr = Tools.StructToSystemEndian(isr);
+                        h = new ImageStructureHeader(isr);
+                        break;
+                    case HeaderType.ImageNavigationRecord:
+                        ImageNavigationRecord inr = Tools.ByteArrayToStruct<ImageNavigationRecord>(tmp);
+                        inr = Tools.StructToSystemEndian(inr);
+                        h = new ImageNavigationHeader(inr);
+                        break;
+                    case HeaderType.ImageDataFunctionRecord:
+                        // Cannot marshable due variable length
+                        //ImageDataFunctionRecord idfr = Tools.ByteArrayToStruct<ImageDataFunctionRecord>(tmp);
+                        //idfr = Tools.StructToSystemEndian(idfr);
+                        ImageDataFunctionRecord idfr = new ImageDataFunctionRecord();
+                        idfr.Data = System.Text.Encoding.UTF8.GetString(tmp.Skip(3).ToArray());
+                        h = new ImageDataFunctionHeader(idfr);
+                        break;
+                    case HeaderType.AnnotationRecord:
+                        // Cannot be marshalled due variable length
+                        //AnnotationRecord ar = Tools.ByteArrayToStruct<AnnotationRecord>(tmp);
+                        //ar = Tools.StructToSystemEndian(ar);
+                        AnnotationRecord ar = new AnnotationRecord();
+                        ar.Filename = System.Text.Encoding.UTF8.GetString(tmp.Skip(3).ToArray());
+                        h = new AnnotationHeader(ar);
+                        break;
+                    case HeaderType.TimestampRecord:
+                        TimestampRecord tr = Tools.ByteArrayToStruct<TimestampRecord>(tmp);
+                        tr = Tools.StructToSystemEndian(tr);
+                        h = new TimestampHeader(tr);
+                        break;
+                    case HeaderType.AncillaryTextRecord:
+                        // Cannot be marshalled due variable length.
+                        // AncillaryText at = Tools.ByteArrayToStruct<AncillaryText>(tmp);
+                        //at = Tools.StructToSystemEndian(at);
+                        AncillaryText at = new AncillaryText();
+                        at.Data = System.Text.Encoding.UTF8.GetString(tmp.Skip(3).ToArray());
+                        h = new AncillaryHeader(at);
+                        break;
+                    case HeaderType.KeyRecord:
+                        h = new XRitBaseHeader(HeaderType.KeyRecord, tmp);
+                        break;
+                    case HeaderType.SegmentIdentificationRecord:
+                        SegmentIdentificationRecord sir = Tools.ByteArrayToStruct<SegmentIdentificationRecord>(tmp);
+                        sir = Tools.StructToSystemEndian(sir);
+                        h = new SegmentIdentificationHeader(sir);
+                        break;
+                    case HeaderType.NOAASpecificHeader:
+                        NOAASpecificRecord nsr = Tools.ByteArrayToStruct<NOAASpecificRecord>(tmp);
+                        nsr = Tools.StructToSystemEndian(nsr);
+                        h = new NOAASpecificHeader(nsr);
+                        break;
+                    case HeaderType.HeaderStructuredRecord:
+                        // Cannot be marshalled due variable length
+                        //HeaderStructuredRecord hsr = Tools.ByteArrayToStruct<HeaderStructuredRecord>(tmp);
+                        //hsr = Tools.StructToSystemEndian(hsr); // Header Structured Record doesn't have endianess dependant fields
+                        HeaderStructuredRecord hsr = new HeaderStructuredRecord();
+                        hsr.Data = System.Text.Encoding.UTF8.GetString(tmp.Skip(3).ToArray());
+                        h = new HeaderStructuredHeader(hsr);
+                        break;
+                    case HeaderType.RiceCompressionRecord:
+                        RiceCompressionRecord rcr = Tools.ByteArrayToStruct<RiceCompressionRecord>(tmp);
+                        rcr = Tools.StructToSystemEndian(rcr);
+                        h = new RiceCompressionHeader(rcr);
+                        break;
+                    case HeaderType.DCSFileNameRecord:
+                        // Cannot be marshalled due variable length
+                        //DCSFilenameRecord dfr = Tools.ByteArrayToStruct<DCSFilenameRecord>(tmp);
+                        //dfr = Tools.StructToSystemEndian(dfr); // DCS Filename Record doesn't have endianess dependant fields
+                        DCSFilenameRecord dfr = new DCSFilenameRecord();
+                        dfr.Filename = System.Text.Encoding.UTF8.GetString(tmp.Skip(3).ToArray());
+                        h = new DCSFilenameHeader(dfr);
+                        break;
+                    default:
+                        h = new XRitBaseHeader();
+                        h.Type = HeaderType.Unknown;
+                }
+
+                h.RawData = tmp;
+                headers.Add(h);
+                length -= size;
+                data = data.Skip(size).ToArray();
+            }
+
+            return headers;
+        }
+
     }
 }
 
