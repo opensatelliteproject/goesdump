@@ -41,39 +41,31 @@ namespace OpenSatelliteProject {
                 Type tType = typeof(T);
                 FieldInfo[] fi = tType.GetFields(BindingFlags.Public | BindingFlags.Instance);
                 foreach (FieldInfo info in fi) {
-                    switch (info.FieldType) {
-                        case typeof(UInt16):
-                            UInt16 u16 = (UInt16)info.GetValue(data);
-                            byte[] bu16 = BitConverter.GetBytes(u16).Reverse().ToArray();
-                            info.SetValue(data, BitConverter.ToUInt16(bu16));
-                            break;
-                        case typeof(UInt32):
-                            UInt16 u32 = (UInt16)info.GetValue(data);
-                            byte[] bu32 = BitConverter.GetBytes(u32).Reverse().ToArray();
-                            info.SetValue(data, BitConverter.ToUInt16(bu32));
-                            break;
-                        case typeof(UInt64):
-                            UInt16 u64 = (UInt16)info.GetValue(data);
-                            byte[] bu64 = BitConverter.GetBytes(u64).Reverse().ToArray();
-                            info.SetValue(data, BitConverter.ToUInt16(bu64));
-                            break;
-                        case typeof(Int16):
-                            UInt16 i16 = (UInt16)info.GetValue(data);
-                            byte[] b16 = BitConverter.GetBytes(i16).Reverse().ToArray();
-                            info.SetValue(data, BitConverter.ToUInt16(b16));
-                            break;
-                        case typeof(Int32):
-                            UInt16 i32 = (UInt16)info.GetValue(data);
-                            byte[] b32 = BitConverter.GetBytes(i32).Reverse().ToArray();
-                            info.SetValue(data, BitConverter.ToUInt16(b32));
-                            break;
-                        case typeof (Int64):
-                            UInt16 i64 = (UInt16)info.GetValue(data);
-                            byte[] b64 = BitConverter.GetBytes(i64).Reverse().ToArray();
-                            info.SetValue(data, BitConverter.ToUInt16(b64));
-                            break;
+                    if (info.FieldType == typeof(UInt16)) {
+                        UInt16 u16 = (UInt16)info.GetValue(data);
+                        byte[] bu16 = BitConverter.GetBytes(u16).Reverse().ToArray();
+                        info.SetValue(data, BitConverter.ToUInt16(bu16, 0));
+                    } else if (info.FieldType == typeof(UInt32)) {
+                        UInt32 u32 = (UInt32)info.GetValue(data);
+                        byte[] bu32 = BitConverter.GetBytes(u32).Reverse().ToArray();
+                        info.SetValue(data, BitConverter.ToUInt32(bu32, 0));
+                    } else if (info.FieldType == typeof(UInt64)) {
+                        UInt64 u64 = (UInt64)info.GetValue(data);
+                        byte[] bu64 = BitConverter.GetBytes(u64).Reverse().ToArray();
+                        info.SetValue(data, BitConverter.ToUInt64(bu64, 0));
+                    } else if (info.FieldType == typeof(Int16)) {
+                        Int16 i16 = (Int16)info.GetValue(data);
+                        byte[] b16 = BitConverter.GetBytes(i16).Reverse().ToArray();
+                        info.SetValue(data, BitConverter.ToInt16(b16, 0));
+                    } else if (info.FieldType == typeof(Int32)) {
+                        Int32 i32 = (Int32)info.GetValue(data);
+                        byte[] b32 = BitConverter.GetBytes(i32).Reverse().ToArray();
+                        info.SetValue(data, BitConverter.ToInt32(b32, 0));
+                    } else if (info.FieldType == typeof(Int64)) {
+                        Int64 i64 = (Int64)info.GetValue(data);
+                        byte[] b64 = BitConverter.GetBytes(i64).Reverse().ToArray();
+                        info.SetValue(data, BitConverter.ToInt64(b64, 0));
                     }
-                    Console.WriteLine(info.Name);
                 }
             }
 

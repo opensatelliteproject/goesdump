@@ -26,6 +26,10 @@ namespace OpenSatelliteProject {
         private static readonly string ImagesFolder = "Images";
         private static readonly string TextFolder = "Text";
         private static readonly string ChartFolder = "Charts";
+        private static readonly string EMWINFolder = "EMWIN";
+        private static readonly string WeatherDataFolder = "Weather Data";
+        private static readonly string OtherSatellitesFolder = "Other Satellites";
+        private static readonly string UnknownDataFolder = "Unknown";
 
         private static Regex dcsRegex = new Regex(DCSRgex, RegexOptions.IgnoreCase);
         private static Regex xxRegex = new Regex(XXRgex, RegexOptions.IgnoreCase);
@@ -34,59 +38,115 @@ namespace OpenSatelliteProject {
         private static Regex gosRegex = new Regex(GOSRgex, RegexOptions.IgnoreCase);
         private static Regex textRegex = new Regex(TextRgex, RegexOptions.IgnoreCase);
 
-        private static string FixFileFolder(string dir, string filename) {
+        private static string FixFileFolder(string dir, string filename, NOAAProduct product, NOAASubproduct subProduct) {
             string filef = filename;
             string basedir = new DirectoryInfo(dir).Parent.FullName;
 
-            if (dcsRegex.IsMatch(filename)) {
+            if (product != null && product.ID != -1) {
+                // New way
+                string folderName = UnknownDataFolder;
+                if (product.ID == (int)NOAAProductID.SCANNER_DATA_1 || product.ID == (int)NOAAProductID.SCANNER_DATA_2) {
+                    switch (subProduct.ID) {
+                        case (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST:
+                        case (int)ScannerSubProduct.VISIBLE_AREA_OF_INTEREST:
+                        case (int)ScannerSubProduct.WATERVAPOUR_AREA_OF_INTEREST:
+                            folderName = Path.Combine(ImagesFolder, "Area of Interest");
+                            break;
+                        case (int)ScannerSubProduct.INFRARED_FULLDISK:
+                        case (int)ScannerSubProduct.VISIBLE_FULLDISK:
+                        case (int)ScannerSubProduct.WATERVAPOUR_FULLDISK:
+                            folderName = Path.Combine(ImagesFolder, "Full Disk");
+                            break;
+                        case (int)ScannerSubProduct.INFRARED_NORTHERN:
+                        case (int)ScannerSubProduct.VISIBLE_NORTHERN:
+                        case (int)ScannerSubProduct.WATERVAPOUR_NORTHERN:
+                            folderName = Path.Combine(ImagesFolder, "Northern Hemisphere");
+                            break;
+                        case (int)ScannerSubProduct.INFRARED_SOUTHERN:
+                        case (int)ScannerSubProduct.VISIBLE_SOUTHERN:
+                        case (int)ScannerSubProduct.WATERVAPOUR_SOUTHERN:
+                            folderName = Path.Combine(ImagesFolder, "Southern Hemisphere");
+                            break;
+                        case (int)ScannerSubProduct.INFRARED_UNITEDSTATES:
+                        case (int)ScannerSubProduct.VISIBLE_UNITEDSTATES:
+                        case (int)ScannerSubProduct.WATERVAPOUR_UNITEDSTATES:
+                            folderName = Path.Combine(ImagesFolder, "United States");
+                            break;
+                        default:
+                            folderName = Path.Combine(ImagesFolder, UnknownDataFolder);
+                            break;
+                    }
+                } else {
+                    switch (product.ID) {
+                        case (int)NOAAProductID.DCS:
+                            folderName = DCSFolder;
+                            break;
+                        case (int)NOAAProductID.EMWIN:
+                            folderName = EMWINFolder;
+                            break;
+                        case (int)NOAAProductID.NOAA_TEXT:
+                            folderName = TextFolder;
+                            break;
+                        case (int)NOAAProductID.OTHER_SATELLITES_1:
+                        case (int)NOAAProductID.OTHER_SATELLITES_2:
+                            folderName = OtherSatellitesFolder;
+                            break;
+                        case (int)NOAAProductID.WEATHER_DATA:
+                            folderName = WeatherDataFolder;
+                            break;
+                        default:
+                            folderName = UnknownDataFolder;
+                            break;
+                    }
+                }
+
                 dir = Path.Combine(basedir, DCSFolder);
+
                 if (!Directory.Exists(dir)) {
                     Directory.CreateDirectory(dir);
                 }
+
                 filef = Path.Combine(dir, filename);
-            } else if (xxRegex.IsMatch(filename)) {
-                dir = Path.Combine(basedir, XXFolder);
+
+            } else {
+                // Old way
+                string folderName = UnknownDataFolder;
+                if (dcsRegex.IsMatch(filename)) {
+                    folderName = DCSFolder;
+                } else if (xxRegex.IsMatch(filename)) {
+                    folderName = Path.Combine(ImagesFolder, "Area of Interest");
+                } else if (fdRegex.IsMatch(filename)) { 
+                    folderName = Path.Combine(ImagesFolder, "Full Disk");
+                } else if (chartRegex.IsMatch(filename)) {
+                    folderName = WeatherDataFolder;
+                } else if (gosRegex.IsMatch(filename)) {
+                    folderName = Path.Combine(ImagesFolder, UnknownDataFolder);
+                } else if (textRegex.IsMatch(filename)) {
+                    folderName = TextFolder;
+                } else {
+                    folderName = UnknownDataFolder;
+                }
+
+                dir = Path.Combine(basedir, folderName);
+
                 if (!Directory.Exists(dir)) {
                     Directory.CreateDirectory(dir);
                 }
-                filef = Path.Combine(dir, filename);
-            } else if (fdRegex.IsMatch(filename)) { 
-                dir = Path.Combine(basedir, FullDiskFolder);
-                if (!Directory.Exists(dir)) {
-                    Directory.CreateDirectory(dir);
-                }
-                filef = Path.Combine(dir, filename);
-            } else if (chartRegex.IsMatch(filename)) {
-                dir = Path.Combine(basedir, ChartFolder);
-                if (!Directory.Exists(dir)) {
-                    Directory.CreateDirectory(dir);
-                }
-                filef = Path.Combine(dir, filename);
-            } else if (gosRegex.IsMatch(filename)) {
-                dir = Path.Combine(basedir, ImagesFolder);
-                if (!Directory.Exists(dir)) {
-                    Directory.CreateDirectory(dir);
-                }
-                filef = Path.Combine(dir, filename);
-            } else if (textRegex.IsMatch(filename)) {
-                dir = Path.Combine(basedir, TextFolder);
-                if (!Directory.Exists(dir)) {
-                    Directory.CreateDirectory(dir);
-                }
+
                 filef = Path.Combine(dir, filename);
             }
 
             return filef;
         }
 
-        public static void ManageJPGFile(string filename, string internalname, int headersize) {
+        public static void ManageJPGFile(string filename, XRITHeader fileHeader) {
             string dir = Path.GetDirectoryName(filename);
-            string f = FixFileFolder(dir, internalname);
+            string f = FixFileFolder(dir, fileHeader.Filename, fileHeader.Product, fileHeader.SubProduct);
             f = f.Replace(".lrit", ".jpg");
-            UIConsole.GlobalConsole.Log(String.Format("New JPEG file {0}", internalname));
+            UIConsole.GlobalConsole.Log(String.Format("New JPEG file {0}", fileHeader.Filename));
             Console.WriteLine("Renaming {0} to {1}", filename, f);
             FileStream fs = File.OpenRead(filename);
-            fs.Seek(headersize, SeekOrigin.Begin);
+            fs.Seek(fileHeader.PrimaryHeader.HeaderLength, SeekOrigin.Begin);
             FileStream os = File.OpenWrite(f);
 
             byte[] buffer = new Byte[1024];
@@ -98,17 +158,19 @@ namespace OpenSatelliteProject {
 
             fs.Close();
             os.Close();
-            //File.Delete(filename);
+
+            // Keep the original lrit file
+            File.Move(filename, f.Replace(".jpg", ".lrit"));
         }
 
-        public static void ManageGIFFile(string filename, string internalname, int headersize) {
+        public static void ManageGIFFile(string filename, XRITHeader fileHeader) {
             string dir = Path.GetDirectoryName(filename);
-            string f = FixFileFolder(dir, internalname);
+            string f = FixFileFolder(dir, fileHeader.Filename, fileHeader.Product, fileHeader.SubProduct);
             f = f.Replace(".lrit", ".gif");
-            UIConsole.GlobalConsole.Log(String.Format("New GIF file {0}", internalname));
+            UIConsole.GlobalConsole.Log(String.Format("New GIF file {0}", fileHeader.Filename));
             Console.WriteLine("Renaming {0} to {1}", filename, f);
             FileStream fs = File.OpenRead(filename);
-            fs.Seek(headersize, SeekOrigin.Begin);
+            fs.Seek(fileHeader.PrimaryHeader.HeaderLength, SeekOrigin.Begin);
             FileStream os = File.OpenWrite(f);
 
             byte[] buffer = new Byte[1024];
@@ -120,49 +182,30 @@ namespace OpenSatelliteProject {
 
             fs.Close();
             os.Close();
-            //File.Delete(filename);
+
+            // Keep the original lrit file
+            File.Move(filename, f.Replace(".gif", ".lrit"));
         }
 
-        public static void ManageFile(string filename) {
-            FileStream fs = File.OpenRead(filename);
-            byte[] szb = new byte[3];
-            fs.Read(szb, 0, 3); // Ignore header size and type
-
-            fs.ReadByte();
-            szb = new byte[4];
-            fs.Read(szb, 0, 4);
-            if (BitConverter.IsLittleEndian) {
-                Array.Reverse(szb);
-            }
-
-            int hsize = (int) BitConverter.ToUInt32(szb, 0);
-
-            if (hsize < 0) { // Header size should never be that big.
-                return;
-            }
-
-            szb = new byte[hsize];
-
-            fs.Seek(0, SeekOrigin.Begin);
-
-            fs.Read(szb, 0, hsize);
-            fs.Close();
-
-            string fname = GetFilename(szb);
-            int compression = IsCompressed(szb);
-
-            if (fname == "--") {
+        public static void ManageFile(string filename, XRITHeader fileHeader) {
+            if (fileHeader.Filename == null) {
                 //Console.WriteLine("Cannot find filename for {0}", filename);
-            } else if (compression == 2) { // JPG Files
-                ManageJPGFile(filename, fname, hsize);
-            } else if (compression == 5) { // GIF Files
-                ManageGIFFile(filename, fname, hsize);
             } else {
-                string dir = Path.GetDirectoryName(filename);
-                string f = FixFileFolder(dir, fname);
-                UIConsole.GlobalConsole.Log(String.Format("New file {0}", fname));
-                //Console.WriteLine("Renaming {0} to {1}", filename, Path.Combine(dir, fname));
-                File.Move(filename, f);
+                switch (fileHeader.Compression) {
+                    case CompressionType.JPEG:
+                        ManageJPGFile(filename, fileHeader);
+                        break;
+                    case CompressionType.GIF:
+                        ManageGIFFile(filename, fileHeader);
+                        break;
+                    default:
+                        string dir = Path.GetDirectoryName(filename);
+                        string f = FixFileFolder(dir, fileHeader.Filename, fileHeader.Product, fileHeader.SubProduct);
+                        UIConsole.GlobalConsole.Log(String.Format("New file {0}", fileHeader.Filename));
+                        //Console.WriteLine("Renaming {0} to {1}", filename, Path.Combine(dir, fname));
+                        File.Move(filename, f);
+                        break;
+                }
             }
         }
 
@@ -268,77 +311,6 @@ namespace OpenSatelliteProject {
             return filename;
         }
 
-        public static int IsCompressed(byte[] data) {
-            bool IsCompressed = false;
-            int NOAACompression = -1;
-            int runs = 0;
-            while (true) {
-                byte type = data[0];
-                byte[] cb = data.Skip(1).Take(2).ToArray();
-
-                if (BitConverter.IsLittleEndian) {
-                    Array.Reverse(cb);
-                }
-
-                UInt16 size = BitConverter.ToUInt16(cb, 0);
-                if (type == 129) {
-                    //4sHHHB
-                    // 4 + 6 = 10
-                    NOAACompression = data[13];
-                } else if (type == 1) {
-                    //>BHHB
-                    IsCompressed = data[5] > 0;
-                }
-
-                data = data.Skip(size).ToArray();
-                if (data.Length == 0) {
-                    break;
-                }
-
-                runs++;
-                if (runs >= MAX_RUNS) {
-                    break;
-                }
-
-            }
-
-            return NOAACompression > -1 ? NOAACompression : (IsCompressed ? 1 : 0);
-        }
-
-        public static int GetPixels(byte[] data) {
-            int pixels = 0;
-            int runs = 0;
-            while (true) {
-                byte type = data[0];
-                byte[] cb = data.Skip(1).Take(2).ToArray();
-
-                if (BitConverter.IsLittleEndian) {
-                    Array.Reverse(cb);
-                }
-
-                UInt16 size = BitConverter.ToUInt16(cb, 0);
-                if (type == 1) {
-                    //>BHHB
-                    cb = data.Skip(4).Take(2).ToArray();
-                    if (BitConverter.IsLittleEndian) {
-                        Array.Reverse(cb);
-                    }
-
-                    return BitConverter.ToUInt16(cb, 0);
-                }
-
-                data = data.Skip(size).ToArray();
-                if (data.Length == 0) {
-                    break;
-                }
-                runs++;
-                if (runs >= MAX_RUNS) {
-                    break;
-                }
-            }
-            return pixels;
-        }
-
         public static XRITHeader GetHeader(byte[] data) {
             List<XRITBaseHeader> headers = GetHeaderData(data);
             return new XRITHeader(headers);
@@ -367,23 +339,23 @@ namespace OpenSatelliteProject {
 
                 XRITBaseHeader h;
                 switch (type) {
-                    case HeaderType.PrimaryHeader:
+                    case (int)HeaderType.PrimaryHeader:
                         PrimaryRecord fh = Tools.ByteArrayToStruct<PrimaryRecord>(tmp);
                         fh = Tools.StructToSystemEndian(fh);
                         h = new PrimaryHeader(fh);
-                        maxLength = fh.HeaderLength; // Set the correct size
+                        maxLength = (int)fh.HeaderLength; // Set the correct size
                         break;
-                    case HeaderType.ImageStructureRecord:
-                        ImageStructureRecord isr = Tools.ByteArrayToStruct<ImageStructureHeader>(tmp);
+                    case (int)HeaderType.ImageStructureRecord:
+                        ImageStructureRecord isr = Tools.ByteArrayToStruct<ImageStructureRecord>(tmp);
                         isr = Tools.StructToSystemEndian(isr);
                         h = new ImageStructureHeader(isr);
                         break;
-                    case HeaderType.ImageNavigationRecord:
+                    case (int)HeaderType.ImageNavigationRecord:
                         ImageNavigationRecord inr = Tools.ByteArrayToStruct<ImageNavigationRecord>(tmp);
                         inr = Tools.StructToSystemEndian(inr);
                         h = new ImageNavigationHeader(inr);
                         break;
-                    case HeaderType.ImageDataFunctionRecord:
+                    case (int)HeaderType.ImageDataFunctionRecord:
                         // Cannot marshable due variable length
                         //ImageDataFunctionRecord idfr = Tools.ByteArrayToStruct<ImageDataFunctionRecord>(tmp);
                         //idfr = Tools.StructToSystemEndian(idfr);
@@ -391,7 +363,7 @@ namespace OpenSatelliteProject {
                         idfr.Data = System.Text.Encoding.UTF8.GetString(tmp.Skip(3).ToArray());
                         h = new ImageDataFunctionHeader(idfr);
                         break;
-                    case HeaderType.AnnotationRecord:
+                    case (int)HeaderType.AnnotationRecord:
                         // Cannot be marshalled due variable length
                         //AnnotationRecord ar = Tools.ByteArrayToStruct<AnnotationRecord>(tmp);
                         //ar = Tools.StructToSystemEndian(ar);
@@ -399,12 +371,12 @@ namespace OpenSatelliteProject {
                         ar.Filename = System.Text.Encoding.UTF8.GetString(tmp.Skip(3).ToArray());
                         h = new AnnotationHeader(ar);
                         break;
-                    case HeaderType.TimestampRecord:
+                    case (int)HeaderType.TimestampRecord:
                         TimestampRecord tr = Tools.ByteArrayToStruct<TimestampRecord>(tmp);
                         tr = Tools.StructToSystemEndian(tr);
                         h = new TimestampHeader(tr);
                         break;
-                    case HeaderType.AncillaryTextRecord:
+                    case (int)HeaderType.AncillaryTextRecord:
                         // Cannot be marshalled due variable length.
                         // AncillaryText at = Tools.ByteArrayToStruct<AncillaryText>(tmp);
                         //at = Tools.StructToSystemEndian(at);
@@ -412,20 +384,20 @@ namespace OpenSatelliteProject {
                         at.Data = System.Text.Encoding.UTF8.GetString(tmp.Skip(3).ToArray());
                         h = new AncillaryHeader(at);
                         break;
-                    case HeaderType.KeyRecord:
+                    case (int)HeaderType.KeyRecord:
                         h = new XRITBaseHeader(HeaderType.KeyRecord, tmp);
                         break;
-                    case HeaderType.SegmentIdentificationRecord:
+                    case (int)HeaderType.SegmentIdentificationRecord:
                         SegmentIdentificationRecord sir = Tools.ByteArrayToStruct<SegmentIdentificationRecord>(tmp);
                         sir = Tools.StructToSystemEndian(sir);
                         h = new SegmentIdentificationHeader(sir);
                         break;
-                    case HeaderType.NOAASpecificHeader:
+                    case (int)HeaderType.NOAASpecificHeader:
                         NOAASpecificRecord nsr = Tools.ByteArrayToStruct<NOAASpecificRecord>(tmp);
                         nsr = Tools.StructToSystemEndian(nsr);
                         h = new NOAASpecificHeader(nsr);
                         break;
-                    case HeaderType.HeaderStructuredRecord:
+                    case (int)HeaderType.HeaderStructuredRecord:
                         // Cannot be marshalled due variable length
                         //HeaderStructuredRecord hsr = Tools.ByteArrayToStruct<HeaderStructuredRecord>(tmp);
                         //hsr = Tools.StructToSystemEndian(hsr); // Header Structured Record doesn't have endianess dependant fields
@@ -433,12 +405,12 @@ namespace OpenSatelliteProject {
                         hsr.Data = System.Text.Encoding.UTF8.GetString(tmp.Skip(3).ToArray());
                         h = new HeaderStructuredHeader(hsr);
                         break;
-                    case HeaderType.RiceCompressionRecord:
+                    case (int)HeaderType.RiceCompressionRecord:
                         RiceCompressionRecord rcr = Tools.ByteArrayToStruct<RiceCompressionRecord>(tmp);
                         rcr = Tools.StructToSystemEndian(rcr);
                         h = new RiceCompressionHeader(rcr);
                         break;
-                    case HeaderType.DCSFileNameRecord:
+                    case (int)HeaderType.DCSFileNameRecord:
                         // Cannot be marshalled due variable length
                         //DCSFilenameRecord dfr = Tools.ByteArrayToStruct<DCSFilenameRecord>(tmp);
                         //dfr = Tools.StructToSystemEndian(dfr); // DCS Filename Record doesn't have endianess dependant fields
@@ -449,6 +421,7 @@ namespace OpenSatelliteProject {
                     default:
                         h = new XRITBaseHeader();
                         h.Type = HeaderType.Unknown;
+                        break;
                 }
 
                 h.RawData = tmp;

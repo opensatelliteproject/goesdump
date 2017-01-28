@@ -97,6 +97,8 @@
     <Compile Include="PacketData\Structs\DCSFilenameRecord.cs" />
     <Compile Include="PacketData\DCSFilenameHeader.cs" />
     <Compile Include="PacketData\XRITHeader.cs" />
+    <Compile Include="PacketData\Enums\NOAAProductID.cs" />
+    <Compile Include="PacketData\Enums\SubProductEnums.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

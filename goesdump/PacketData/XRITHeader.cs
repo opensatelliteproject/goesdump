@@ -61,6 +61,12 @@ namespace OpenSatelliteProject.PacketData {
             }
         }
 
+        public bool IsCompressed {
+            get {
+                return Compression != CompressionType.NO_COMPRESSION;
+            }
+        }
+
         public NOAAProduct Product {
             get { 
                 if (NOAASpecificHeader != null) {
@@ -141,6 +147,7 @@ namespace OpenSatelliteProject.PacketData {
                     break;
                 default:
                     UnknownHeaders.Add(header);
+                    break;
             }
         }
 

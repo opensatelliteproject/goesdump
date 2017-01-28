@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Diagnostics;
+using OpenSatelliteProject.PacketData;
 
 
 namespace OpenSatelliteProject {
@@ -18,8 +19,9 @@ namespace OpenSatelliteProject {
         private int endnum = -1;
         private string filename;
         private int channelId;
-        private int compressionFlag;
-        private int pixels;
+        //private int compressionFlag;
+        //private int pixels;
+        private XRITHeader fileHeader;
 
         private byte[] buffer;
 
@@ -90,9 +92,10 @@ namespace OpenSatelliteProject {
                     UIConsole.GlobalConsole.Debug(String.Format("\t\tTotal Size: {0} Current Size: {1}", msdu.PacketLength + 2, msdu.Data.Length)); 
                 }
 
-                if (msdu.Sequence == SequenceType.FIRST_SEGMENT || msdu.Sequence == SequenceType.FIRST_SEGMENT) {
-                    compressionFlag = PacketManager.IsCompressed(msdu.Data.Skip(10).ToArray());
-                    pixels = PacketManager.GetPixels(msdu.Data.Skip(10).ToArray());
+                if (msdu.Sequence == SequenceType.FIRST_SEGMENT || msdu.Sequence == SequenceType.SINGLE_DATA) {
+                    fileHeader = PacketManager.GetHeader(msdu.Data.Skip(10).ToArray());
+                    //compressionFlag = PacketManager.IsCompressed(msdu.Data.Skip(10).ToArray());
+                    //pixels = PacketManager.GetPixels(msdu.Data.Skip(10).ToArray());
                     if (msdu.Sequence == SequenceType.FIRST_SEGMENT) {
                         startnum = msdu.PacketNumber;
                     }
@@ -113,8 +116,8 @@ namespace OpenSatelliteProject {
                     Directory.CreateDirectory(path);
                 }
 
-                switch (compressionFlag) {
-                    case 1: // RICE
+                switch (fileHeader.Compression) {
+                    case CompressionType.LRIT_RICE: 
                         filename = String.Format("channels/{0}/{1}_{2}_{3}.lrit", channelId, msdu.APID, msdu.Version, msdu.PacketNumber);
                         break;
                     default: // For 0, 2, 5 runs the default
@@ -122,7 +125,7 @@ namespace OpenSatelliteProject {
                         break;
                 }
 
-                using (FileStream fs = new FileStream(filename, firstOrSinglePacket || compressionFlag == 1 ? FileMode.Create : FileMode.Append, FileAccess.Write)) {
+                using (FileStream fs = new FileStream(filename, firstOrSinglePacket || fileHeader.Compression == CompressionType.LRIT_RICE ? FileMode.Create : FileMode.Append, FileAccess.Write)) {
                     using (BinaryWriter sw = new BinaryWriter(fs)) {
                         byte[] dataToSave = msdu.Data.Skip(firstOrSinglePacket ? 10 : 0).Take(firstOrSinglePacket ? msdu.PacketLength - 10 : msdu.PacketLength).ToArray(); 
                         sw.Write(dataToSave);
@@ -130,18 +133,18 @@ namespace OpenSatelliteProject {
                 }
 
                 if (msdu.Sequence == SequenceType.LAST_SEGMENT || msdu.Sequence == SequenceType.SINGLE_DATA) {
-                    if (compressionFlag == 1) { // # Rice
+                    if (fileHeader.Compression == CompressionType.LRIT_RICE) { // # Rice
                         string decompressed;
                         if (msdu.Sequence == SequenceType.SINGLE_DATA) {
-                            decompressed = PacketManager.Decompressor(filename, pixels);
+                            decompressed = PacketManager.Decompressor(filename, fileHeader.RiceCompressionHeader.Pixel);
                         } else {
-                            decompressed = PacketManager.Decompressor(String.Format("channels/{0}/{1}_{2}_", channelId, msdu.APID, msdu.Version), pixels, startnum, endnum);
+                            decompressed = PacketManager.Decompressor(String.Format("channels/{0}/{1}_{2}_", channelId, msdu.APID, msdu.Version), fileHeader.RiceCompressionHeader.Pixel, startnum, endnum);
                         }
-                        PacketManager.ManageFile(decompressed);
+                        PacketManager.ManageFile(decompressed, fileHeader);
                         startnum = -1;
                         endnum = -1;
                     } else {
-                        PacketManager.ManageFile(filename);
+                        PacketManager.ManageFile(filename, fileHeader);
                     }
                 }
             } catch (Exception e) {
