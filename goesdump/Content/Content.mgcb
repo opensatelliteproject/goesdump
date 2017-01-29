@@ -16,7 +16,7 @@
 #begin defaultFont.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
+/processorParam:TextureFormat=NoChange
 /build:defaultFont.spritefont
 
 #begin arrow.png

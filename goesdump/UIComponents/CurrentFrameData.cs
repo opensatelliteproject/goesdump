@@ -23,6 +23,7 @@ namespace OpenSatelliteProject {
         private float fontHeight;
         private DateTime startTime;
         private TimeSpan runningTime;
+        private readonly float fontScale = 1f;
         #endregion
 
         #region Properties
@@ -67,7 +68,7 @@ namespace OpenSatelliteProject {
 
         public CurrentFrameData(SpriteFont font) {
             this.font = font;
-            fontHeight = font.MeasureString("A").Y;
+            fontHeight = font.MeasureString("A").Y * fontScale;
             ReedSolomon = new int[] { 0, 0, 0, 0 };
             SyncWord = new byte[] { 0, 0, 0, 0 };
         }
@@ -79,16 +80,16 @@ namespace OpenSatelliteProject {
         }
 
         public void draw(SpriteBatch spriteBatch, GameTime gameTime) {
-            spriteBatch.DrawString(font, String.Format(SatelliteIDLine, SatelliteID), new Vector2(Position.X, Position.Y + fontHeight * 0), Color.Black);
-            spriteBatch.DrawString(font, String.Format(VirtualChannelIDLine, VirtualChannelID), new Vector2(Position.X, Position.Y + fontHeight * 1), Color.Black);
-            spriteBatch.DrawString(font, String.Format(PacketNumberLine, PacketNumber), new Vector2(Position.X, Position.Y+ fontHeight * 2), Color.Black);
-            spriteBatch.DrawString(font, String.Format(ViterbiLine, ViterbiErrors, TotalBits), new Vector2(Position.X, Position.Y + fontHeight * 3), Color.Black);
-            spriteBatch.DrawString(font, String.Format(ReedSolomonLine, ReedSolomon[0], ReedSolomon[1], ReedSolomon[2], ReedSolomon[3]), new Vector2(Position.X, Position.Y + fontHeight * 4), Color.Black);
-            spriteBatch.DrawString(font, String.Format(SignalQualityLine, SignalQuality), new Vector2(Position.X, Position.Y + fontHeight * 5), Color.Black);
-            spriteBatch.DrawString(font, String.Format(SyncCorrelationLine, SyncCorrelation), new Vector2(Position.X, Position.Y + fontHeight * 6), Color.Black);
-            spriteBatch.DrawString(font, String.Format(PhaseCorrectionLine, PhaseCorrection), new Vector2(Position.X, Position.Y + fontHeight * 7), Color.Black);
-            spriteBatch.DrawString(font, String.Format(RunningTimeLine, runningTime.ToString(@"dd\.hh\:mm\:ss")), new Vector2(Position.X, Position.Y + fontHeight * 8), Color.Black);
-            spriteBatch.DrawString(font, String.Format(SyncWordLine, SyncWord[0], SyncWord[1], SyncWord[2], SyncWord[3]), new Vector2(Position.X, Position.Y + fontHeight * 9), Color.Black);
+            spriteBatch.DrawString(font, String.Format(SatelliteIDLine, SatelliteID), new Vector2(Position.X, Position.Y + fontHeight * 0), Color.Black, 0, new Vector2(0, 0), fontScale, SpriteEffects.None, 0);
+            spriteBatch.DrawString(font, String.Format(VirtualChannelIDLine, VirtualChannelID), new Vector2(Position.X, Position.Y + fontHeight * 1), Color.Black, 0, new Vector2(0, 0), fontScale, SpriteEffects.None, 0);
+            spriteBatch.DrawString(font, String.Format(PacketNumberLine, PacketNumber), new Vector2(Position.X, Position.Y+ fontHeight * 2), Color.Black, 0, new Vector2(0, 0), fontScale, SpriteEffects.None, 0);
+            spriteBatch.DrawString(font, String.Format(ViterbiLine, ViterbiErrors, TotalBits), new Vector2(Position.X, Position.Y + fontHeight * 3), Color.Black, 0, new Vector2(0, 0), fontScale, SpriteEffects.None, 0);
+            spriteBatch.DrawString(font, String.Format(ReedSolomonLine, ReedSolomon[0], ReedSolomon[1], ReedSolomon[2], ReedSolomon[3]), new Vector2(Position.X, Position.Y + fontHeight * 4), Color.Black, 0, new Vector2(0, 0), fontScale, SpriteEffects.None, 0);
+            spriteBatch.DrawString(font, String.Format(SignalQualityLine, SignalQuality), new Vector2(Position.X, Position.Y + fontHeight * 5), Color.Black, 0, new Vector2(0, 0), fontScale, SpriteEffects.None, 0);
+            spriteBatch.DrawString(font, String.Format(SyncCorrelationLine, SyncCorrelation), new Vector2(Position.X, Position.Y + fontHeight * 6), Color.Black, 0, new Vector2(0, 0), fontScale, SpriteEffects.None, 0);
+            spriteBatch.DrawString(font, String.Format(PhaseCorrectionLine, PhaseCorrection), new Vector2(Position.X, Position.Y + fontHeight * 7), Color.Black, 0, new Vector2(0, 0), fontScale, SpriteEffects.None, 0);
+            spriteBatch.DrawString(font, String.Format(RunningTimeLine, runningTime.ToString(@"dd\.hh\:mm\:ss")), new Vector2(Position.X, Position.Y + fontHeight * 8), Color.Black, 0, new Vector2(0, 0), fontScale, SpriteEffects.None, 0);
+            spriteBatch.DrawString(font, String.Format(SyncWordLine, SyncWord[0], SyncWord[1], SyncWord[2], SyncWord[3]), new Vector2(Position.X, Position.Y + fontHeight * 9), Color.Black, 0, new Vector2(0, 0), fontScale, SpriteEffects.None, 0);
         }
 
         #endregion

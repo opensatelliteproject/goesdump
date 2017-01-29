@@ -61,21 +61,49 @@
     <Compile Include="ChannelDecoder\Demuxer.cs" />
     <Compile Include="ChannelDecoder\DemuxManager.cs" />
     <Compile Include="GoesDecoder\PacketManager.cs" />
-    <Compile Include="PacketData\ImageStructureHeader.cs" />
-    <Compile Include="PacketData\FirstHeader.cs" />
-    <Compile Include="PacketData\ImageNavigationRecord.cs" />
-    <Compile Include="PacketData\ImageDataFunctionRecord.cs" />
-    <Compile Include="PacketData\AnnotationRecord.cs" />
-    <Compile Include="PacketData\TimestampRecord.cs" />
-    <Compile Include="PacketData\AncillaryText.cs" />
     <Compile Include="UIComponents\UIConsole.cs" />
     <Compile Include="UIComponents\ConsoleMessage.cs" />
     <Compile Include="UIComponents\UILed.cs" />
     <Compile Include="UIComponents\MouseCursor.cs" />
+    <Compile Include="PacketData\NOAAProduct.cs" />
+    <Compile Include="PacketData\NOAASubproduct.cs" />
+    <Compile Include="PacketData\Presets.cs" />
+    <Compile Include="PacketData\Structs\AncillaryText.cs" />
+    <Compile Include="PacketData\Structs\AnnotationRecord.cs" />
+    <Compile Include="PacketData\Enums\CompressionType.cs" />
+    <Compile Include="PacketData\Enums\FileTypeCode.cs" />
+    <Compile Include="PacketData\Structs\ImageDataFunctionRecord.cs" />
+    <Compile Include="PacketData\Structs\ImageNavigationRecord.cs" />
+    <Compile Include="PacketData\Structs\TimestampRecord.cs" />
+    <Compile Include="PacketData\Enums\HeaderType.cs" />
+    <Compile Include="PacketData\XRitBaseHeader.cs" />
+    <Compile Include="PacketData\AncillaryHeader.cs" />
+    <Compile Include="PacketData\PrimaryHeader.cs" />
+    <Compile Include="PacketData\ImageStructureHeader.cs" />
+    <Compile Include="PacketData\Structs\ImageStructureRecord.cs" />
+    <Compile Include="PacketData\Structs\PrimaryRecord.cs" />
+    <Compile Include="PacketData\ImageNavigationHeader.cs" />
+    <Compile Include="PacketData\ImageDataFunctionHeader.cs" />
+    <Compile Include="PacketData\AnnotationHeader.cs" />
+    <Compile Include="PacketData\TimestampHeader.cs" />
+    <Compile Include="PacketData\SegmentIdentificationHeader.cs" />
+    <Compile Include="PacketData\Structs\SegmentIdentificationRecord.cs" />
+    <Compile Include="PacketData\Structs\NOAASpecificRecord.cs" />
+    <Compile Include="PacketData\NOAASpecificHeader.cs" />
+    <Compile Include="PacketData\Structs\HeaderStructuredRecord.cs" />
+    <Compile Include="PacketData\HeaderStructuredHeader.cs" />
+    <Compile Include="PacketData\Structs\RiceCompressionRecord.cs" />
+    <Compile Include="PacketData\RiceCompressionHeader.cs" />
+    <Compile Include="PacketData\Structs\DCSFilenameRecord.cs" />
+    <Compile Include="PacketData\DCSFilenameHeader.cs" />
+    <Compile Include="PacketData\XRITHeader.cs" />
+    <Compile Include="PacketData\Enums\NOAAProductID.cs" />
+    <Compile Include="PacketData\Enums\SubProductEnums.cs" />
+    <Compile Include="GoesDecoder\FileHandler.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icon.png" />
     <None Include="packages.config" />
+    <None Include="icon.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icon.ico" />
@@ -95,5 +123,7 @@
     <Folder Include="UIComponents\" />
     <Folder Include="ChannelDecoder\" />
     <Folder Include="PacketData\" />
+    <Folder Include="PacketData\Structs\" />
+    <Folder Include="PacketData\Enums\" />
   </ItemGroup>
 </Project>

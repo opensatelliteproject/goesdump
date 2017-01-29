@@ -12,6 +12,7 @@ namespace OpenSatelliteProject {
 
         private static readonly int MAX_MESSAGES = 10;
         private static readonly float LINE_SPACING = 2;
+        private static readonly float FONT_SCALE = 1f;
 
         public static UIConsole GlobalConsole;
 
@@ -50,7 +51,7 @@ namespace OpenSatelliteProject {
 
         public float MaxHeight {
             get {
-                return (Font.MeasureString("A").Y + LINE_SPACING) * (MAX_MESSAGES+1) + 5;
+                return (Font.MeasureString("A").Y * FONT_SCALE + LINE_SPACING) * (MAX_MESSAGES+1) + 5;
             }
         }
 
@@ -65,7 +66,8 @@ namespace OpenSatelliteProject {
             messageMutex.WaitOne();
             foreach (ConsoleMessage m in messages) {
                 try {
-                    spriteBatch.DrawString(Font, m.ToString(), curPos, ConsoleMessage.CMP2COLOR[m.Priority]);
+                    //spriteBatch.DrawString(Font, m.ToString(), curPos, ConsoleMessage.CMP2COLOR[m.Priority]);
+                    spriteBatch.DrawString(Font, m.ToString(), curPos, ConsoleMessage.CMP2COLOR[m.Priority], 0, new Vector2(0, 0), FONT_SCALE, SpriteEffects.None, 0);
                 } catch (Exception e) {
                     Console.WriteLine(String.Format("Got exception {0} with: \n\n{1}", e, m.ToString()));
                 }
