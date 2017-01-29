@@ -21,11 +21,8 @@ namespace OpenSatelliteProject {
         private static readonly string TextRgex = @"(.*)TEXTdat(.*).lrit";
 
         private static readonly string DCSFolder = "DCS";
-        private static readonly string FullDiskFolder = "FullDisk";
-        private static readonly string XXFolder = "XX";
         private static readonly string ImagesFolder = "Images";
         private static readonly string TextFolder = "Text";
-        private static readonly string ChartFolder = "Charts";
         private static readonly string EMWINFolder = "EMWIN";
         private static readonly string WeatherDataFolder = "Weather Data";
         private static readonly string OtherSatellitesFolder = "Other Satellites";
@@ -38,7 +35,7 @@ namespace OpenSatelliteProject {
         private static Regex gosRegex = new Regex(GOSRgex, RegexOptions.IgnoreCase);
         private static Regex textRegex = new Regex(TextRgex, RegexOptions.IgnoreCase);
 
-        private static string FixFileFolder(string dir, string filename, NOAAProduct product, NOAASubproduct subProduct) {
+        public static string FixFileFolder(string dir, string filename, NOAAProduct product, NOAASubproduct subProduct) {
             string filef = filename;
             string basedir = new DirectoryInfo(dir).Parent.FullName;
 
@@ -100,7 +97,7 @@ namespace OpenSatelliteProject {
                     }
                 }
 
-                dir = Path.Combine(basedir, DCSFolder);
+                dir = Path.Combine(basedir, folderName);
 
                 if (!Directory.Exists(dir)) {
                     Directory.CreateDirectory(dir);
@@ -139,15 +136,21 @@ namespace OpenSatelliteProject {
             return filef;
         }
 
-        public static void ManageJPGFile(string filename, XRITHeader fileHeader) {
+        static PacketManager() {
+            FileHandler.AttachByCompressionHandler((int)CompressionType.JPEG, (filename, fileHeader) => DumpFile(filename, fileHeader, "jpg"));
+            FileHandler.AttachByCompressionHandler((int)CompressionType.GIF, (filename, fileHeader) => DumpFile(filename, fileHeader, "gif"));
+        }
+
+        public static void DumpFile(string filename, XRITHeader fileHeader, string newExt) {
             string dir = Path.GetDirectoryName(filename);
             string f = FixFileFolder(dir, fileHeader.Filename, fileHeader.Product, fileHeader.SubProduct);
-            f = f.Replace(".lrit", ".jpg");
+            f = f.Replace(".lrit", "." + newExt);
 
             if (File.Exists(f)) {
                 string timestamp = DateTime.Now.ToString("yyyyMMddHHmmssffff");
-                string append = String.Format("-{0}.jpg", timestamp);
-                f = f.Replace(".jpg", append);
+                string ext = Path.GetExtension(f);
+                string append = String.Format("--dup-{0}{1}", timestamp, ext);
+                f = f.Replace(String.Format("{0}", ext), append);
             }
 
             if (!String.Equals(Path.GetFileName(f), fileHeader.Filename)) {
@@ -181,99 +184,7 @@ namespace OpenSatelliteProject {
             os.Close();
 
             // Keep the original lrit file
-            File.Move(filename, f.Replace(".jpg", ".lrit"));
-        }
-
-        public static void ManageGIFFile(string filename, XRITHeader fileHeader) {
-            string dir = Path.GetDirectoryName(filename);
-            string f = FixFileFolder(dir, fileHeader.Filename, fileHeader.Product, fileHeader.SubProduct);
-            f = f.Replace(".lrit", ".gif");
-
-            if (File.Exists(f)) {
-                string timestamp = DateTime.Now.ToString("yyyyMMddHHmmssffff");
-                string append = String.Format("-{0}.gif", timestamp);
-                f = f.Replace(".gif", append);
-            }
-
-            if (!String.Equals(Path.GetFileName(f), fileHeader.Filename)) {
-                if (fileHeader.SubProduct.Name != "Unknown") {
-                    UIConsole.GlobalConsole.Log(String.Format("New {0} - {1} ({2}) saved as {3}", fileHeader.Product.Name, fileHeader.SubProduct.Name, fileHeader.Filename, Path.GetFileName(f)));
-                } else {
-                    UIConsole.GlobalConsole.Log(String.Format("New {0} ({1}) saved as {2}", fileHeader.Product.Name, fileHeader.Filename, Path.GetFileName(f)));
-                }
-            } else {
-                if (fileHeader.SubProduct.Name != "Unknown") {
-                    UIConsole.GlobalConsole.Log(String.Format("New {0} - {1} ({2})", fileHeader.Product.Name, fileHeader.SubProduct.Name, fileHeader.Filename));
-                } else {
-                    UIConsole.GlobalConsole.Log(String.Format("New {0} ({1})", fileHeader.Product.Name, fileHeader.Filename));
-                }
-            }
-
-
-            //UIConsole.GlobalConsole.Log(String.Format("New GIF file {0}", fileHeader.Filename));
-            Console.WriteLine("Renaming {0} to {1}", filename, f);
-            FileStream fs = File.OpenRead(filename);
-            fs.Seek(fileHeader.PrimaryHeader.HeaderLength, SeekOrigin.Begin);
-            FileStream os = File.OpenWrite(f);
-
-            byte[] buffer = new Byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = fs.Read(buffer, 0, 1024)) > 0) {
-                os.Write(buffer, 0, bytesRead);
-            }
-
-            fs.Close();
-            os.Close();
-
-            // Keep the original lrit file
-            File.Move(filename, f.Replace(".gif", ".lrit"));
-        }
-
-        public static void ManageFile(string filename, XRITHeader fileHeader) {
-            if (fileHeader.Filename == null) {
-                //Console.WriteLine("Cannot find filename for {0}", filename);
-            } else {
-                switch (fileHeader.Compression) {
-                    case CompressionType.JPEG:
-                        ManageJPGFile(filename, fileHeader);
-                        break;
-                    case CompressionType.GIF:
-                        ManageGIFFile(filename, fileHeader);
-                        break;
-                    default:
-                        string dir = Path.GetDirectoryName(filename);
-                        string f = FixFileFolder(dir, fileHeader.Filename, fileHeader.Product, fileHeader.SubProduct);
-                        //Console.WriteLine("Renaming {0} to {1}", filename, Path.Combine(dir, fname));
-
-                        if (File.Exists(f)) {
-                            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmssffff");
-                            string append = String.Format("-{0}.lrit", timestamp);
-                            f = f.Replace(".lrit", append);
-                        }
-
-                        if (!String.Equals(Path.GetFileName(f), fileHeader.Filename)) {
-                            if (fileHeader.SubProduct.Name != "Unknown") {
-                                UIConsole.GlobalConsole.Log(String.Format("New {0} - {1} ({2}) saved as {3}", fileHeader.Product.Name, fileHeader.SubProduct.Name, fileHeader.Filename, Path.GetFileName(f)));
-                            } else {
-                                UIConsole.GlobalConsole.Log(String.Format("New {0} ({1}) saved as {2}", fileHeader.Product.Name, fileHeader.Filename, Path.GetFileName(f)));
-                            }
-                        } else {
-                            if (fileHeader.SubProduct.Name != "Unknown") {
-                                UIConsole.GlobalConsole.Log(String.Format("New {0} - {1} ({2})", fileHeader.Product.Name, fileHeader.SubProduct.Name, fileHeader.Filename));
-                            } else {
-                                UIConsole.GlobalConsole.Log(String.Format("New {0} ({1})", fileHeader.Product.Name, fileHeader.Filename));
-                            }
-                        }
-
-                        try {
-                            File.Move(filename, f);
-                        } catch (IOException e) {
-                            UIConsole.GlobalConsole.Error(String.Format("Error moving file {0} to {1}: {2}", filename, f, e));
-                        }
-                        break;
-                }
-            }
+            File.Move(filename, f.Replace("." + newExt, ".lrit"));
         }
 
         public static string Decompressor(string filename, int pixels) {

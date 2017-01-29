@@ -49,21 +49,21 @@ namespace OpenSatelliteProject.PacketData {
             }));
 
             noaaProducts.Add((int)NOAAProductID.SCANNER_DATA_2, new NOAAProduct(NOAAProductID.SCANNER_DATA_2, "Scanner Image", new Dictionary<int, NOAASubproduct>() { // So far, only received GOES 15 images. Coecidence? 
-                { (int) ScannerSubProduct.NONE,                         new NOAASubproduct(ScannerSubProduct.NONE,                          "N(int) one") },
-                { (int) ScannerSubProduct.INFRARED_FULLDISK,            new NOAASubproduct(ScannerSubProduct.INFRARED_FULLDISK,             "I(int) nfrared Full Disk") },
-                { (int) ScannerSubProduct.INFRARED_NORTHERN,            new NOAASubproduct(ScannerSubProduct.INFRARED_NORTHERN,             "I(int) nfrared Northern Hemisphere") },
-                { (int) ScannerSubProduct.INFRARED_SOUTHERN,            new NOAASubproduct(ScannerSubProduct.INFRARED_SOUTHERN,             "I(int) nfrared Southern Hemisphere") },
-                { (int) ScannerSubProduct.INFRARED_UNITEDSTATES,        new NOAASubproduct(ScannerSubProduct.INFRARED_UNITEDSTATES,         "I(int) nfrared United States") },
-                { (int) ScannerSubProduct.INFRARED_AREA_OF_INTEREST,    new NOAASubproduct(ScannerSubProduct.INFRARED_AREA_OF_INTEREST,     "I(int) nfrared Area of Interest") },
-                { (int) ScannerSubProduct.VISIBLE_FULLDISK,             new NOAASubproduct(ScannerSubProduct.VISIBLE_FULLDISK,              "V(int) isible Full Disk") },
-                { (int) ScannerSubProduct.VISIBLE_NORTHERN,             new NOAASubproduct(ScannerSubProduct.VISIBLE_NORTHERN,              "V(int) isible Northern Hemisphere") },
-                { (int) ScannerSubProduct.VISIBLE_SOUTHERN,             new NOAASubproduct(ScannerSubProduct.VISIBLE_SOUTHERN,              "V(int) isible Southern Hemisphere") },
-                { (int) ScannerSubProduct.VISIBLE_UNITEDSTATES,         new NOAASubproduct(ScannerSubProduct.VISIBLE_UNITEDSTATES,          "V(int) isible United States") },
-                { (int) ScannerSubProduct.VISIBLE_AREA_OF_INTEREST,     new NOAASubproduct(ScannerSubProduct.VISIBLE_AREA_OF_INTEREST,      "V(int) isible Area of Interest") },
-                { (int) ScannerSubProduct.WATERVAPOUR_FULLDISK,         new NOAASubproduct(ScannerSubProduct.WATERVAPOUR_FULLDISK,          "W(int) ater Vapour Full Disk") },
-                { (int) ScannerSubProduct.WATERVAPOUR_NORTHERN,         new NOAASubproduct(ScannerSubProduct.WATERVAPOUR_NORTHERN,          "W(int) ater Vapour Northern Hemisphere") },
-                { (int) ScannerSubProduct.WATERVAPOUR_SOUTHERN,         new NOAASubproduct(ScannerSubProduct.WATERVAPOUR_SOUTHERN,          "W(int) ater Vapour Southern Hemisphere") },
-                { (int) ScannerSubProduct.WATERVAPOUR_UNITEDSTATES,     new NOAASubproduct(ScannerSubProduct.WATERVAPOUR_UNITEDSTATES,      "W(int) ater Vapour United States") },
+                { (int) ScannerSubProduct.NONE,                         new NOAASubproduct(ScannerSubProduct.NONE,                          "None") },
+                { (int) ScannerSubProduct.INFRARED_FULLDISK,            new NOAASubproduct(ScannerSubProduct.INFRARED_FULLDISK,             "Infrared Full Disk") },
+                { (int) ScannerSubProduct.INFRARED_NORTHERN,            new NOAASubproduct(ScannerSubProduct.INFRARED_NORTHERN,             "Infrared Northern Hemisphere") },
+                { (int) ScannerSubProduct.INFRARED_SOUTHERN,            new NOAASubproduct(ScannerSubProduct.INFRARED_SOUTHERN,             "Infrared Southern Hemisphere") },
+                { (int) ScannerSubProduct.INFRARED_UNITEDSTATES,        new NOAASubproduct(ScannerSubProduct.INFRARED_UNITEDSTATES,         "Infrared United States") },
+                { (int) ScannerSubProduct.INFRARED_AREA_OF_INTEREST,    new NOAASubproduct(ScannerSubProduct.INFRARED_AREA_OF_INTEREST,     "Infrared Area of Interest") },
+                { (int) ScannerSubProduct.VISIBLE_FULLDISK,             new NOAASubproduct(ScannerSubProduct.VISIBLE_FULLDISK,              "Visible Full Disk") },
+                { (int) ScannerSubProduct.VISIBLE_NORTHERN,             new NOAASubproduct(ScannerSubProduct.VISIBLE_NORTHERN,              "Visible Northern Hemisphere") },
+                { (int) ScannerSubProduct.VISIBLE_SOUTHERN,             new NOAASubproduct(ScannerSubProduct.VISIBLE_SOUTHERN,              "Visible Southern Hemisphere") },
+                { (int) ScannerSubProduct.VISIBLE_UNITEDSTATES,         new NOAASubproduct(ScannerSubProduct.VISIBLE_UNITEDSTATES,          "Visible United States") },
+                { (int) ScannerSubProduct.VISIBLE_AREA_OF_INTEREST,     new NOAASubproduct(ScannerSubProduct.VISIBLE_AREA_OF_INTEREST,      "Visible Area of Interest") },
+                { (int) ScannerSubProduct.WATERVAPOUR_FULLDISK,         new NOAASubproduct(ScannerSubProduct.WATERVAPOUR_FULLDISK,          "Water Vapour Full Disk") },
+                { (int) ScannerSubProduct.WATERVAPOUR_NORTHERN,         new NOAASubproduct(ScannerSubProduct.WATERVAPOUR_NORTHERN,          "Water Vapour Northern Hemisphere") },
+                { (int) ScannerSubProduct.WATERVAPOUR_SOUTHERN,         new NOAASubproduct(ScannerSubProduct.WATERVAPOUR_SOUTHERN,          "Water Vapour Southern Hemisphere") },
+                { (int) ScannerSubProduct.WATERVAPOUR_UNITEDSTATES,     new NOAASubproduct(ScannerSubProduct.WATERVAPOUR_UNITEDSTATES,      "Water Vapour United States") },
                 { (int) ScannerSubProduct.WATERVAPOUR_AREA_OF_INTEREST, new NOAASubproduct(ScannerSubProduct.WATERVAPOUR_AREA_OF_INTEREST,  "Water Vapour Area of Interest") }
             }));
 

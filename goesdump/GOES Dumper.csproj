@@ -99,6 +99,7 @@
     <Compile Include="PacketData\XRITHeader.cs" />
     <Compile Include="PacketData\Enums\NOAAProductID.cs" />
     <Compile Include="PacketData\Enums\SubProductEnums.cs" />
+    <Compile Include="GoesDecoder\FileHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
