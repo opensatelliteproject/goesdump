@@ -8,26 +8,29 @@ namespace OpenSatelliteProject {
         #region Delegate
 
         public delegate void StatisticsEvent(Statistics_st data);
-
         public delegate void ChannelDataEvent(byte[] data);
+        public delegate void ConstellationDataEvent(float[] data);
 
         #endregion
         #region Event
 
         public event StatisticsEvent StatisticsAvailable;
         public event ChannelDataEvent ChannelDataAvailable;
+        public event ConstellationDataEvent ConstellationDataAvailable;
 
         #endregion
         #region Threads
 
         private Thread statisticsThread;
         private Thread channelDataThread;
+        private Thread constellationDataThread;
 
         #endregion
         #region Private Variables
 
         private bool statisticsThreadRunning;
         private bool channelDataThreadRunning;
+        private bool constellationDataThreadRunning;
 
         #endregion
         #region Constructor / Destructor
@@ -35,15 +38,19 @@ namespace OpenSatelliteProject {
         public Connector() {
             statisticsThread = new Thread(new ThreadStart(statisticsLoop));
             channelDataThread = new Thread(new ThreadStart(channelDataLoop));
+            constellationDataThread = new Thread(new ThreadStart(constellationDataLoop));
 
             statisticsThread.IsBackground = true;
             channelDataThread.IsBackground = true;
+            constellationDataThread.IsBackground = true;
 
             statisticsThreadRunning = true;
             channelDataThreadRunning = true;
+            constellationDataThreadRunning = true;
 
             statisticsThread.Start();
             channelDataThread.Start();
+            constellationDataThread.Start();
         }
 
         ~Connector() {
@@ -62,6 +69,7 @@ namespace OpenSatelliteProject {
         public void Stop() {
             statisticsThreadRunning = false;
             channelDataThreadRunning = false;
+            constellationDataThreadRunning = false;
 
             if (statisticsThread != null) {
                 statisticsThread.Join();
@@ -72,14 +80,23 @@ namespace OpenSatelliteProject {
                 channelDataThread.Join();
                 channelDataThread = null;
             }
+
+            if (constellationDataThread != null) {
+                constellationDataThread.Join();
+                constellationDataThread = null;
+            }
         }
 
         private void postStatistics(object st) {
-            StatisticsAvailable((Statistics_st)st);
+            StatisticsAvailable?.Invoke((Statistics_st)st);
         }
 
         private void postChannelData(object data) {
-            ChannelDataAvailable((byte[])data);
+            ChannelDataAvailable?.Invoke((byte[])data);
+        }
+
+        private void postConstellationData(object data) {
+            ConstellationDataAvailable?.Invoke((float[])data);
         }
 
         private void statisticsLoop() {
@@ -171,10 +188,10 @@ namespace OpenSatelliteProject {
             IPHostEntry ipHostInfo = Dns.GetHostEntry("localhost");
             IPAddress ipAddress = new IPAddress(new byte[] { 127, 0, 0, 1 });
             foreach (IPAddress ip in ipHostInfo.AddressList) {
-              if (ip.AddressFamily != AddressFamily.InterNetworkV6) {
-                ipAddress = ip;
-                break;
-              }
+                if (ip.AddressFamily != AddressFamily.InterNetworkV6) {
+                    ipAddress = ip;
+                    break;
+                }
             }
             IPEndPoint remoteEP = new IPEndPoint(ipAddress, 5001);
             Socket sender = null;
@@ -242,6 +259,44 @@ namespace OpenSatelliteProject {
             }
 
             UIConsole.GlobalConsole.Log("Channel Data Thread closed.");
+        }
+
+        private void constellationDataLoop() {
+            UIConsole.GlobalConsole.Log("Constellation Data Loop started");
+            byte[] buffer = null;
+            float[] data = new float[1024];
+
+            IPHostEntry ipHostInfo = Dns.GetHostEntry("localhost");
+            IPAddress ipAddress = new IPAddress(new byte[] { 127, 0, 0, 1 });
+            foreach (IPAddress ip in ipHostInfo.AddressList) {
+                if (ip.AddressFamily != AddressFamily.InterNetworkV6) {
+                    ipAddress = ip;
+                    break;
+                }
+            }
+
+            IPEndPoint remoteEP = new IPEndPoint(ipAddress, 9000);
+            UdpClient udpClient = new UdpClient(9000);
+            udpClient.Client.ReceiveTimeout = 200;
+
+            while (constellationDataThreadRunning) {
+                try {
+                    buffer = udpClient.Receive(ref remoteEP);
+                    if (buffer != null && buffer.Length == 1024) {
+                        for (int i = 0; i < 1024; i++) {
+                            sbyte t = (sbyte)buffer[i];
+                            data[i] = t;
+                            data[i] /= 128f;
+                        }
+                        this.postConstellationData(data);
+                    }
+                } catch (SocketException e) {
+                    // Do nothing, timeout on UDP
+                }
+            }
+           
+
+            UIConsole.GlobalConsole.Log("Constellation Thread closed.");
         }
 
         #endregion
