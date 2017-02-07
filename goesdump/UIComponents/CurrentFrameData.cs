@@ -13,7 +13,7 @@ namespace OpenSatelliteProject {
         private readonly string SignalQualityLine       = "Signal Quality:             {0,3}%";
         private readonly string SyncCorrelationLine     = "Sync Correlation:            {0,3}";
         private readonly string PhaseCorrectionLine     = "Phase Correction:            {0,3}";
-        private readonly string RunningTimeLine         = "Running Time:        {0,11}";
+        private readonly string RunningTimeLine         = "Running Time:     {0,14}";
         private readonly string ReedSolomonLine         = "Reed Solomon:        {0,2} {1,2} {2,2} {3,2}";
         private readonly string SyncWordLine            = "Sync Word:              {0:X02}{1:X02}{2:X02}{3:X02}";
         #endregion

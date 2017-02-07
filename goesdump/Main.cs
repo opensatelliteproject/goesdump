@@ -26,10 +26,10 @@ namespace OpenSatelliteProject {
         UILed statisticsSocketLed;
         UILed dataSocketLed;
         UILed frameLockLed;
+        Constellation cons;
         MouseCursor cursor;
 
         int lastPhaseCorrection = -1;
-        int desyncCount = 0;
         int heartBeatCount = 0;
 
         public Main() {
@@ -74,6 +74,7 @@ namespace OpenSatelliteProject {
                 }
             };
             cn.ChannelDataAvailable += (byte[] data) => demuxManager.parseBytes(data);
+            cn.ConstellationDataAvailable += (float[] data) => cons.updateConstellationData(data);
             statistics = new Statistics_st();
         }
 
@@ -90,12 +91,17 @@ namespace OpenSatelliteProject {
             cfd = new CurrentFrameData(font);
             cfd.Position = new Vector2(20, 20);
 
+            cons = new Constellation(GraphicsDevice, font);
+            cons.Position = new Vector2(400, 20);
+            cons.Size = new Vector2(180, 180);
+
 
             satelliteBusyLed = new UILed(GraphicsDevice, font);
             heartBeatLed = new UILed(GraphicsDevice, font);
             statisticsSocketLed = new UILed(GraphicsDevice, font);
             dataSocketLed = new UILed(GraphicsDevice, font);
             frameLockLed = new UILed(GraphicsDevice, font);
+
             int firstLed = 260;
             satelliteBusyLed.Position = new Vector2(20, firstLed);
             satelliteBusyLed.Text = "Satellite Busy";
@@ -148,6 +154,7 @@ namespace OpenSatelliteProject {
             statisticsSocketLed.update(gameTime);
             dataSocketLed.update(gameTime);
             frameLockLed.update(gameTime);
+            cons.update(gameTime);
             cursor.update(gameTime);
 
             base.Update(gameTime);
@@ -168,6 +175,7 @@ namespace OpenSatelliteProject {
             statisticsSocketLed.draw(spriteBatch, gameTime);
             dataSocketLed.draw(spriteBatch, gameTime);
             frameLockLed.draw(spriteBatch, gameTime);
+            cons.draw(spriteBatch, gameTime);
 
             cursor.draw(spriteBatch, gameTime);
             spriteBatch.End();
