@@ -5,6 +5,14 @@ using System.Linq;
 
 namespace OpenSatelliteProject {
     public static class Tools {
+
+        public static bool IsLinux {
+            get {
+                int p = (int) Environment.OSVersion.Platform;
+                return (p == 4) || (p == 6) || (p == 128);
+            }
+        }
+
         public static DateTime UnixTimeStampToDateTime(long unixTimeStamp) {
             // Unix timestamp is seconds past epoch
             System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);

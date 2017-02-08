@@ -192,13 +192,20 @@ namespace OpenSatelliteProject {
                 Process decompressor = new Process();
                 ProcessStartInfo startInfo = new ProcessStartInfo();
                 startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                startInfo.FileName = "wine";
-                startInfo.Arguments = String.Format("Decompress.exe {0} {1} a", pixels, filename);
+
+                if (Tools.IsLinux) {
+                    startInfo.FileName = "wine";
+                    startInfo.Arguments = String.Format("Decompress.exe {0} {1} a", pixels, filename);
+                    startInfo.EnvironmentVariables.Add("WINEDEBUG", "fixme-all,err-winediag");
+                } else {
+                    startInfo.FileName = "Decompress.exe";
+                    startInfo.Arguments = String.Format("{0} {1} a", pixels, filename);
+                }
+
                 startInfo.RedirectStandardError = true;
                 startInfo.RedirectStandardOutput = true;
                 startInfo.CreateNoWindow = true;
                 startInfo.UseShellExecute = false;
-                startInfo.EnvironmentVariables.Add("WINEDEBUG", "fixme-all,err-winediag");
 
                 decompressor.StartInfo = startInfo;
 
