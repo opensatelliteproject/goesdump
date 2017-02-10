@@ -218,6 +218,11 @@ namespace OpenSatelliteProject {
                     UIConsole.GlobalConsole.Error(String.Format("Error Decompressing: {0}", stderr));
                 } else {
                     UIConsole.GlobalConsole.Debug(String.Format("Decompress sucessful to {0}", String.Format("{0}_decomp.lrit", filename)));
+                    try {
+                        File.Delete(filename);
+                    } catch (Exception e) {
+                        Console.WriteLine("Cannot delete file {0}", filename);
+                    }
                 }
 
             } catch (Exception e) {
@@ -234,13 +239,19 @@ namespace OpenSatelliteProject {
                 Process decompressor = new Process();
                 ProcessStartInfo startInfo = new ProcessStartInfo();
                 startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                startInfo.FileName = "wine";
-                startInfo.Arguments = String.Format("Decompress.exe {0} {1} {2} {3} a", prefix, pixels, startnum + 1, endnum);
+                if (Tools.IsLinux) {
+                    startInfo.FileName = "wine";
+                    startInfo.Arguments = String.Format("Decompress.exe {0} {1} {2} {3} a", prefix, pixels, startnum + 1, endnum);
+                    startInfo.EnvironmentVariables.Add("WINEDEBUG", "fixme-all,err-winediag");
+                } else {
+                    startInfo.FileName = "Decompress.exe";
+                    startInfo.Arguments =  String.Format("{0} {1} {2} {3} a", prefix, pixels, startnum + 1, endnum);
+                }
+
                 startInfo.RedirectStandardError = true;
                 startInfo.RedirectStandardOutput = true;
                 startInfo.CreateNoWindow = true;
                 startInfo.UseShellExecute = false;
-                startInfo.EnvironmentVariables.Add("WINEDEBUG", "fixme-all,err-winediag");
 
                 decompressor.StartInfo = startInfo;
 
@@ -253,6 +264,14 @@ namespace OpenSatelliteProject {
                     UIConsole.GlobalConsole.Error(String.Format("Error Decompressing: {0}", stderr));
                 } else {
                     UIConsole.GlobalConsole.Debug(String.Format("Decompress sucessful to {0}", String.Format("{0}_decomp{1}.lrit", prefix, startnum)));
+                    for (int i=startnum; i<endnum+1; i++) {
+                        string f = string.Format("{0}{1}.lrit", prefix, i);
+                        try {
+                            File.Delete(f);
+                        } catch (Exception e) {
+                            Console.WriteLine("Error deleting file {0}", f);
+                        }
+                    }
                 }
 
             } catch (Exception e) {
