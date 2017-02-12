@@ -69,7 +69,7 @@ namespace OpenSatelliteProject {
                     //spriteBatch.DrawString(Font, m.ToString(), curPos, ConsoleMessage.CMP2COLOR[m.Priority]);
                     spriteBatch.DrawString(Font, m.ToString(), curPos, ConsoleMessage.CMP2COLOR[m.Priority], 0, new Vector2(0, 0), FONT_SCALE, SpriteEffects.None, 0);
                 } catch (Exception e) {
-                    Console.WriteLine(String.Format("Got exception {0} with: \n\n{1}", e, m.ToString()));
+                    //Console.WriteLine(String.Format("Got exception {0} with: \n\n{1}", e, m.ToString()));
                 }
                 curPos.Y += fontHeight + LINE_SPACING;
             }

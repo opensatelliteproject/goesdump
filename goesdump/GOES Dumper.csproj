@@ -45,6 +45,7 @@
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\NVorbis.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.IO.Compression.FileSystem" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -101,6 +102,9 @@
     <Compile Include="PacketData\Enums\SubProductEnums.cs" />
     <Compile Include="GoesDecoder\FileHandler.cs" />
     <Compile Include="UIComponents\Constellation.cs" />
+    <Compile Include="ChannelDecoder\EMWIN.cs" />
+    <Compile Include="PacketData\EMWINHeader.cs" />
+    <Compile Include="PacketData\EmwinFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

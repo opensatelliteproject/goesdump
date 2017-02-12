@@ -101,17 +101,24 @@ namespace OpenSatelliteProject {
                     endnum = msdu.PacketNumber;
 
                     if (startnum == -1) {
-                        UIConsole.GlobalConsole.Debug("Orphan Packet. Dropping");
+                        //UIConsole.GlobalConsole.Debug("Orphan Packet. Dropping");
                         return;
                     }
                 } else if (msdu.Sequence != SequenceType.SINGLE_DATA && startnum == -1) {
-                    UIConsole.GlobalConsole.Debug("Orphan Packet. Dropping");
+                    //UIConsole.GlobalConsole.Debug("Orphan Packet. Dropping");
                     return;
                 }
 
                 string path = String.Format("channels/{0}", channelId);
                 if (!Directory.Exists(path)) {
                     Directory.CreateDirectory(path);
+                }
+
+                if (fileHeader.PrimaryHeader.FileType == FileTypeCode.EMWIN) {
+                    //Ingestor
+                    int offset = 10 + (int)fileHeader.PrimaryHeader.HeaderLength;
+                    EMWIN.Ingestor.Process(msdu.Data.Skip(offset).ToArray());
+                    return;
                 }
 
                 switch (fileHeader.Compression) {
