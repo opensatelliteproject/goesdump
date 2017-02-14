@@ -9,16 +9,17 @@ public partial class MainWindow: Gtk.Window {
         Build();
 
         fileChooser.FileSet += (object sender, EventArgs e) => {
-            ProcessFile(fileChooser.Filename);
             Console.WriteLine(fileChooser.Filename);
+            ProcessFile(fileChooser.Filename);
         };
 
-        //ProcessFile("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Weather Data/NWSchrt_DANGER_PAC_LATESTBWdat043203144255.lrit");
+        ProcessFile("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Text/NWSTEXTdat043204159214.lrit");
     }
 
     private void ProcessFile(string filename) {
         string outputFolder = System.IO.Path.GetDirectoryName(filename);
-        ImageHandler.Handler.HandleFile(filename, outputFolder);
+        //ImageHandler.Handler.HandleFile(filename, outputFolder);
+        TextHandler.Handler.HandleFile(filename, outputFolder);
     }
 
     protected void OnDeleteEvent(object sender, DeleteEventArgs a) {

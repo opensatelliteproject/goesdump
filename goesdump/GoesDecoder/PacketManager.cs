@@ -138,15 +138,40 @@ namespace OpenSatelliteProject {
             FileHandler.AttachByCompressionHandler((int)CompressionType.JPEG, (filename, fileHeader) => DumpFile(filename, fileHeader, "jpg"));
             FileHandler.AttachByCompressionHandler((int)CompressionType.GIF, (filename, fileHeader) => DumpFile(filename, fileHeader, "gif"));
             FileHandler.AttachByProductIdHandler((int)NOAAProductID.WEATHER_DATA, HandleWeatherData);
+            FileHandler.AttachByProductIdHandler((int)NOAAProductID.OTHER_SATELLITES_1, HandleWeatherData);
+            FileHandler.AttachByProductIdHandler((int)NOAAProductID.OTHER_SATELLITES_2, HandleWeatherData);
+            FileHandler.AttachByProductIdHandler((int)NOAAProductID.NOAA_TEXT, HandleTextData);
         }
 
         public static void HandleWeatherData(string filename, XRITHeader header) {
             if (header.PrimaryHeader.FileType == FileTypeCode.IMAGE) {
                 string basedir = new DirectoryInfo(Path.GetDirectoryName(filename)).Parent.FullName;
-                basedir = Path.Combine(basedir, WeatherDataFolder);
+                if (header.Product.ID == (int)NOAAProductID.OTHER_SATELLITES_1 || header.Product.ID == (int)NOAAProductID.OTHER_SATELLITES_2) {
+                    basedir = Path.Combine(basedir, OtherSatellitesFolder);
+                } else {
+                    basedir = Path.Combine(basedir, WeatherDataFolder);
+                }
 
                 try {
+                    UIConsole.GlobalConsole.Log(string.Format("New Weather Data - {0} - {1}", header.SubProduct.Name, header.Filename));
                     ImageHandler.Handler.HandleFile(filename, basedir);
+                    File.Delete(filename);
+                } catch (Exception e) {
+                    UIConsole.GlobalConsole.Warn(string.Format("Failed to parse Weather Data Image at {0}: {1}", filename, e));
+                }
+            } else {
+                FileHandler.DefaultHandler(filename, header);
+            }
+        }
+
+        public static void HandleTextData(string filename, XRITHeader header) {
+            if (header.PrimaryHeader.FileType == FileTypeCode.TEXT) {
+                string basedir = new DirectoryInfo(Path.GetDirectoryName(filename)).Parent.FullName;
+                basedir = Path.Combine(basedir, TextFolder);
+
+                try {
+                    UIConsole.GlobalConsole.Log(string.Format("New NOAA Text ({0})", header.Filename));
+                    TextHandler.Handler.HandleFile(filename, basedir);
                     File.Delete(filename);
                 } catch (Exception e) {
                     UIConsole.GlobalConsole.Warn(string.Format("Failed to parse Weather Data Image at {0}: {1}", filename, e));

@@ -122,8 +122,9 @@ namespace OpenSatelliteProject.Tools {
                 } else {
                     // So our stride is bigger than our width (alignment issues). So let's copy line by line.
                     var strideBuffer = new byte[data.Stride * height];
+                    int nwidth = width * bitsPerPixel / 8;
                     for (int i = 0; i < height; i++) {
-                        Buffer.BlockCopy(buffer, width * i, strideBuffer, data.Stride * i, width);
+                        Buffer.BlockCopy(buffer, nwidth * i, strideBuffer, data.Stride * i, nwidth);
                     }
                     Marshal.Copy(strideBuffer, 0, data.Scan0, strideBuffer.Length);
                 }

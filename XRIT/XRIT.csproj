@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{31BC62BD-1EE9-4B14-A931-19C572126A51}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>XRIT</RootNamespace>
+    <RootNamespace>OpenSatelliteProject</RootNamespace>
     <AssemblyName>XRIT</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -72,6 +72,7 @@
     <Compile Include="Tools\FileParser.cs" />
     <Compile Include="Tools\LLTools.cs" />
     <Compile Include="Tools\ImageHandler.cs" />
+    <Compile Include="Tools\TextHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

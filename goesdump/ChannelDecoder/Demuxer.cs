@@ -102,11 +102,11 @@ namespace OpenSatelliteProject {
                     endnum = msdu.PacketNumber;
 
                     if (startnum == -1) {
-                        UIConsole.GlobalConsole.Debug("Orphan Packet. Dropping");
+                        //UIConsole.GlobalConsole.Debug("Orphan Packet. Dropping");
                         return;
                     }
                 } else if (msdu.Sequence != SequenceType.SINGLE_DATA && startnum == -1) {
-                    UIConsole.GlobalConsole.Debug("Orphan Packet. Dropping");
+                    //UIConsole.GlobalConsole.Debug("Orphan Packet. Dropping");
                     return;
                 }
 

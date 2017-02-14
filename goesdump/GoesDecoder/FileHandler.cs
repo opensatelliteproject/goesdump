@@ -29,7 +29,7 @@ namespace OpenSatelliteProject {
             if (byCompressionTypeHandler.ContainsKey((int)fileHeader.Compression)) {
                 byCompressionTypeHandler[(int)fileHeader.Compression](filename, fileHeader);
             } else if (byProductIdHandler.ContainsKey(fileHeader.Product.ID)) {
-                byProductIdHandler[(int)fileHeader.Compression](filename, fileHeader);
+                byProductIdHandler[fileHeader.Product.ID](filename, fileHeader);
             } else {
                 DefaultHandler(filename, fileHeader);
             }
