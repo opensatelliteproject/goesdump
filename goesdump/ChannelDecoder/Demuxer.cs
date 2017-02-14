@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO;
 using System.Diagnostics;
 using OpenSatelliteProject.PacketData;
+using OpenSatelliteProject.Tools;
 
 
 namespace OpenSatelliteProject {
@@ -91,7 +92,7 @@ namespace OpenSatelliteProject {
                 }
 
                 if (msdu.Sequence == SequenceType.FIRST_SEGMENT || msdu.Sequence == SequenceType.SINGLE_DATA) {
-                    fileHeader = PacketManager.GetHeader(msdu.Data.Skip(10).ToArray());
+                    fileHeader = FileParser.GetHeader(msdu.Data.Skip(10).ToArray());
                     //compressionFlag = PacketManager.IsCompressed(msdu.Data.Skip(10).ToArray());
                     //pixels = PacketManager.GetPixels(msdu.Data.Skip(10).ToArray());
                     if (msdu.Sequence == SequenceType.FIRST_SEGMENT) {
@@ -101,11 +102,11 @@ namespace OpenSatelliteProject {
                     endnum = msdu.PacketNumber;
 
                     if (startnum == -1) {
-                        UIConsole.GlobalConsole.Debug("Orphan Packet. Dropping");
+                        //UIConsole.GlobalConsole.Debug("Orphan Packet. Dropping");
                         return;
                     }
                 } else if (msdu.Sequence != SequenceType.SINGLE_DATA && startnum == -1) {
-                    UIConsole.GlobalConsole.Debug("Orphan Packet. Dropping");
+                    //UIConsole.GlobalConsole.Debug("Orphan Packet. Dropping");
                     return;
                 }
 

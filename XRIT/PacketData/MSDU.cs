@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
+using OpenSatelliteProject.Tools;
 
-namespace OpenSatelliteProject {
+namespace OpenSatelliteProject.PacketData {
     public class MSDU {
         #region Properties
+
         public int Version { get; set; }
 
         public int SHF { get; set; }
@@ -53,18 +55,21 @@ namespace OpenSatelliteProject {
                 return APID == 2047;
             }
         }
+
         #endregion
 
         #region Constructor / Destructor
+
         private MSDU() {
         }
 
         #endregion
 
         #region Methods
+
         public void addDataBytes(byte[] data) {            
             if (data.Length + Data.Length > PacketLength + 2) {
-                UIConsole.GlobalConsole.Warn("Overflow in MSDU!");
+                Console.WriteLine("(MSDU) Overflow in MSDU!");
             }
             byte[] newData = new byte[Data.Length + data.Length];
             Array.Copy(Data, newData, Data.Length);
@@ -76,10 +81,12 @@ namespace OpenSatelliteProject {
             }
 
         }
+
         #endregion
 
 
         #region Builders / Parsers
+
         public static MSDU parseMSDU(byte[] data) {
             MSDU msdu = new MSDU();
 
@@ -126,6 +133,7 @@ namespace OpenSatelliteProject {
 
             return msdu;
         }
+
         #endregion
     }
 }

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{31BC62BD-1EE9-4B14-A931-19C572126A51}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>OpenSatelliteProject</RootNamespace>
+    <AssemblyName>XRIT</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PacketData\AncillaryHeader.cs" />
+    <Compile Include="PacketData\AnnotationHeader.cs" />
+    <Compile Include="PacketData\DCSFilenameHeader.cs" />
+    <Compile Include="PacketData\Enums\CompressionType.cs" />
+    <Compile Include="PacketData\Enums\FileTypeCode.cs" />
+    <Compile Include="PacketData\Enums\HeaderType.cs" />
+    <Compile Include="PacketData\Enums\NOAAProductID.cs" />
+    <Compile Include="PacketData\Enums\SubProductEnums.cs" />
+    <Compile Include="PacketData\HeaderStructuredHeader.cs" />
+    <Compile Include="PacketData\ImageDataFunctionHeader.cs" />
+    <Compile Include="PacketData\ImageNavigationHeader.cs" />
+    <Compile Include="PacketData\ImageStructureHeader.cs" />
+    <Compile Include="PacketData\MSDU.cs" />
+    <Compile Include="PacketData\NOAAProduct.cs" />
+    <Compile Include="PacketData\NOAASpecificHeader.cs" />
+    <Compile Include="PacketData\NOAASubproduct.cs" />
+    <Compile Include="PacketData\Presets.cs" />
+    <Compile Include="PacketData\PrimaryHeader.cs" />
+    <Compile Include="PacketData\RiceCompressionHeader.cs" />
+    <Compile Include="PacketData\SegmentIdentificationHeader.cs" />
+    <Compile Include="PacketData\SequenceType.cs" />
+    <Compile Include="PacketData\Structs\AncillaryText.cs" />
+    <Compile Include="PacketData\Structs\AnnotationRecord.cs" />
+    <Compile Include="PacketData\Structs\DCSFilenameRecord.cs" />
+    <Compile Include="PacketData\Structs\HeaderStructuredRecord.cs" />
+    <Compile Include="PacketData\Structs\ImageDataFunctionRecord.cs" />
+    <Compile Include="PacketData\Structs\ImageNavigationRecord.cs" />
+    <Compile Include="PacketData\Structs\ImageStructureRecord.cs" />
+    <Compile Include="PacketData\Structs\NOAASpecificRecord.cs" />
+    <Compile Include="PacketData\Structs\PrimaryRecord.cs" />
+    <Compile Include="PacketData\Structs\RiceCompressionRecord.cs" />
+    <Compile Include="PacketData\Structs\SegmentIdentificationRecord.cs" />
+    <Compile Include="PacketData\Structs\TimestampRecord.cs" />
+    <Compile Include="PacketData\TimestampHeader.cs" />
+    <Compile Include="PacketData\XRitBaseHeader.cs" />
+    <Compile Include="PacketData\XRITHeader.cs" />
+    <Compile Include="Tools\FileParser.cs" />
+    <Compile Include="Tools\LLTools.cs" />
+    <Compile Include="Tools\ImageHandler.cs" />
+    <Compile Include="Tools\TextHandler.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="PacketData\" />
+    <Folder Include="Tools\" />
+  </ItemGroup>
+</Project>
