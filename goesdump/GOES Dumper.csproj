@@ -48,6 +48,7 @@
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\NVorbis.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -57,10 +58,7 @@
     <Compile Include="Main.cs" />
     <Compile Include="UIComponents\CurrentFrameData.cs" />
     <Compile Include="UIComponents\Drawable.cs" />
-    <Compile Include="Tools.cs" />
     <Compile Include="UIComponents\Updatable.cs" />
-    <Compile Include="ChannelDecoder\MSDU.cs" />
-    <Compile Include="ChannelDecoder\SequenceType.cs" />
     <Compile Include="ChannelDecoder\Demuxer.cs" />
     <Compile Include="ChannelDecoder\DemuxManager.cs" />
     <Compile Include="GoesDecoder\PacketManager.cs" />
@@ -68,40 +66,6 @@
     <Compile Include="UIComponents\ConsoleMessage.cs" />
     <Compile Include="UIComponents\UILed.cs" />
     <Compile Include="UIComponents\MouseCursor.cs" />
-    <Compile Include="PacketData\NOAAProduct.cs" />
-    <Compile Include="PacketData\NOAASubproduct.cs" />
-    <Compile Include="PacketData\Presets.cs" />
-    <Compile Include="PacketData\Structs\AncillaryText.cs" />
-    <Compile Include="PacketData\Structs\AnnotationRecord.cs" />
-    <Compile Include="PacketData\Enums\CompressionType.cs" />
-    <Compile Include="PacketData\Enums\FileTypeCode.cs" />
-    <Compile Include="PacketData\Structs\ImageDataFunctionRecord.cs" />
-    <Compile Include="PacketData\Structs\ImageNavigationRecord.cs" />
-    <Compile Include="PacketData\Structs\TimestampRecord.cs" />
-    <Compile Include="PacketData\Enums\HeaderType.cs" />
-    <Compile Include="PacketData\XRitBaseHeader.cs" />
-    <Compile Include="PacketData\AncillaryHeader.cs" />
-    <Compile Include="PacketData\PrimaryHeader.cs" />
-    <Compile Include="PacketData\ImageStructureHeader.cs" />
-    <Compile Include="PacketData\Structs\ImageStructureRecord.cs" />
-    <Compile Include="PacketData\Structs\PrimaryRecord.cs" />
-    <Compile Include="PacketData\ImageNavigationHeader.cs" />
-    <Compile Include="PacketData\ImageDataFunctionHeader.cs" />
-    <Compile Include="PacketData\AnnotationHeader.cs" />
-    <Compile Include="PacketData\TimestampHeader.cs" />
-    <Compile Include="PacketData\SegmentIdentificationHeader.cs" />
-    <Compile Include="PacketData\Structs\SegmentIdentificationRecord.cs" />
-    <Compile Include="PacketData\Structs\NOAASpecificRecord.cs" />
-    <Compile Include="PacketData\NOAASpecificHeader.cs" />
-    <Compile Include="PacketData\Structs\HeaderStructuredRecord.cs" />
-    <Compile Include="PacketData\HeaderStructuredHeader.cs" />
-    <Compile Include="PacketData\Structs\RiceCompressionRecord.cs" />
-    <Compile Include="PacketData\RiceCompressionHeader.cs" />
-    <Compile Include="PacketData\Structs\DCSFilenameRecord.cs" />
-    <Compile Include="PacketData\DCSFilenameHeader.cs" />
-    <Compile Include="PacketData\XRITHeader.cs" />
-    <Compile Include="PacketData\Enums\NOAAProductID.cs" />
-    <Compile Include="PacketData\Enums\SubProductEnums.cs" />
     <Compile Include="GoesDecoder\FileHandler.cs" />
     <Compile Include="UIComponents\Constellation.cs" />
   </ItemGroup>
@@ -123,4 +87,15 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="GoesDecoder\" />
+    <Folder Include="UIComponents\" />
+    <Folder Include="ChannelDecoder\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\XRIT\XRIT.csproj">
+      <Project>{31BC62BD-1EE9-4B14-A931-19C572126A51}</Project>
+      <Name>XRIT</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

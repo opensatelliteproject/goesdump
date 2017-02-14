@@ -290,7 +290,7 @@ namespace OpenSatelliteProject {
                         }
                         this.postConstellationData(data);
                     }
-                } catch (SocketException e) {
+                } catch (SocketException) {
                     // Do nothing, timeout on UDP
                 }
             }

@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using OpenSatelliteProject.Tools;
 
 namespace OpenSatelliteProject {
     public class CurrentFrameData: Drawable, Updatable {
@@ -49,7 +50,7 @@ namespace OpenSatelliteProject {
                 SignalQuality = value.signalQuality;
                 SyncCorrelation = value.syncCorrelation;
                 PhaseCorrection = value.phaseCorrection;
-                startTime = Tools.UnixTimeStampToDateTime(value.startTime);
+                startTime = LLTools.UnixTimeStampToDateTime(value.startTime);
                 if (value.rsErrors != null) {
                     ReedSolomon[0] = value.rsErrors[0];
                     ReedSolomon[1] = value.rsErrors[1];

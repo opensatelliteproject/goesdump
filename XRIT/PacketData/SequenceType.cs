@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OpenSatelliteProject {
+namespace OpenSatelliteProject.PacketData {
     public enum SequenceType {
         CONTINUED_SEGMENT = 0,
         FIRST_SEGMENT = 1,
