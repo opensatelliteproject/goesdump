@@ -27,8 +27,8 @@ namespace OpenSatelliteProject {
         #region Updatable implementation
 
         public void update(Microsoft.Xna.Framework.GameTime gameTime) {
-            Point mPos = Mouse.GetState().Position;
-            position = new Rectangle(mPos.X, mPos.Y, cursorSize, cursorSize);
+            //Point mPos = Mouse.GetState().Position;
+            //position = new Rectangle(mPos.X, mPos.Y, cursorSize, cursorSize);
         }
 
         #endregion
