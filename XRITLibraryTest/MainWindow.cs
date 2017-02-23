@@ -19,7 +19,7 @@ public partial class MainWindow: Gtk.Window {
     private void ProcessFile(string filename) {
         string outputFolder = System.IO.Path.GetDirectoryName(filename);
         //ImageHandler.Handler.HandleFile(filename, outputFolder);
-        TextHandler.Handler.HandleFile(filename, outputFolder);
+        //TextHandler.Handler.HandleFile(filename, outputFolder);
     }
 
     protected void OnDeleteEvent(object sender, DeleteEventArgs a) {
