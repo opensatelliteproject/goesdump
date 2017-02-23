@@ -228,98 +228,103 @@ namespace OpenSatelliteProject {
         }
 
         public static string Decompressor(string filename, int pixels) {
-            try {
-                Process decompressor = new Process();
-                ProcessStartInfo startInfo = new ProcessStartInfo();
-                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            /**
+             *  Temporary Workarround. Needs to change directly on Demuxer
+             */
+            string outputFile = String.Format("{0}_decomp.lrit", filename);
+            byte[] outputData = new byte[pixels];
 
-                if (LLTools.IsLinux) {
-                    startInfo.FileName = "wine";
-                    startInfo.Arguments = String.Format("Decompress.exe {0} {1} a", pixels, filename);
-                    startInfo.EnvironmentVariables.Add("WINEDEBUG", "fixme-all,err-winediag");
-                } else {
-                    startInfo.FileName = "Decompress.exe";
-                    startInfo.Arguments = String.Format("{0} {1} a", pixels, filename);
-                }
-
-                startInfo.RedirectStandardError = true;
-                startInfo.RedirectStandardOutput = true;
-                startInfo.CreateNoWindow = true;
-                startInfo.UseShellExecute = false;
-
-                decompressor.StartInfo = startInfo;
-
-                UIConsole.GlobalConsole.Debug(String.Format("Calling {0}", startInfo.Arguments));
-                decompressor.Start();
-                decompressor.WaitForExit();
-
-                if (decompressor.ExitCode != 0) {
-                    string stderr = decompressor.StandardError.ReadToEnd();
-                    UIConsole.GlobalConsole.Error(String.Format("Error Decompressing: {0}", stderr));
-                } else {
-                    UIConsole.GlobalConsole.Debug(String.Format("Decompress sucessful to {0}", String.Format("{0}_decomp.lrit", filename)));
-                    try {
-                        File.Delete(filename);
-                    } catch (Exception e) {
-                        Console.WriteLine("Cannot delete file {0}: {1}", filename, e);
-                    }
-                }
-
-            } catch (Exception e) {
-                UIConsole.GlobalConsole.Error(String.Format("Error running decompressor: {0}", e));
+            for (int i = 0; i < pixels; i++) {
+                outputData[i] = 0x00;
             }
 
+            try {
+                byte[] inputData = File.ReadAllBytes(filename);
+                AEC.LritRiceDecompress(ref outputData, inputData, 8, 16, pixels, AEC.ALLOW_K13_OPTION_MASK | AEC.MSB_OPTION_MASK | AEC.NN_OPTION_MASK);
+            } catch (Exception e) {
+                if (e is AECException) {
+                    AECException aece = (AECException)e;
+                    UIConsole.GlobalConsole.Error(string.Format("AEC Decompress Error: {0}", aece.status.ToString()));
+                } else {
+                    UIConsole.GlobalConsole.Error(string.Format("Decompress error: {0}", e.ToString()));
+                }
+            }
 
-            return String.Format("{0}_decomp.lrit", filename);
+            File.WriteAllBytes(outputFile, outputData);
+            return outputFile;
         }
 
 
         public static string Decompressor(string prefix, int pixels, int startnum, int endnum) {
+            /**
+             *  Temporary Workarround. Needs to change directly on Demuxer
+             */
+
+            string outputFile = String.Format("{0}_decomp{1}.lrit", prefix, startnum);
+
             try {
-                Process decompressor = new Process();
-                ProcessStartInfo startInfo = new ProcessStartInfo();
-                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                if (LLTools.IsLinux) {
-                    startInfo.FileName = "wine";
-                    startInfo.Arguments = String.Format("Decompress.exe {0} {1} {2} {3} a", prefix, pixels, startnum + 1, endnum);
-                    startInfo.EnvironmentVariables.Add("WINEDEBUG", "fixme-all,err-winediag");
-                } else {
-                    startInfo.FileName = "Decompress.exe";
-                    startInfo.Arguments =  String.Format("{0} {1} {2} {3} a", prefix, pixels, startnum + 1, endnum);
+                byte[] input = File.ReadAllBytes(string.Format("{0}{1}.lrit", prefix, startnum));
+                byte[] outputData = new byte[pixels];
+
+                FileStream f = File.OpenWrite(outputFile);
+                startnum++;
+                // First file only contains header
+                f.Write(input, 0, input.Length);
+
+                int overflowCaseLast = -1;
+
+                // Check for overflow in file number
+                if (endnum < startnum) {
+                    overflowCaseLast = endnum;
+                    endnum = 16383;
                 }
 
-                startInfo.RedirectStandardError = true;
-                startInfo.RedirectStandardOutput = true;
-                startInfo.CreateNoWindow = true;
-                startInfo.UseShellExecute = false;
+                for (int i = startnum; i <= endnum; i++) {
+                    string ifile = string.Format("{0}{1}.lrit", prefix, i);
+                    input = File.ReadAllBytes(ifile);
 
-                decompressor.StartInfo = startInfo;
+                    for (int z = 0; z < outputData.Length; z++) {
+                        outputData[z] = 0x00;
+                    }
 
-                UIConsole.GlobalConsole.Debug(String.Format("Calling {0}", startInfo.Arguments));
-                decompressor.Start();
-                decompressor.WaitForExit();
+                    try {
+                        AEC.LritRiceDecompress(ref outputData, input, 8, 16, pixels, AEC.ALLOW_K13_OPTION_MASK | AEC.MSB_OPTION_MASK | AEC.NN_OPTION_MASK);
+                    } catch (AECException e) {
+                        Console.WriteLine("AEC Decompress problem decompressing file {0}: {1}", ifile, e.status.ToString());
+                        Console.WriteLine("AEC Params: {0} - {1} - {2}", 8, 16, pixels);
+                    }
 
-                if (decompressor.ExitCode != 0) {
-                    string stderr = decompressor.StandardError.ReadToEnd();
-                    UIConsole.GlobalConsole.Error(String.Format("Error Decompressing: {0}", stderr));
-                } else {
-                    UIConsole.GlobalConsole.Debug(String.Format("Decompress sucessful to {0}", String.Format("{0}_decomp{1}.lrit", prefix, startnum)));
-                    for (int i=startnum; i<endnum+1; i++) {
-                        string f = string.Format("{0}{1}.lrit", prefix, i);
-                        try {
-                            File.Delete(f);
-                        } catch (Exception e) {
-                            Console.WriteLine("Error deleting file {0}: {1}", f, e);
+                    f.Write(outputData, 0, outputData.Length);
+                }
+
+                if (overflowCaseLast != -1) {
+                    for (int i = 0; i < overflowCaseLast; i++) {
+                        string ifile = string.Format("{0}{1}.lrit", prefix, i);
+                        input = File.ReadAllBytes(ifile);
+                        for (int z = 0; z < outputData.Length; z++) {
+                            outputData[z] = 0x00;
                         }
+
+                        try {
+                            AEC.LritRiceDecompress(ref outputData, input, 8, 16, pixels, AEC.ALLOW_K13_OPTION_MASK | AEC.MSB_OPTION_MASK | AEC.NN_OPTION_MASK);
+                            File.Delete(ifile);
+                        } catch (AECException e) {
+                            Console.WriteLine("AEC Decompress problem decompressing file {0}", ifile);
+                        } catch (IOException e) {
+                            Console.WriteLine("Error deleting file {0}: {1}", ifile, e);
+                        }
+
+                        f.Write(outputData, 0, outputData.Length);
                     }
                 }
 
+                f.Close();
+
             } catch (Exception e) {
-                UIConsole.GlobalConsole.Error(String.Format("Error running decompressor: {0}", e));
+                UIConsole.GlobalConsole.Error(string.Format("There was an error decompressing data: {0}", e));
             }
 
-
-            return String.Format("{0}_decomp{1}.lrit", prefix, startnum);
+            return outputFile;
         }
     }
 }
