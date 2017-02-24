@@ -1,6 +1,8 @@
 ﻿using System;
+#if !HEADLESS
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+#endif
 using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
@@ -8,8 +10,11 @@ using System.Text;
 using System.Globalization;
 
 namespace OpenSatelliteProject {
+    #if !HEADLESS
     public class UIConsole: Drawable, Updatable {
-
+    #else
+    public class UIConsole {
+    #endif
         private static readonly int MAX_MESSAGES = 10;
         private static readonly float LINE_SPACING = 2;
         private static readonly float FONT_SCALE = 1f;
@@ -17,10 +22,10 @@ namespace OpenSatelliteProject {
         public static UIConsole GlobalConsole;
 
         public bool LogConsole { get; set; }
-
+        #if !HEADLESS
         public Vector2 Position { get; set; }
         public SpriteFont Font { get; set; }
-
+        #endif
         private List<ConsoleMessage> messages;
         private Mutex messageMutex;
 
@@ -46,17 +51,19 @@ namespace OpenSatelliteProject {
             messages = new List<ConsoleMessage>();
             LogConsole = true;
             messageMutex = new Mutex();
+            #if !HEADLESS
             Position = new Vector2(0, 0);
+            #endif
         }
-
+        #if !HEADLESS
         public float MaxHeight {
             get {
                 return (Font.MeasureString("A").Y * FONT_SCALE + LINE_SPACING) * (MAX_MESSAGES+1) + 5;
             }
         }
-
+        #endif
         #region Drawable implementation
-
+        #if !HEADLESS
         public void draw(SpriteBatch spriteBatch, GameTime gameTime) {
             float fontHeight = Font.MeasureString("A").Y;
             Vector2 curPos = new Vector2(Position.X, Position.Y);
@@ -75,16 +82,17 @@ namespace OpenSatelliteProject {
             }
             messageMutex.ReleaseMutex();
         }
-
+        #endif
         #endregion
 
         #region Updatable implementation
-
+        #if !HEADLESS
         public void update(GameTime gameTime) {
             // Do Nothing
         }
-
+        #endif
         #endregion
+        #if !HEADLESS
         private void addMessage(ConsoleMessage message) {
             string[] lines = message.Message.Split('\n');
             int totalLines = messages.Count + lines.Length;
@@ -108,11 +116,13 @@ namespace OpenSatelliteProject {
                 }
             }
         }
-
+        #endif
         public void Log(string message) {
             messageMutex.WaitOne();
             ConsoleMessage cm = new ConsoleMessage(ConsoleMessagePriority.INFO, message);
+            #if !HEADLESS
             addMessage(cm);
+            #endif
             if (LogConsole) {
                 ConsoleColor oldColor = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Blue;
@@ -125,7 +135,9 @@ namespace OpenSatelliteProject {
         public void Warn(string message) {
             messageMutex.WaitOne();
             ConsoleMessage cm = new ConsoleMessage(ConsoleMessagePriority.WARN, message);
+            #if !HEADLESS
             addMessage(cm);
+            #endif
             if (LogConsole) {
                 ConsoleColor oldColor = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Yellow;
@@ -138,7 +150,9 @@ namespace OpenSatelliteProject {
         public void Error(string message) {
             messageMutex.WaitOne();
             ConsoleMessage cm = new ConsoleMessage(ConsoleMessagePriority.ERROR, message);
+            #if !HEADLESS
             addMessage(cm);
+            #endif
             if (LogConsole) {
                 ConsoleColor oldColor = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -151,7 +165,9 @@ namespace OpenSatelliteProject {
         public void Debug(string message) {
             messageMutex.WaitOne();
             ConsoleMessage cm = new ConsoleMessage(ConsoleMessagePriority.DEBUG, message);
+            #if !HEADLESS
             addMessage(cm);
+            #endif
             if (LogConsole) {
                 ConsoleColor oldColor = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.DarkGray;

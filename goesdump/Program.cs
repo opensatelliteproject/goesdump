@@ -1,4 +1,5 @@
 ﻿#region Using Statements
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +12,22 @@ using MonoMac.Foundation;
 
 namespace OpenSatelliteProject {
     static class Program {
-        private static Main main;
+        
 
-        internal static void RunGame() {
+        #if (HEADLESS)
+        private static HeadlessMain main;
+        internal static void RunProg() {
+            main = new HeadlessMain();
+            main.Start();
+        }
+        #else
+        private static Main main;
+        internal static void RunProg() {
             main = new Main();
             main.Run();
             main.Dispose();
         }
+        #endif
 
         /// <summary>
         /// The main entry point for the application.
@@ -34,7 +44,7 @@ namespace OpenSatelliteProject {
                 NSApplication.Main(args);
             }
             #else
-            RunGame();
+            RunProg();
             #endif
         }
 
@@ -51,7 +61,7 @@ namespace OpenSatelliteProject {
                 }
                 return null;
             };
-            Program.RunGame();
+            Program.RunProg();
         }
 
         public override bool ApplicationShouldTerminateAfterLastWindowClosed (NSApplication sender)

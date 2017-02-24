@@ -43,7 +43,9 @@ namespace OpenSatelliteProject {
             statisticsThread.IsBackground = true;
             channelDataThread.IsBackground = true;
             constellationDataThread.IsBackground = true;
+        }
 
+        public void Start() {
             statisticsThreadRunning = true;
             channelDataThreadRunning = true;
             constellationDataThreadRunning = true;
@@ -149,6 +151,7 @@ namespace OpenSatelliteProject {
                         if (!statisticsThreadRunning) {
                             break;
                         }
+                        Thread.Sleep(1);
                     }
 
                     sender.Shutdown(SocketShutdown.Both);
@@ -167,6 +170,7 @@ namespace OpenSatelliteProject {
                     UIConsole.GlobalConsole.Warn("Socket closed. Waiting 1s before trying again.");
                     Thread.Sleep(1000);
                 }
+                Thread.Sleep(1);
             }
             Console.WriteLine("Requested to close Statistics Thread!");
             try {
@@ -228,6 +232,7 @@ namespace OpenSatelliteProject {
                         if (!channelDataThreadRunning) {
                             break;
                         }
+                        Thread.Sleep(1);
                     }
 
                     sender.Shutdown(SocketShutdown.Both);
@@ -245,6 +250,7 @@ namespace OpenSatelliteProject {
                     UIConsole.GlobalConsole.Warn("Socket closed. Waiting 1s before trying again.");
                     Thread.Sleep(1000);
                 }
+                Thread.Sleep(1);
             }
 
             UIConsole.GlobalConsole.Debug("Requested to close Channel Data Thread!");
@@ -293,6 +299,8 @@ namespace OpenSatelliteProject {
                 } catch (SocketException) {
                     // Do nothing, timeout on UDP
                 }
+
+                Thread.Sleep(10);
             }
            
 

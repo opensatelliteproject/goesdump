@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !HEADLESS
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -109,4 +110,4 @@ namespace OpenSatelliteProject {
         #endregion
     }
 }
-
+#endif
