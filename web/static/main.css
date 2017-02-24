@@ -1,0 +1,71 @@
+.console-card.mdl-card {
+  width: 100%;
+}
+
+.console-card > .mdl-card__title {
+  color: #fff;
+  background: #46B6AC;
+}
+
+.main-grid {
+  padding-bottom: 0;
+  justify-content: center;
+}
+
+.main-grid-cell {
+}
+
+.statistics-ul {
+  padding: 0;
+  margin-top: 0;
+  list-style-type: none;
+}
+
+.statistics li {
+  height:18px;
+  padding: 0 0 0 0;
+  font-family: "Verdana", sans-serif;
+}
+
+.statistics-val {
+  float: right;
+}
+
+.osp-card {
+  height: 310px;
+}
+
+.osp-card > .mdl-card__title {
+  color: #fff;
+  background: #46B6AC;
+  padding: 8px 16px;
+  align-items: flex-start;
+}
+
+.led-holder {
+  width: 50px;
+}
+
+.led-card-content {
+  justify-content: center;
+  text-align: center;
+  vertical-align: middle;
+  position: relative;
+  height: 250px;
+}
+
+.led-block {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 280px;
+  height: 100px;
+  transform: translate(-50%,-50%);
+}
+
+.constellation-holder {
+  justify-content: center;
+  text-align: center;
+  vertical-align: middle;
+  margin: auto;
+}

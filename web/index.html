@@ -1,0 +1,124 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="GOES Dump WebUI">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>OpenSatelliteProject xRIT Ingestor</title>
+    <link rel="stylesheet" href="/node_modules/material-design-lite/material.min.css">
+    <script src="/node_modules/material-design-lite/material.min.js"></script>
+    <link rel="stylesheet" href="/static/material-icons.css">
+    <link rel="stylesheet" href="/static/main.css">
+    <link rel="stylesheet" href="/static/leds.css">
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="/static/main.js"></script>
+  </head>
+  <body>
+    <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <header class="demo-header mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
+        <div class="mdl-layout__header-row">
+          <span class="mdl-layout-title">Open Satellite Project</span>
+          <div class="mdl-layout-spacer"></div>
+          <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="hdrbtn">
+            <i class="material-icons">more_vert</i>
+          </button>
+          <ul class="mdl-menu mdl-js-menu mdl-js-ripple-effect mdl-menu--bottom-right" for="hdrbtn">
+            <li class="mdl-menu__item">About</li>
+          </ul>
+        </div>
+      </header>
+      <main class="mdl-layout__content mdl-color--grey-100">
+        <div class="main-grid mdl-grid">
+            <div class="mdl-cell mdl-cell--4-col main-grid-cell  graybox ">
+              <div class="osp-card mdl-card--expand mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                  <h2 class="mdl-card__title-text">Statistics</h2>
+                </div>
+                <div id="statistics-text" class="mdl-card__supporting-text">
+                  <ul class="statistics-ul">
+                    <li class="statistics">
+                        SC ID: <div class="statistics-val"><span id="field_scid">0</span></div>
+                    </li>
+                    <li class="statistics">
+                        VC ID: <div class="statistics-val"><span id="field_vcid">0</span></div>
+                    </li>
+                    <li class="statistics">
+                        Packet Number: <div class="statistics-val"><span id="field_packetnumber">0</span></div>
+                    </li>
+                    <li class="statistics">
+                        Viterbi Errors: <div class="statistics-val"><span id="field_viterrors">0</span>/<span id="field_framebits">0</span></div>
+                    </li>
+                    <li class="statistics">
+                        Signal Quality: <div class="statistics-val"><span id="field_signalquality">0</span></div>
+                    </li>
+                    <li class="statistics">
+                        Sync Correlation: <div class="statistics-val"><span id="field_synccorrelation">0</span></div>
+                    </li>
+                    <li class="statistics">
+                        Phase Shift: <div class="statistics-val"><span id="field_phasecorrection">0</span></div>
+                    </li>
+                    <li class="statistics">
+                        Running Time: <div class="statistics-val"><span id="field_runningtime">0</span></div>
+                    </li>
+                    <li class="statistics">
+                        Reed Solomon: <div class="statistics-val"><span id="field_rserror0">0</span>&nbsp;<span id="field_rserror1">0</span>&nbsp;<span id="field_rserror2">0</span>&nbsp;<span id="field_rserror3">0</span></div>
+                    </li>
+                    <li class="statistics">
+                        Sync Word: <div class="statistics-val"><span id="field_syncword">00000000</span></div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="mdl-cell mdl-cell--4-col main-grid-cell graybox">
+              <div class="osp-card mdl-card--expand mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                  <h2 class="mdl-card__title-text">Constellation</h2>
+                </div>
+                <div class="mdl-card__supporting-text">
+                  <div class="constellation-holder">
+                    <canvas id="constellation" width=240 height=240></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mdl-cell mdl-cell--4-col main-grid-cell graybox">
+              <div class="osp-card mdl-card--expand mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                  <h2 class="mdl-card__title-text">Status</h2>
+                </div>
+                <div class="led-card-content mdl-card__supporting-text">
+                  <div class="led-block">
+                    <div class="led-box">
+                      <div id="led-frame-lock" class="led-blue"></div>
+                      <p>Frame Lock</p>
+                    </div>
+                    <div class="led-box">
+                      <div id="led-websocket" class="led-blue"></div>
+                      <p>WebSocket</p>
+                    </div>
+                    <div class="led-box">
+                      <div id="led-satellite-busy" class="led-blue"></div>
+                      <p>Satellite Busy</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="main-grid mdl-grid">
+            <div class="main-grid-cell mdl-cell graybox mdl-cell--12-col">
+              <div class="console-card mdl-card console-card mdl-card--expand mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                  <h2 class="mdl-card__title-text">Console</h2>
+                </div>
+                <div id="console-text" class="mdl-card__supporting-text">
+                  Console Here
+                </div>
+              </div>
+            </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
