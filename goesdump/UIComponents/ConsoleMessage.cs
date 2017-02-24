@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+
+#if !HEADLESS
 using Microsoft.Xna.Framework;
+#endif
 
 namespace OpenSatelliteProject {
     public enum ConsoleMessagePriority {
@@ -11,13 +14,14 @@ namespace OpenSatelliteProject {
     }
 
     public class ConsoleMessage {
-
+        #if !HEADLESS
         public static readonly Dictionary<ConsoleMessagePriority, Color> CMP2COLOR = new Dictionary<ConsoleMessagePriority, Color>() {
             { ConsoleMessagePriority.INFO, Color.Blue },
             { ConsoleMessagePriority.WARN, Color.Yellow },
             { ConsoleMessagePriority.ERROR, Color.Red },
             { ConsoleMessagePriority.DEBUG, Color.Brown }
         };
+        #endif
 
         public DateTime TimeStamp { get; set; }
 
