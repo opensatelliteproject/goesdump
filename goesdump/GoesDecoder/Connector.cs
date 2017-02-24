@@ -130,11 +130,11 @@ namespace OpenSatelliteProject {
 
                     while (isConnected) {
                         try {
-                            if (sender.Available > buffer.Length) {
-                                sender.Receive(buffer);
-                                Statistics_st sst = Statistics_st.fromByteArray(buffer);
-                                this.postStatistics(sst);
+                            if (sender.Receive(buffer) < buffer.Length) {
+                                UIConsole.GlobalConsole.Error("Received less than Statistics Packet size!");
                             }
+                            Statistics_st sst = Statistics_st.fromByteArray(buffer);
+                            this.postStatistics(sst);
                         } catch (ArgumentNullException ane) {
                             UIConsole.GlobalConsole.Error(String.Format("ArgumentNullException : {0}", ane.ToString()));
                             isConnected = false;
@@ -170,7 +170,6 @@ namespace OpenSatelliteProject {
                     UIConsole.GlobalConsole.Warn("Socket closed. Waiting 1s before trying again.");
                     Thread.Sleep(1000);
                 }
-                Thread.Sleep(1);
             }
             Console.WriteLine("Requested to close Statistics Thread!");
             try {
@@ -206,16 +205,17 @@ namespace OpenSatelliteProject {
                 UIConsole.GlobalConsole.Log("Channel Data Thread connect");
                 try {
                     sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    sender.ReceiveTimeout = 200;
                     sender.Connect(remoteEP);
                     isConnected = true;
                     UIConsole.GlobalConsole.Log(String.Format("Socket connected to {0}", sender.RemoteEndPoint.ToString()));
 
                     while (isConnected) {
                         try {
-                            if (sender.Available > buffer.Length) {
-                                sender.Receive(buffer);
-                                this.postChannelData(buffer);
+                            if (sender.Receive(buffer) < buffer.Length) {
+                                UIConsole.GlobalConsole.Error("Received less bytes than channel data!");
                             }
+                            this.postChannelData(buffer);
                         } catch (ArgumentNullException ane) {
                             UIConsole.GlobalConsole.Error(String.Format("ArgumentNullException : {0}", ane.ToString()));
                             isConnected = false;
@@ -232,7 +232,6 @@ namespace OpenSatelliteProject {
                         if (!channelDataThreadRunning) {
                             break;
                         }
-                        Thread.Sleep(1);
                     }
 
                     sender.Shutdown(SocketShutdown.Both);
@@ -250,7 +249,6 @@ namespace OpenSatelliteProject {
                     UIConsole.GlobalConsole.Warn("Socket closed. Waiting 1s before trying again.");
                     Thread.Sleep(1000);
                 }
-                Thread.Sleep(1);
             }
 
             UIConsole.GlobalConsole.Debug("Requested to close Channel Data Thread!");
@@ -299,11 +297,8 @@ namespace OpenSatelliteProject {
                 } catch (SocketException) {
                     // Do nothing, timeout on UDP
                 }
-
-                Thread.Sleep(10);
             }
            
-
             UIConsole.GlobalConsole.Log("Constellation Thread closed.");
         }
 
