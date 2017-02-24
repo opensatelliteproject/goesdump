@@ -12,13 +12,14 @@ using System.Globalization;
 namespace OpenSatelliteProject {
     #if !HEADLESS
     public class UIConsole: Drawable, Updatable {
-    #else
-    public class UIConsole {
-    #endif
         private static readonly int MAX_MESSAGES = 10;
         private static readonly float LINE_SPACING = 2;
         private static readonly float FONT_SCALE = 1f;
+        private List<ConsoleMessage> messages;
 
+    #else
+    public class UIConsole {
+    #endif
         public static UIConsole GlobalConsole;
 
         public bool LogConsole { get; set; }
@@ -26,8 +27,11 @@ namespace OpenSatelliteProject {
         public Vector2 Position { get; set; }
         public SpriteFont Font { get; set; }
         #endif
-        private List<ConsoleMessage> messages;
         private Mutex messageMutex;
+
+        public delegate void ConsoleEvent(string message, ConsoleMessagePriority priority);
+
+        public event ConsoleEvent MessageAvailable;
 
         private static string RemoveDiacritics(string text) {
           var normalizedString = text.Normalize(NormalizationForm.FormD);
@@ -48,10 +52,10 @@ namespace OpenSatelliteProject {
         }
 
         public UIConsole() {
-            messages = new List<ConsoleMessage>();
             LogConsole = true;
             messageMutex = new Mutex();
             #if !HEADLESS
+            messages = new List<ConsoleMessage>();
             Position = new Vector2(0, 0);
             #endif
         }
@@ -129,6 +133,7 @@ namespace OpenSatelliteProject {
                 Console.WriteLine(cm.ToString());
                 Console.ForegroundColor = oldColor;
             }
+            MessageAvailable?.Invoke(message, ConsoleMessagePriority.INFO);
             messageMutex.ReleaseMutex();
         }
 
@@ -144,6 +149,7 @@ namespace OpenSatelliteProject {
                 Console.WriteLine(cm.ToString());
                 Console.ForegroundColor = oldColor;
             }
+            MessageAvailable?.Invoke(message, ConsoleMessagePriority.WARN);
             messageMutex.ReleaseMutex();
         }
 
@@ -159,6 +165,7 @@ namespace OpenSatelliteProject {
                 Console.WriteLine(cm.ToString());
                 Console.ForegroundColor = oldColor;
             }
+            MessageAvailable?.Invoke(message, ConsoleMessagePriority.ERROR);
             messageMutex.ReleaseMutex();
         }
 
@@ -174,6 +181,7 @@ namespace OpenSatelliteProject {
                 Console.WriteLine(cm.ToString());
                 Console.ForegroundColor = oldColor;
             }
+            MessageAvailable?.Invoke(message, ConsoleMessagePriority.DEBUG);
             messageMutex.ReleaseMutex();
         }
     }

@@ -69,6 +69,14 @@
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Drawing" />
+    <Reference Include="mscorlib" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="websocket-sharp">
+      <HintPath>..\packages\WebSocketSharp.1.0.3-rc11\lib\websocket-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -89,6 +97,11 @@
     <Compile Include="GoesDecoder\FileHandler.cs" />
     <Compile Include="UIComponents\Constellation.cs" />
     <Compile Include="HeadlessMain.cs" />
+    <Compile Include="WebManager\WSHandler.cs" />
+    <Compile Include="Models\BaseModel.cs" />
+    <Compile Include="Models\StatisticsModel.cs" />
+    <Compile Include="Models\ConsoleModel.cs" />
+    <Compile Include="Models\ConstellationModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -112,6 +125,8 @@
     <Folder Include="GoesDecoder\" />
     <Folder Include="UIComponents\" />
     <Folder Include="ChannelDecoder\" />
+    <Folder Include="WebManager\" />
+    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\XRIT\XRIT.csproj">
