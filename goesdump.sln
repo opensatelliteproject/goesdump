@@ -40,4 +40,7 @@ Global
 		{E1B44542-24FF-409C-A2A3-237A00A8520D}.Release|x86.ActiveCfg = Release|x86
 		{E1B44542-24FF-409C-A2A3-237A00A8520D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		version = 1.0.3
+	EndGlobalSection
 EndGlobal
