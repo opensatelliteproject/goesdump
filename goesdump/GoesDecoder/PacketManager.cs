@@ -154,6 +154,9 @@ namespace OpenSatelliteProject {
 
                 try {
                     UIConsole.GlobalConsole.Log(string.Format("New Weather Data - {0} - {1}", header.SubProduct.Name, header.Filename));
+                    if (!Directory.Exists(basedir)) {
+                        Directory.CreateDirectory(basedir);
+                    }
                     ImageHandler.Handler.HandleFile(filename, basedir);
                     File.Delete(filename);
                 } catch (Exception e) {
@@ -171,6 +174,9 @@ namespace OpenSatelliteProject {
 
                 try {
                     UIConsole.GlobalConsole.Log(string.Format("New NOAA Text ({0})", header.Filename));
+                    if (!Directory.Exists(basedir)) {
+                        Directory.CreateDirectory(basedir);
+                    }
                     TextHandler.Handler.HandleFile(filename, basedir);
                     File.Delete(filename);
                 } catch (Exception e) {

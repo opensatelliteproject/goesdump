@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !HEADLESS
+using System;
 using Microsoft.Xna.Framework;
 
 namespace OpenSatelliteProject {
@@ -6,4 +7,4 @@ namespace OpenSatelliteProject {
         void update(GameTime gameTime);
     }
 }
-
+#endif

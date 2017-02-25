@@ -146,9 +146,9 @@ namespace OpenSatelliteProject.Tools {
                 }
             }
 
-            string outName = header.Filename.Replace(".lrit", ".gif");
+            string outName = header.Filename.Replace(".lrit", ".jpg");
             outName = Path.Combine(outputFolder, outName);
-            b.Save(outName, ImageFormat.Gif);
+            b.Save(outName, ImageFormat.Jpeg);
         }
     }
 }

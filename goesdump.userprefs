@@ -1,11 +1,14 @@
 ﻿<Properties StartupItem="goesdump/GOES Dumper.csproj" RefactoringSettings.EnableRefactorings="True">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/Tools/AEC.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug Headless|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/HeadlessMain.cs">
     <Files>
-      <File FileName="XRIT/Tools/AEC.cs" Line="28" Column="39" />
-      <File FileName="XRITLibraryTest/MainWindow.cs" Line="28" Column="16" />
-      <File FileName="goesdump/ChannelDecoder/Demuxer.cs" Line="137" Column="73" />
-      <File FileName="goesdump/GoesDecoder/PacketManager.cs" Line="291" Column="156" />
+      <File FileName="goesdump/HeadlessMain.cs" Line="65" Column="13" />
+      <File FileName="goesdump/WebManager/WSHandler.cs" Line="19" Column="14" />
+      <File FileName="goesdump/UIComponents/UIConsole.cs" Line="180" Column="65" />
+      <File FileName="goesdump/UIComponents/ConsoleMessage.cs" Line="46" Column="43" />
+      <File FileName="goesdump/UIComponents/CurrentFrameData.cs" Line="1" Column="1" />
+      <File FileName="goesdump/UIComponents/Constellation.cs" Line="155" Column="24" />
+      <File FileName="goesdump/GoesDecoder/PacketManager.cs" Line="10" Column="33" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
@@ -14,4 +17,5 @@
   <MonoDevelop.Ide.DebuggingService.PinnedWatches>
     <Watch file="XRIT/Tools/AEC.cs" line="32" offsetX="528" offsetY="496" expression="param" liveUpdate="False" />
   </MonoDevelop.Ide.DebuggingService.PinnedWatches>
+  <AuthorInfo Name="Lucas Teske" Email="lucas@teske.com.br" Copyright="OpenSatelliteProject @ 2016" Company="OpenSatelliteProject" Trademark="" />
 </Properties>

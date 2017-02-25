@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !HEADLESS
+using System;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -76,6 +77,7 @@ namespace OpenSatelliteProject {
             cn.ChannelDataAvailable += (byte[] data) => demuxManager.parseBytes(data);
             cn.ConstellationDataAvailable += (float[] data) => cons.updateConstellationData(data);
             statistics = new Statistics_st();
+            cn.Start();
         }
 
         /// <summary>
@@ -190,4 +192,4 @@ namespace OpenSatelliteProject {
         }
     }
 }
-
+#endif

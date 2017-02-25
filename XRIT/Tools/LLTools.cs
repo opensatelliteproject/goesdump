@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace OpenSatelliteProject.Tools {
     public static class LLTools {
@@ -16,6 +18,10 @@ namespace OpenSatelliteProject.Tools {
             System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
             return dtDateTime;
+        }
+
+        public static List<T> Clone<T>(this List<T> listToClone) where T: ICloneable {
+            return listToClone.Select(item => (T)item.Clone()).ToList();
         }
 
         public static int CalcCRC(byte[] data) {
