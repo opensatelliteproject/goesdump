@@ -9,7 +9,7 @@
   var constellationCtx;
   var constellationCanvas;
   var constellationPoints = [];
-
+  var ws;
   function init() {
     consoleWrite("INFO", "Starting websocket");
 
@@ -17,7 +17,7 @@
     setLedColor("led-websocket", "red");
     setLedColor("led-satellite-busy", "red");
 
-    var ws = new WebSocket(window.serverUrl);
+    ws = new WebSocket(window.serverUrl);
 
     ws.onopen    = function (e) { onOpen(e);    }
     ws.onmessage = function (e) { onMessage(e); }
@@ -61,6 +61,9 @@
   function onOpen(event) {
     consoleWrite("INFO", "Connected to Server");
     setLedColor("led-websocket", "green");
+    ws.send(JSON.stringify({
+      "method": "getCacheMessages"
+    }));
   }
 
   function setLedColor(led, color) {

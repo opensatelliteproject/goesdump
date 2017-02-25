@@ -29,7 +29,7 @@ namespace OpenSatelliteProject {
         #endif
         private Mutex messageMutex;
 
-        public delegate void ConsoleEvent(string message, ConsoleMessagePriority priority);
+        public delegate void ConsoleEvent(ConsoleMessage data);
 
         public event ConsoleEvent MessageAvailable;
 
@@ -133,7 +133,7 @@ namespace OpenSatelliteProject {
                 Console.WriteLine(cm.ToString());
                 Console.ForegroundColor = oldColor;
             }
-            MessageAvailable?.Invoke(message, ConsoleMessagePriority.INFO);
+            MessageAvailable?.Invoke(cm);
             messageMutex.ReleaseMutex();
         }
 
@@ -149,7 +149,7 @@ namespace OpenSatelliteProject {
                 Console.WriteLine(cm.ToString());
                 Console.ForegroundColor = oldColor;
             }
-            MessageAvailable?.Invoke(message, ConsoleMessagePriority.WARN);
+            MessageAvailable?.Invoke(cm);
             messageMutex.ReleaseMutex();
         }
 
@@ -165,7 +165,7 @@ namespace OpenSatelliteProject {
                 Console.WriteLine(cm.ToString());
                 Console.ForegroundColor = oldColor;
             }
-            MessageAvailable?.Invoke(message, ConsoleMessagePriority.ERROR);
+            MessageAvailable?.Invoke(cm);
             messageMutex.ReleaseMutex();
         }
 
@@ -181,7 +181,7 @@ namespace OpenSatelliteProject {
                 Console.WriteLine(cm.ToString());
                 Console.ForegroundColor = oldColor;
             }
-            MessageAvailable?.Invoke(message, ConsoleMessagePriority.DEBUG);
+            MessageAvailable?.Invoke(cm);
             messageMutex.ReleaseMutex();
         }
     }
