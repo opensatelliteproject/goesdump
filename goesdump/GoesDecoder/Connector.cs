@@ -139,7 +139,9 @@ namespace OpenSatelliteProject {
                             UIConsole.GlobalConsole.Error(String.Format("ArgumentNullException : {0}", ane.ToString()));
                             isConnected = false;
                         } catch (SocketException se) {
-                            UIConsole.GlobalConsole.Error(String.Format("SocketException : {0}", se.ToString()));
+                            // That's usually timeout.  I would say that is best to handle and show some message
+                            // But for now, that would make it confusing for the users. So let's keep without a notice.
+                            //UIConsole.GlobalConsole.Error(String.Format("SocketException : {0}", se.ToString()));
                             isConnected = false;
                         } catch (Exception e) {
                             UIConsole.GlobalConsole.Error(String.Format("Unexpected exception : {0}", e.ToString()));
@@ -220,7 +222,9 @@ namespace OpenSatelliteProject {
                             UIConsole.GlobalConsole.Error(String.Format("ArgumentNullException : {0}", ane.ToString()));
                             isConnected = false;
                         } catch (SocketException se) {
-                            UIConsole.GlobalConsole.Error(String.Format("SocketException : {0}", se.ToString()));
+                            // That's usually timeout.  I would say that is best to handle and show some message
+                            // But for now, that would make it confusing for the users. So let's keep without a notice.
+                            //UIConsole.GlobalConsole.Error(String.Format("SocketException : {0}", se.ToString()));
                             isConnected = false;
                         } catch (Exception e) {
                             UIConsole.GlobalConsole.Error(String.Format("Unexpected exception : {0}", e.ToString()));
@@ -269,6 +273,9 @@ namespace OpenSatelliteProject {
             UIConsole.GlobalConsole.Log("Constellation Data Loop started");
             byte[] buffer = null;
             float[] data = new float[1024];
+            for (int i = 0; i < 1024; i++) {
+                data[i] = 0;
+            }
 
             IPHostEntry ipHostInfo = Dns.GetHostEntry("localhost");
             IPAddress ipAddress = new IPAddress(new byte[] { 127, 0, 0, 1 });
