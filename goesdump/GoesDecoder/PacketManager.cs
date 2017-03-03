@@ -247,6 +247,7 @@ namespace OpenSatelliteProject {
             try {
                 byte[] inputData = File.ReadAllBytes(filename);
                 AEC.LritRiceDecompress(ref outputData, inputData, 8, 16, pixels, AEC.ALLOW_K13_OPTION_MASK | AEC.MSB_OPTION_MASK | AEC.NN_OPTION_MASK);
+                File.Delete(ifile);
             } catch (Exception e) {
                 if (e is AECException) {
                     AECException aece = (AECException)e;
@@ -295,6 +296,7 @@ namespace OpenSatelliteProject {
 
                     try {
                         AEC.LritRiceDecompress(ref outputData, input, 8, 16, pixels, AEC.ALLOW_K13_OPTION_MASK | AEC.MSB_OPTION_MASK | AEC.NN_OPTION_MASK);
+                        File.Delete(ifile);
                     } catch (AECException e) {
                         Console.WriteLine("AEC Decompress problem decompressing file {0}: {1}", ifile, e.status.ToString());
                         Console.WriteLine("AEC Params: {0} - {1} - {2}", 8, 16, pixels);
