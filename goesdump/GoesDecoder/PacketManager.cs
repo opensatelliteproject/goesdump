@@ -247,7 +247,7 @@ namespace OpenSatelliteProject {
             try {
                 byte[] inputData = File.ReadAllBytes(filename);
                 AEC.LritRiceDecompress(ref outputData, inputData, 8, 16, pixels, AEC.ALLOW_K13_OPTION_MASK | AEC.MSB_OPTION_MASK | AEC.NN_OPTION_MASK);
-                File.Delete(ifile);
+                File.Delete(filename);
             } catch (Exception e) {
                 if (e is AECException) {
                     AECException aece = (AECException)e;
