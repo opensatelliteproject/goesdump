@@ -1,14 +1,169 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using OpenSatelliteProject.Tools;
+using System.Runtime.InteropServices;
+using System.IO;
+using System.Drawing.Drawing2D;
 
 namespace OpenSatelliteProject {
     public static class ImageTools {
 
+        /// <summary>
+        /// Generates False Color Image from Group Data if Visible and Infrared channels are complete.
+        /// Returns null otherwise.
+        /// </summary>
+        /// <returns>The false color image</returns>
+        /// <param name="data">Group Data</param>
+        public static Bitmap GenerateFalseColor(GroupData data) {
+            if (data.Visible.IsComplete && data.Visible.MaxSegments != 0 && data.Infrared.IsComplete && data.Infrared.MaxSegments != 0) {
+                var visible = GenerateFullImage(data.Visible);
+                var infrared = GenerateFullImage(data.Infrared);
+                ImageTools.ApplyCurve(Presets.VIS_FALSE_CURVE, ref visible);
+                ImageTools.ApplyLUT(Presets.THERMAL_FALSE_LUT, ref infrared, 3);
+                ImageTools.CombineHStoV(ref infrared, visible);
+                visible.Dispose();
+                return infrared;
+            } else {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Generates the full image represented on OrganizedData
+        /// </summary>
+        /// <returns>The full image</returns>
+        /// <param name="data">The Organizer Data</param>
+        public static Bitmap GenerateFullImage(OrganizerData data) {
+            Bitmap bmp = new Bitmap(data.Columns, data.Lines, PixelFormat.Format8bppIndexed);
+
+            ColorPalette pal = bmp.Palette;
+            // Standard grayscale palette
+            for(int i=0;i<=255;i++) {
+                pal.Entries[i] = Color.FromArgb(i, i, i);
+            }
+            bmp.Palette = pal;
+
+            int lineOffset = 0;
+
+            var pdata = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, PixelFormat.Format8bppIndexed);
+            // Dump files to bitmap
+            for (int i = 0; i < data.Segments.Count; i++) {
+                var filename = data.Segments[i];
+                var header = FileParser.GetHeaderFromFile(filename);
+                var width = header.ImageStructureHeader.Columns;
+                var height = header.ImageStructureHeader.Lines;
+                var bytesToRead = (width * height);
+                var buffer = new byte[bytesToRead];
+
+                // Read data
+                var file = File.OpenRead(filename);
+                file.Seek(header.PrimaryHeader.HeaderLength, SeekOrigin.Begin);
+                file.Read(buffer, 0, bytesToRead);
+                file.Close();
+
+                // Write data to image
+                if (pdata.Stride == width) {
+                    Marshal.Copy(buffer, 0, IntPtr.Add(pdata.Scan0, lineOffset * pdata.Stride), buffer.Length);
+                    lineOffset += height;
+                } else {
+                    // So our stride is bigger than our width (alignment issues). So let's copy line by line.
+                    for (int z = 0; z < height; z++) {
+                        Marshal.Copy(buffer, width * z, IntPtr.Add(pdata.Scan0, lineOffset * pdata.Stride), width);
+                        lineOffset += 1;
+                    }
+                }
+            }
+            bmp.UnlockBits(pdata);
+
+            // Crop
+            int sc = (int)data.StartColumn;
+            int hw = (int)Math.Min(data.Columns - sc, sc);
+            int cl = (int)data.StartColumn - hw;
+            int cf = cl + 2 * hw;
+
+            bmp = bmp.Crop(cl, 0, cf - cl, bmp.Height, true);
+
+            // Resize to match pixel aspect
+            int newHeight = (int) Math.Round(bmp.Height * data.PixelAspect);
+            bmp = ResizeImage(bmp, bmp.Width, newHeight, true);
+
+            return bmp;
+        }
+
+        /// <summary>
+        /// Resize the image to the specified width and height.
+        /// </summary>
+        /// <param name="image">The image to resize.</param>
+        /// <param name="width">The width to resize to.</param>
+        /// <param name="height">The height to resize to.</param>
+        /// <returns>The resized image.</returns>
+        public static Bitmap ResizeImage(Image image, int width, int height, bool disposeOld) {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            using (var graphics = Graphics.FromImage(destImage)) {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes()) {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width,image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            if (disposeOld) {
+                image.Dispose();
+            }
+
+            return destImage;
+        }
+
+        /// <summary>
+        /// Crop the specified bitmap, x, y, w, h and disposeOld.
+        /// </summary>
+        /// <param name="bitmap">Bitmap.</param>
+        /// <param name="x">The x coordinate.</param>
+        /// <param name="y">The y coordinate.</param>
+        /// <param name="w">The width.</param>
+        /// <param name="h">The height.</param>
+        /// <param name="disposeOld">If set to <c>true</c> dispose old.</param>
+        public static Bitmap Crop(this Bitmap bitmap, int x, int y, int w, int h, bool disposeOld) {
+            Bitmap cropped = bitmap.Clone(new Rectangle(x, y, w, h), bitmap.PixelFormat);
+
+            if (disposeOld) {
+                bitmap.Dispose();
+            }
+            return cropped;
+        }
+
+        /// <summary>
+        /// Converts the bitmap from one format to another.
+        /// </summary>
+        /// <returns>The converted bitmap</returns>
+        /// <param name="orig">Original bitmap</param>
+        /// <param name="newFormat">New format</param>
         public static Bitmap ToFormat(this Bitmap orig, PixelFormat newFormat) {
+            return ToFormat(orig, newFormat, false);
+        }
+
+        /// <summary>
+        /// Converts the bitmap from one format to another.
+        /// </summary>
+        /// <returns>The converted bitmap</returns>
+        /// <param name="orig">Original bitmap</param>
+        /// <param name="newFormat">New format</param>
+        public static Bitmap ToFormat(this Bitmap orig, PixelFormat newFormat, bool disposeOld) {
             Bitmap newBmp = new Bitmap(orig.Width, orig.Height, newFormat);
             using (Graphics gr = Graphics.FromImage(newBmp)) {
                 gr.DrawImage(orig, new Rectangle(0, 0, newBmp.Width, newBmp.Height));
+            }
+
+            if (disposeOld) {
+                orig.Dispose();
             }
             return newBmp;
         }
@@ -18,17 +173,47 @@ namespace OpenSatelliteProject {
         /// </summary>
         /// <param name="lut">Raw Lookup Table</param>
         /// <param name="bitmap">Bitmap to be applied</param>
-        public static void ApplyLUT(byte[] lut, ref Bitmap bitmap) {
-            if (bitmap.PixelFormat != PixelFormat.Format8bppIndexed) {
-                throw new Exception("Must be a 8bpp Indexed file");
-            }
+        public static void ApplyLUT(byte[] lut, ref Bitmap bitmap, int lutPointSize) {
+            if (bitmap.PixelFormat == PixelFormat.Format8bppIndexed) {
+                ColorPalette pal = bitmap.Palette;
+                for (int i = 0; i <= 255; i++) {
+                    pal.Entries[i] = Color.FromArgb(lut[i * lutPointSize], lut[i * lutPointSize + 1 % lutPointSize], lut[i * lutPointSize + 2 % lutPointSize]);
+                }
 
-            ColorPalette pal = bitmap.Palette;
-            for(int i=0;i<=255;i++) {
-                pal.Entries[i] = Color.FromArgb(lut[i*3], lut[i*3+1], lut[i*3+2]);
+                bitmap.Palette = pal;
+            } else if (bitmap.PixelFormat == PixelFormat.Format24bppRgb) {
+                var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+                int totalPoints = data.Stride * bitmap.Height;
+                unsafe {
+                    byte* dPtr = (byte*)data.Scan0.ToPointer();
+                    for (int c = 0; c < totalPoints; c++) {
+                        int subPixel = c % 3;
+                        int lutPoint = (lutPointSize - subPixel - 1) % lutPointSize;
+                        byte d = dPtr[c];
+                        dPtr[c] = lut[d*lutPointSize + lutPoint];
+                    }
+                }
+                bitmap.UnlockBits(data);
+            } else if (bitmap.PixelFormat == PixelFormat.Format32bppArgb) {
+                var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+                int totalPoints = data.Stride * bitmap.Height;
+                unsafe {
+                    byte* dPtr = (byte*)data.Scan0.ToPointer();
+                    for (int c = 0; c < totalPoints; c++) {
+                        int subPixel = c % 4;
+                        int lutPoint = (lutPointSize - subPixel - 1) % lutPointSize;
+                        if (subPixel != 3) { // Ignore Alpha
+                            byte d = dPtr[c];
+                            dPtr[c] = lut[d * lutPointSize + lutPoint];
+                        } else {
+                            dPtr[c] = 0xFF;
+                        }
+                    }
+                }
+                bitmap.UnlockBits(data); 
+            } else {
+                throw new Exception("Pixel format not supported!");
             }
-
-            bitmap.Palette = pal;
         }
 
         /// <summary>
@@ -48,28 +233,43 @@ namespace OpenSatelliteProject {
                 cLut[i] = (byte) (((int)Math.Floor(v)) & 0xFF);
             }
 
+            ApplyLUT(cLut, ref bitmap, 1);
+            /*
             if (bitmap.PixelFormat == PixelFormat.Format8bppIndexed) {
                 // Just apply to the palete.
                 ColorPalette pal = bitmap.Palette;
-                for(int i=0;i<=255;i++) {
+                for (int i = 0; i <= 255; i++) {
                     Color c = pal.Entries[i];
                     pal.Entries[i] = Color.FromArgb(c.A, cLut[c.R], cLut[c.G], cLut[c.B]);
                 }
                 bitmap.Palette = pal;
             } else if (bitmap.PixelFormat == PixelFormat.Format24bppRgb) {
                 var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
-                int totalPoints = data.Stride * bitmap.Height * 3;
+                int totalPoints = data.Stride * bitmap.Height;
                 unsafe {
-                    byte* dPtr = (byte *)data.Scan0.ToPointer();
-                    for (int c = 0; c<totalPoints; c++) {
+                    byte* dPtr = (byte*)data.Scan0.ToPointer();
+                    for (int c = 0; c < totalPoints; c++) {
                         byte d = dPtr[c];
                         dPtr[c] = cLut[d];
                     }
                 }
                 bitmap.UnlockBits(data);
+            } else if (bitmap.PixelFormat == PixelFormat.Format32bppArgb) {
+                var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+                int totalPoints = data.Stride * bitmap.Height;
+                unsafe {
+                    byte* dPtr = (byte*)data.Scan0.ToPointer();
+                    for (int c = 0; c < totalPoints; c++) {
+                        if (c % 4 != 3) { // Ignore Alpha
+                            byte d = dPtr[c];
+                            dPtr[c] = cLut[d];
+                        }
+                    }
+                }
+                bitmap.UnlockBits(data); 
             } else {
                 throw new Exception("Unsuported bitmap pixel format");
-            }
+            }*/
         }
 
         /// <summary>
@@ -108,6 +308,10 @@ namespace OpenSatelliteProject {
             return new float[] { h, s, v };
         }
 
+        /// <summary>
+        /// Converts HSV to RGB
+        /// </summary>
+        /// <param name="hsv">Hsv.</param>
         public static byte[] hsv2rgb (float[] hsv) {
             float h = hsv[0], s = hsv[1], v = hsv[2];
             float h60 = h / 60f;
@@ -166,32 +370,54 @@ namespace OpenSatelliteProject {
         /// <param name="hsbmp">Hue/Saturation Bitmap</param>
         /// <param name="vbmp">Value Bitmap</param>
         public static void CombineHStoV(ref Bitmap hsbmp, Bitmap vbmp) {
-            if (vbmp.PixelFormat != PixelFormat.Format24bppRgb) {
-                vbmp = vbmp.ToFormat(PixelFormat.Format24bppRgb);
+            if (hsbmp.PixelFormat != PixelFormat.Format24bppRgb && hsbmp.PixelFormat != PixelFormat.Format32bppArgb) {
+                throw new Exception("hsbmp format needs to be either 24bpp or 32bpp RGB");
             }
 
-            if (hsbmp.PixelFormat != PixelFormat.Format24bppRgb) {
-                throw new Exception("hsbmp format needs to be 24bpp RGB");
+            if (vbmp.PixelFormat != hsbmp.PixelFormat) {
+                vbmp = vbmp.ToFormat(hsbmp.PixelFormat);
             }
+
 
             var vdata = vbmp.LockBits(new Rectangle(0, 0, vbmp.Width, vbmp.Height), ImageLockMode.ReadOnly, vbmp.PixelFormat);
             var hsdata = hsbmp.LockBits(new Rectangle(0, 0, hsbmp.Width, hsbmp.Height), ImageLockMode.ReadWrite, hsbmp.PixelFormat);
 
-            unsafe {
-                byte* hsPtr = (byte *)hsdata.Scan0.ToPointer();
-                byte* vPtr = (byte*)vdata.Scan0.ToPointer();
+            if (hsbmp.PixelFormat == PixelFormat.Format24bppRgb) {
+                unsafe {
+                    byte* hsPtr = (byte*)hsdata.Scan0.ToPointer();
+                    byte* vPtr = (byte*)vdata.Scan0.ToPointer();
 
-                for (int y = 0; y < hsbmp.Height; y++) {
-                    for (int x = 0; x < hsbmp.Width; x++) {
-                        // TODO: Improve this
-                        int c = ((hsdata.Stride / 3) * y + x) * 3;
-                        byte[] rgb = new byte[] { hsPtr[c], hsPtr[c + 1], hsPtr[c + 2] };
-                        float[] hsv = rgb2hsv(rgb);
-                        hsv[2] = vPtr[c] / 255f;
-                        rgb = hsv2rgb(hsv);
-                        hsPtr[c+0] = rgb[0];
-                        hsPtr[c+1] = rgb[1];
-                        hsPtr[c+2] = rgb[2];
+                    for (int y = 0; y < hsbmp.Height; y++) {
+                        for (int x = 0; x < hsbmp.Width; x++) {
+                            // TODO: Improve this
+                            int c = ((hsdata.Stride / 3) * y + x) * 3;
+                            byte[] rgb = new byte[] { hsPtr[c], hsPtr[c + 1], hsPtr[c + 2] };
+                            float[] hsv = rgb2hsv(rgb);
+                            hsv[2] = vPtr[c] / 255f;
+                            rgb = hsv2rgb(hsv);
+                            hsPtr[c + 0] = rgb[0];
+                            hsPtr[c + 1] = rgb[1];
+                            hsPtr[c + 2] = rgb[2];
+                        }
+                    }
+                }
+            } else { // 32 ARGB
+                unsafe {
+                    byte* hsPtr = (byte*)hsdata.Scan0.ToPointer();
+                    byte* vPtr = (byte*)vdata.Scan0.ToPointer();
+
+                    for (int y = 0; y < hsbmp.Height; y++) {
+                        for (int x = 0; x < hsbmp.Width; x++) {
+                            // TODO: Improve this
+                            int c = ((hsdata.Stride / 4) * y + x) * 4;
+                            byte[] rgb = new byte[] { hsPtr[c+0], hsPtr[c + 1], hsPtr[c + 2] };
+                            float[] hsv = rgb2hsv(rgb);
+                            hsv[2] = vPtr[c] / 255f;
+                            rgb = hsv2rgb(hsv);
+                            hsPtr[c + 0] = rgb[0];
+                            hsPtr[c + 1] = rgb[1];
+                            hsPtr[c + 2] = rgb[2];
+                        }
                     }
                 }
             }

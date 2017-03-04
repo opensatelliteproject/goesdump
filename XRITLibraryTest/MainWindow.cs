@@ -16,25 +16,63 @@ public partial class MainWindow: Gtk.Window {
         };
 
         //ProcessFile("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Text/NWSTEXTdat043204159214.lrit");
+        ///*
+        Organizer organizer = new Organizer("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Images/Full Disk");
+        organizer.Update();
 
-        //Organizer organizer = new Organizer("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Images/Full Disk");
-        //organizer.Update();
+        var data = organizer.GroupData;
 
+        foreach (var z in data) {
+            var mData = z.Value;
+            Console.WriteLine(z.Key);
+            Console.WriteLine(z.Key == 1488055518);
+            var bmp = ImageTools.GenerateFalseColor(mData);
+
+            if (bmp != null) {
+                bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "FLSCLR", z.Key), ImageFormat.Jpeg);
+                bmp.Dispose();
+            } else {
+                if (mData.Visible.IsComplete && mData.Visible.MaxSegments != 0) {
+                    bmp = ImageTools.GenerateFullImage(mData.Visible);
+                    bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "VIS", z.Key), ImageFormat.Jpeg);
+                    bmp.Dispose();
+                }
+                if (mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0) {
+                    bmp = ImageTools.GenerateFullImage(mData.Infrared);
+                    bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "IR", z.Key), ImageFormat.Jpeg);
+                    bmp.Dispose();
+                }
+                if (mData.WaterVapour.IsComplete && mData.WaterVapour.MaxSegments != 0) {
+                    bmp = ImageTools.GenerateFullImage(mData.WaterVapour);
+                    bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "WV", z.Key), ImageFormat.Jpeg);
+                    bmp.Dispose();
+                }
+                Console.WriteLine("Not all segments available!");
+            }
+        }
+
+
+        //*/
+
+        /*
         string visFile = "/home/lucas/Works/OpenSatelliteProject/split/samples/FD 26-02-17 2106 G13VI.jpg";
         string irFile = "/home/lucas/Works/OpenSatelliteProject/split/samples/FD 26-02-17 2106 G13IR.jpg";
 
         Bitmap vis = new Bitmap(visFile);
         ImageTools.ApplyCurve(Presets.VIS_FALSE_CURVE, ref vis);
         vis.Save("test.jpg", ImageFormat.Jpeg);
+        //vis = vis.ToFormat(PixelFormat.Format32bppArgb, true);
 
         Bitmap ir = new Bitmap(irFile);
-        ImageTools.ApplyLUT(Presets.THERMAL_FALSE_LUT, ref ir);
+        ir = ir.ToFormat(PixelFormat.Format32bppArgb, true);
+        ImageTools.ApplyLUT(Presets.THERMAL_FALSE_LUT, ref ir, 3);
         ir.Save("test2.jpg", ImageFormat.Jpeg);
 
-        ir = ir.ToFormat(PixelFormat.Format24bppRgb);
+        ir = ir.ToFormat(PixelFormat.Format32bppArgb);
         ImageTools.CombineHStoV(ref ir, vis);
 
         ir.Save("final.jpg", ImageFormat.Jpeg);
+        //*/
     }
 
     private void ProcessFile(string filename) {

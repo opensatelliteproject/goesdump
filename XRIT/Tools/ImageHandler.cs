@@ -121,12 +121,10 @@ namespace OpenSatelliteProject.Tools {
                     Marshal.Copy(buffer, 0, data.Scan0, buffer.Length);
                 } else {
                     // So our stride is bigger than our width (alignment issues). So let's copy line by line.
-                    var strideBuffer = new byte[data.Stride * height];
                     int nwidth = width * bitsPerPixel / 8;
                     for (int i = 0; i < height; i++) {
-                        Buffer.BlockCopy(buffer, nwidth * i, strideBuffer, data.Stride * i, nwidth);
+                        Marshal.Copy(buffer, nwidth * i, IntPtr.Add(data.Scan0, i * data.Stride), nwidth);
                     }
-                    Marshal.Copy(strideBuffer, 0, data.Scan0, strideBuffer.Length);
                 }
                 b.UnlockBits(data);
             } else {
@@ -149,6 +147,7 @@ namespace OpenSatelliteProject.Tools {
             string outName = header.Filename.Replace(".lrit", ".jpg");
             outName = Path.Combine(outputFolder, outName);
             b.Save(outName, ImageFormat.Jpeg);
+            b.Dispose();
         }
     }
 }

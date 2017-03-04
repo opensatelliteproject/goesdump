@@ -9,6 +9,7 @@ namespace OpenSatelliteProject {
         public OrganizerData Infrared { get; set; }
         public OrganizerData WaterVapour { get; set; }
 
+        public bool IsProcessed { get; set; }
         public bool IsComplete { get { return Visible.IsComplete && Infrared.IsComplete && WaterVapour.IsComplete; } }
 
         public GroupData() {
@@ -18,6 +19,7 @@ namespace OpenSatelliteProject {
             Visible = new OrganizerData();
             Infrared = new OrganizerData();
             WaterVapour = new OrganizerData();
+            IsProcessed = false;
         }
 
         public override string ToString() {

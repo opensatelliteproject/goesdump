@@ -1,15 +1,12 @@
 ﻿<Properties StartupItem="XRITLibraryTest/XRITLibraryTest.csproj" RefactoringSettings.EnableRefactorings="True">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug Headless|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/GoesDecoder/Connector.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/Tools/Presets.cs">
     <Files>
-      <File FileName="goesdump/HeadlessMain.cs" Line="65" Column="1" />
-      <File FileName="goesdump/WebManager/WSHandler.cs" Line="1" Column="1" />
-      <File FileName="goesdump/UIComponents/UIConsole.cs" Line="1" Column="1" />
-      <File FileName="goesdump/UIComponents/ConsoleMessage.cs" Line="1" Column="1" />
-      <File FileName="goesdump/UIComponents/CurrentFrameData.cs" Line="1" Column="1" />
-      <File FileName="goesdump/UIComponents/Constellation.cs" Line="1" Column="1" />
-      <File FileName="goesdump/GoesDecoder/PacketManager.cs" Line="1" Column="1" />
-      <File FileName="goesdump/GoesDecoder/Connector.cs" Line="279" Column="13" />
+      <File FileName="XRIT/Tools/Organizer.cs" Line="115" Column="1" />
+      <File FileName="XRITLibraryTest/MainWindow.cs" Line="33" Column="9" />
+      <File FileName="XRIT/Tools/ImageTools.cs" Line="186" Column="46" />
+      <File FileName="XRIT/Tools/ImageHandler.cs" Line="139" Column="43" />
+      <File FileName="XRIT/Tools/Presets.cs" Line="7" Column="48" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
