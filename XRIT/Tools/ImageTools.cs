@@ -44,7 +44,8 @@ namespace OpenSatelliteProject {
             byte[] cLut = new byte[256];
 
             for (int i = 0; i < 256; i++) {
-                cLut[i] = (byte) (((int)Math.Floor(i * curve[i])) & 0xFF);
+                float v = 255 * curve[i];
+                cLut[i] = (byte) (((int)Math.Floor(v)) & 0xFF);
             }
 
             if (bitmap.PixelFormat == PixelFormat.Format8bppIndexed) {
@@ -182,7 +183,8 @@ namespace OpenSatelliteProject {
 
                 for (int y = 0; y < hsbmp.Height; y++) {
                     for (int x = 0; x < hsbmp.Width; x++) {
-                        int c = (hsdata.Stride * y + x) * 3;
+                        // TODO: Improve this
+                        int c = ((hsdata.Stride / 3) * y + x) * 3;
                         byte[] rgb = new byte[] { hsPtr[c], hsPtr[c + 1], hsPtr[c + 2] };
                         float[] hsv = rgb2hsv(rgb);
                         hsv[2] = vPtr[c] / 255f;

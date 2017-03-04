@@ -95,6 +95,7 @@
     <Compile Include="Models\OrganizerData.cs" />
     <Compile Include="Models\GroupData.cs" />
     <Compile Include="Tools\ImageTools.cs" />
+    <Compile Include="Tools\Presets.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

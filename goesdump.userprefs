@@ -1,4 +1,4 @@
-﻿<Properties StartupItem="goesdump/GOES Dumper.csproj" RefactoringSettings.EnableRefactorings="True">
+﻿<Properties StartupItem="XRITLibraryTest/XRITLibraryTest.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug Headless|x86" />
   <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/GoesDecoder/Connector.cs">
     <Files>
