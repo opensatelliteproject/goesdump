@@ -9,6 +9,8 @@ namespace OpenSatelliteProject {
         private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         private Dictionary<int, GroupData> groupData;
+        private List<string> alreadyProcessed;
+
         private string folder;
 
         public Dictionary<int, GroupData> GroupData { get { return groupData; } }
@@ -16,11 +18,15 @@ namespace OpenSatelliteProject {
         public Organizer(string folder) {
             this.folder = folder;    
             this.groupData = new Dictionary<int, GroupData>();
+            this.alreadyProcessed = new List<string>();
         }
 
         public void Update() {
             List<string> files = Directory.GetFiles(folder).Where(f => f.EndsWith(".lrit")).ToList();
             foreach (string file in files) {
+                if (alreadyProcessed.Contains(file)) {
+                    continue;
+                }
                 try {
                     var header = FileParser.GetHeaderFromFile(file);
                     var anciliary = header.AncillaryHeader.Values;
@@ -98,6 +104,7 @@ namespace OpenSatelliteProject {
                     } else {
                         od.Lines += header.ImageStructureHeader.Lines;
                     }
+                    alreadyProcessed.Add(file);
                 } catch (Exception e) {
                     Console.WriteLine("Error reading file {0}: {1}", file, e);
                 }
