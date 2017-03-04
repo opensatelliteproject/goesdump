@@ -5,9 +5,21 @@ using OpenSatelliteProject.Tools;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Drawing.Drawing2D;
+#if DEBUG
+using System.Diagnostics;
+#endif
 
 namespace OpenSatelliteProject {
     public static class ImageTools {
+
+        /// <summary>
+        /// Determines if can generate false color for the specified data.
+        /// </summary>
+        /// <returns><c>true</c> if can generate false color the specified data; otherwise, <c>false</c>.</returns>
+        /// <param name="data">Data.</param>
+        public static bool CanGenerateFalseColor(GroupData data) {
+            return data.Visible.IsComplete && data.Visible.MaxSegments != 0 && data.Infrared.IsComplete && data.Infrared.MaxSegments != 0;
+        }
 
         /// <summary>
         /// Generates False Color Image from Group Data if Visible and Infrared channels are complete.
@@ -17,11 +29,38 @@ namespace OpenSatelliteProject {
         /// <param name="data">Group Data</param>
         public static Bitmap GenerateFalseColor(GroupData data) {
             if (data.Visible.IsComplete && data.Visible.MaxSegments != 0 && data.Infrared.IsComplete && data.Infrared.MaxSegments != 0) {
+                #if DEBUG
+                Stopwatch watch = Stopwatch.StartNew();
+                #endif
                 var visible = GenerateFullImage(data.Visible);
+                #if DEBUG
+                watch.Stop();
+                Console.WriteLine("Took {0} milisseconds to generate Visible Image", watch.ElapsedMilliseconds);
+                watch = Stopwatch.StartNew();
+                #endif
                 var infrared = GenerateFullImage(data.Infrared);
+                #if DEBUG
+                watch.Stop();
+                Console.WriteLine("Took {0} milisseconds to generate Infrared Image", watch.ElapsedMilliseconds);
+                watch = Stopwatch.StartNew();
+                #endif
                 ImageTools.ApplyCurve(Presets.VIS_FALSE_CURVE, ref visible);
+                #if DEBUG
+                watch.Stop();
+                Console.WriteLine("Took {0} milisseconds to apply visible curve", watch.ElapsedMilliseconds);
+                watch = Stopwatch.StartNew();
+                #endif
                 ImageTools.ApplyLUT(Presets.THERMAL_FALSE_LUT, ref infrared, 3);
+                #if DEBUG
+                watch.Stop();
+                Console.WriteLine("Took {0} milisseconds to apply infrared LUT", watch.ElapsedMilliseconds);
+                watch = Stopwatch.StartNew();
+                #endif
                 ImageTools.CombineHStoV(ref infrared, visible);
+                #if DEBUG
+                watch.Stop();
+                Console.WriteLine("Took {0} milisseconds to combine HS to V", watch.ElapsedMilliseconds);
+                #endif
                 visible.Dispose();
                 return infrared;
             } else {
@@ -234,42 +273,6 @@ namespace OpenSatelliteProject {
             }
 
             ApplyLUT(cLut, ref bitmap, 1);
-            /*
-            if (bitmap.PixelFormat == PixelFormat.Format8bppIndexed) {
-                // Just apply to the palete.
-                ColorPalette pal = bitmap.Palette;
-                for (int i = 0; i <= 255; i++) {
-                    Color c = pal.Entries[i];
-                    pal.Entries[i] = Color.FromArgb(c.A, cLut[c.R], cLut[c.G], cLut[c.B]);
-                }
-                bitmap.Palette = pal;
-            } else if (bitmap.PixelFormat == PixelFormat.Format24bppRgb) {
-                var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
-                int totalPoints = data.Stride * bitmap.Height;
-                unsafe {
-                    byte* dPtr = (byte*)data.Scan0.ToPointer();
-                    for (int c = 0; c < totalPoints; c++) {
-                        byte d = dPtr[c];
-                        dPtr[c] = cLut[d];
-                    }
-                }
-                bitmap.UnlockBits(data);
-            } else if (bitmap.PixelFormat == PixelFormat.Format32bppArgb) {
-                var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
-                int totalPoints = data.Stride * bitmap.Height;
-                unsafe {
-                    byte* dPtr = (byte*)data.Scan0.ToPointer();
-                    for (int c = 0; c < totalPoints; c++) {
-                        if (c % 4 != 3) { // Ignore Alpha
-                            byte d = dPtr[c];
-                            dPtr[c] = cLut[d];
-                        }
-                    }
-                }
-                bitmap.UnlockBits(data); 
-            } else {
-                throw new Exception("Unsuported bitmap pixel format");
-            }*/
         }
 
         /// <summary>

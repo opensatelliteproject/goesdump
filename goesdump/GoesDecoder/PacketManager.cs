@@ -33,6 +33,66 @@ namespace OpenSatelliteProject {
         private static Regex gosRegex = new Regex(GOSRgex, RegexOptions.IgnoreCase);
         private static Regex textRegex = new Regex(TextRgex, RegexOptions.IgnoreCase);
 
+        public static string GetFolderByProduct(NOAAProductID product, int subProduct) {
+            // TODO: Unify with other functions that use the same thing
+            string folderName = UnknownDataFolder;
+            if (product == NOAAProductID.SCANNER_DATA_1 || product == NOAAProductID.SCANNER_DATA_2) {
+                switch (subProduct) {
+                    case (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST:
+                    case (int)ScannerSubProduct.VISIBLE_AREA_OF_INTEREST:
+                    case (int)ScannerSubProduct.WATERVAPOUR_AREA_OF_INTEREST:
+                        folderName = Path.Combine(ImagesFolder, "Area of Interest");
+                        break;
+                    case (int)ScannerSubProduct.INFRARED_FULLDISK:
+                    case (int)ScannerSubProduct.VISIBLE_FULLDISK:
+                    case (int)ScannerSubProduct.WATERVAPOUR_FULLDISK:
+                        folderName = Path.Combine(ImagesFolder, "Full Disk");
+                        break;
+                    case (int)ScannerSubProduct.INFRARED_NORTHERN:
+                    case (int)ScannerSubProduct.VISIBLE_NORTHERN:
+                    case (int)ScannerSubProduct.WATERVAPOUR_NORTHERN:
+                        folderName = Path.Combine(ImagesFolder, "Northern Hemisphere");
+                        break;
+                    case (int)ScannerSubProduct.INFRARED_SOUTHERN:
+                    case (int)ScannerSubProduct.VISIBLE_SOUTHERN:
+                    case (int)ScannerSubProduct.WATERVAPOUR_SOUTHERN:
+                        folderName = Path.Combine(ImagesFolder, "Southern Hemisphere");
+                        break;
+                    case (int)ScannerSubProduct.INFRARED_UNITEDSTATES:
+                    case (int)ScannerSubProduct.VISIBLE_UNITEDSTATES:
+                    case (int)ScannerSubProduct.WATERVAPOUR_UNITEDSTATES:
+                        folderName = Path.Combine(ImagesFolder, "United States");
+                        break;
+                    default:
+                        folderName = Path.Combine(ImagesFolder, UnknownDataFolder);
+                        break;
+                }
+            } else {
+                switch (product) {
+                    case NOAAProductID.DCS:
+                        folderName = DCSFolder;
+                        break;
+                    case NOAAProductID.EMWIN:
+                        folderName = EMWINFolder;
+                        break;
+                    case NOAAProductID.NOAA_TEXT:
+                        folderName = TextFolder;
+                        break;
+                    case NOAAProductID.OTHER_SATELLITES_1:
+                    case NOAAProductID.OTHER_SATELLITES_2:
+                        folderName = OtherSatellitesFolder;
+                        break;
+                    case NOAAProductID.WEATHER_DATA:
+                        folderName = WeatherDataFolder;
+                        break;
+                    default:
+                        folderName = UnknownDataFolder;
+                        break;
+                }
+            }
+            return folderName;
+        }
+
         public static string FixFileFolder(string dir, string filename, NOAAProduct product, NOAASubproduct subProduct) {
             string filef = filename;
             string basedir = new DirectoryInfo(dir).Parent.FullName;

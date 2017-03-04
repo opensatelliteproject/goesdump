@@ -103,6 +103,7 @@
     <Compile Include="Models\StatisticsModel.cs" />
     <Compile Include="Models\ConsoleModel.cs" />
     <Compile Include="Models\ConstellationModel.cs" />
+    <Compile Include="GoesDecoder\ImageManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

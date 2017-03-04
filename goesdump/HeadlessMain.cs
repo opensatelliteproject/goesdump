@@ -9,11 +9,18 @@ using WebSocketSharp;
 using System.Collections.Generic;
 using System.Linq;
 using OpenSatelliteProject.Tools;
+using OpenSatelliteProject.PacketData.Enums;
 
 namespace OpenSatelliteProject {
     public class HeadlessMain {
 
         private static readonly int MAX_CACHED_MESSAGES = 10;
+
+        private ImageManager FDImageManager;
+        private ImageManager XXImageManager;
+        private ImageManager NHImageManager;
+        private ImageManager SHImageManager;
+        private ImageManager USImageManager;
 
         private Mutex mtx;
         private Connector cn;
@@ -38,6 +45,18 @@ namespace OpenSatelliteProject {
         }
 
         public HeadlessMain() {
+            
+            string fdFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_FULLDISK);
+            string xxFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST);
+            string nhFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_NORTHERN);
+            string shFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_SOUTHERN);
+            string usFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_UNITEDSTATES);
+            FDImageManager = new ImageManager(Path.Combine("channels", fdFolder));
+            XXImageManager = new ImageManager(Path.Combine("channels", xxFolder));
+            NHImageManager = new ImageManager(Path.Combine("channels", nhFolder));
+            SHImageManager = new ImageManager(Path.Combine("channels", shFolder));
+            USImageManager = new ImageManager(Path.Combine("channels", usFolder));
+
             mtx = new Mutex();
             cn = new Connector();            
             demuxManager = new DemuxManager();
@@ -110,11 +129,17 @@ namespace OpenSatelliteProject {
 
         public void Start() {
             UIConsole.GlobalConsole.Log("Headless Main Starting");
+            FDImageManager.Start();
+            XXImageManager.Start();
+            NHImageManager.Start();
+            SHImageManager.Start();
+            USImageManager.Start();
+
             cn.Start();
             httpsv.Start();
             running = true;
             while (running) {
-                Thread.Sleep(1000);
+                Thread.Sleep(10);
             }
             httpsv.Stop();
         }

@@ -24,13 +24,12 @@ public partial class MainWindow: Gtk.Window {
 
         foreach (var z in data) {
             var mData = z.Value;
-            Console.WriteLine(z.Key);
-            Console.WriteLine(z.Key == 1488055518);
             var bmp = ImageTools.GenerateFalseColor(mData);
 
             if (bmp != null) {
                 bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "FLSCLR", z.Key), ImageFormat.Jpeg);
                 bmp.Dispose();
+                mData.IsProcessed = true;
             } else {
                 if (mData.Visible.IsComplete && mData.Visible.MaxSegments != 0) {
                     bmp = ImageTools.GenerateFullImage(mData.Visible);

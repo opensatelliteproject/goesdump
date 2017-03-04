@@ -102,12 +102,13 @@ namespace OpenSatelliteProject {
                     Console.WriteLine("Error reading file {0}: {1}", file, e);
                 }
             }
-
+            /*
             foreach (var i in groupData) {
                 var data = i.Value;
                 Console.WriteLine("Showing group({0}): ", i.Key);
                 Console.WriteLine(data.ToString());
             }
+            */
         }
     }
 }

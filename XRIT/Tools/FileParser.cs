@@ -34,6 +34,7 @@ namespace OpenSatelliteProject.Tools {
                 f.Close();
                 return header;
             } else {
+                f.Close();
                 throw new Exception("Invalid file");
             }
         }
