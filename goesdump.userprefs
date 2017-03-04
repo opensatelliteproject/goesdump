@@ -1,12 +1,33 @@
 ﻿<Properties StartupItem="goesdump/GOES Dumper.csproj" RefactoringSettings.EnableRefactorings="True">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="XRITLibraryTest/MainWindow.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug Headless|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/Tools/Organizer.cs">
     <Files>
-      <File FileName="XRIT/Tools/Organizer.cs" Line="1" Column="1" />
-      <File FileName="XRITLibraryTest/MainWindow.cs" Line="32" Column="42" />
-      <File FileName="XRIT/Tools/ImageTools.cs" Line="1" Column="1" />
-      <File FileName="XRIT/Models/GroupData.cs" Line="1" Column="1" />
+      <File FileName="XRIT/Tools/Organizer.cs" Line="107" Column="48" />
+      <File FileName="XRIT/Tools/ImageTools.cs" Line="96" Column="52" />
+      <File FileName="XRIT/Models/GroupData.cs" Line="29" Column="44" />
+      <File FileName="goesdump/GoesDecoder/ImageManager.cs" Line="58" Column="58" />
+      <File FileName="goesdump/GoesDecoder/Connector.cs" Line="1" Column="1" />
+      <File FileName="goesdump/HeadlessMain.cs" Line="30" Column="35" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="goesdump" expanded="True">
+            <Node name="GOES Dumper" expanded="True">
+              <Node name="GoesDecoder" expanded="True" />
+            </Node>
+            <Node name="XRIT" expanded="True">
+              <Node name="Models" expanded="True" />
+              <Node name="PacketData" expanded="True" />
+              <Node name="Tools" expanded="True">
+                <Node name="Organizer.cs" selected="True" />
+              </Node>
+            </Node>
+            <Node name="XRITLibraryTest" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

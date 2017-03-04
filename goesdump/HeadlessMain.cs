@@ -128,6 +128,11 @@ namespace OpenSatelliteProject {
         }
 
         public void Start() {
+            Console.CancelKeyPress += delegate {
+                UIConsole.GlobalConsole.Log("Hit Ctrl + C! Closing...");
+                running = false;
+            };
+
             UIConsole.GlobalConsole.Log("Headless Main Starting");
             FDImageManager.Start();
             XXImageManager.Start();
@@ -141,7 +146,14 @@ namespace OpenSatelliteProject {
             while (running) {
                 Thread.Sleep(10);
             }
+            UIConsole.GlobalConsole.Log("Closing program...");
+            cn.Stop();
             httpsv.Stop();
+            FDImageManager.Stop();
+            XXImageManager.Stop();
+            NHImageManager.Stop();
+            SHImageManager.Stop();
+            USImageManager.Stop();
         }
     }
 }

@@ -43,6 +43,10 @@ namespace OpenSatelliteProject {
 
                 foreach (var z in data) {
                     var mData = z.Value;
+                    if (!running) {
+                        break;
+                    }
+
                     if (!mData.IsProcessed) {
                         string filename = string.Format("{0}-{1}-{2}-{3}.jpg", z.Key, mData.SatelliteName, mData.RegionName, "FLSCLR");
                         filename = Path.Combine(folder, filename);
@@ -53,36 +57,40 @@ namespace OpenSatelliteProject {
                             continue;
                         }
 
-                        if (ImageTools.CanGenerateFalseColor(mData)) {
-                            UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of FSLCR for {0}.", Path.GetFileName(filename)));
-                            var bmp = ImageTools.GenerateFalseColor(mData);
+                        try {
+                            if (ImageTools.CanGenerateFalseColor(mData)) {
+                                UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of FSLCR for {0}.", Path.GetFileName(filename)));
+                                var bmp = ImageTools.GenerateFalseColor(mData);
 
-                            bmp.Save(filename, ImageFormat.Jpeg);
-                            bmp.Dispose();
-                            UIConsole.GlobalConsole.Log(string.Format("New False Colour Image: {0}", Path.GetFileName(filename)));
-                            mData.IsProcessed = true;
-                        } else {
-                            /*
-                            if (mData.Visible.IsComplete && mData.Visible.MaxSegments != 0 && !mData.IsVisibleProcessed) {
-                                bmp = ImageTools.GenerateFullImage(mData.Visible);
-                                bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "VIS", z.Key), ImageFormat.Jpeg);
+                                bmp.Save(filename, ImageFormat.Jpeg);
                                 bmp.Dispose();
-                                mData.IsVisibleProcessed = true;
+                                UIConsole.GlobalConsole.Log(string.Format("New False Colour Image: {0}", Path.GetFileName(filename)));
+                                mData.IsProcessed = true;
+                            } else {
+                                /*
+                                if (mData.Visible.IsComplete && mData.Visible.MaxSegments != 0 && !mData.IsVisibleProcessed) {
+                                    bmp = ImageTools.GenerateFullImage(mData.Visible);
+                                    bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "VIS", z.Key), ImageFormat.Jpeg);
+                                    bmp.Dispose();
+                                    mData.IsVisibleProcessed = true;
+                                }
+                                if (mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
+                                    bmp = ImageTools.GenerateFullImage(mData.Infrared);
+                                    bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "IR", z.Key), ImageFormat.Jpeg);
+                                    bmp.Dispose();
+                                    mData.IsInfraredProcessed = true;
+                                }
+                                if (mData.WaterVapour.IsComplete && mData.WaterVapour.MaxSegments != 0 && !mData.IsWaterVapourProcessed) {
+                                    bmp = ImageTools.GenerateFullImage(mData.WaterVapour);
+                                    bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "WV", z.Key), ImageFormat.Jpeg);
+                                    bmp.Dispose();
+                                    mData.IsWaterVapourProcessed = true;
+                                }
+                                Console.WriteLine("Not all segments available!");
+                                */
                             }
-                            if (mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
-                                bmp = ImageTools.GenerateFullImage(mData.Infrared);
-                                bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "IR", z.Key), ImageFormat.Jpeg);
-                                bmp.Dispose();
-                                mData.IsInfraredProcessed = true;
-                            }
-                            if (mData.WaterVapour.IsComplete && mData.WaterVapour.MaxSegments != 0 && !mData.IsWaterVapourProcessed) {
-                                bmp = ImageTools.GenerateFullImage(mData.WaterVapour);
-                                bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "WV", z.Key), ImageFormat.Jpeg);
-                                bmp.Dispose();
-                                mData.IsWaterVapourProcessed = true;
-                            }
-                            Console.WriteLine("Not all segments available!");
-                            */
+                        } catch (Exception e) {
+                            UIConsole.GlobalConsole.Error(string.Format("Error processing image {0}: {1}", filename, e));
                         }
                     }
                 }
