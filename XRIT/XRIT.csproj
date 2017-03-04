@@ -91,10 +91,14 @@
     <Compile Include="Tools\ImageHandler.cs" />
     <Compile Include="Tools\TextHandler.cs" />
     <Compile Include="Tools\AEC.cs" />
+    <Compile Include="Tools\Organizer.cs" />
+    <Compile Include="Models\OrganizerData.cs" />
+    <Compile Include="Models\GroupData.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="PacketData\" />
     <Folder Include="Tools\" />
+    <Folder Include="Models\" />
   </ItemGroup>
 </Project>
