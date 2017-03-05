@@ -6,11 +6,22 @@ using System.Linq;
 
 namespace OpenSatelliteProject.Tools {
     public static class LLTools {
+        private static readonly string[] hrsSuffix = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
         public static bool IsLinux {
             get {
                 int p = (int)Environment.OSVersion.Platform;
                 return (p == 4) || (p == 6) || (p == 128);
             }
+        }
+
+        public static String BytesToString(long byteCount) {
+            
+            if (byteCount == 0)
+                return "0" + hrsSuffix[0];
+            long bytes = Math.Abs(byteCount);
+            int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
+            double num = Math.Round(bytes / Math.Pow(1024, place), 1);
+            return (Math.Sign(byteCount) * num).ToString() + hrsSuffix[place];
         }
 
         public static DateTime UnixTimeStampToDateTime(long unixTimeStamp) {

@@ -104,6 +104,7 @@
     <Compile Include="Models\ConsoleModel.cs" />
     <Compile Include="Models\ConstellationModel.cs" />
     <Compile Include="GoesDecoder\ImageManager.cs" />
+    <Compile Include="WebManager\DirectoryHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

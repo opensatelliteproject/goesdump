@@ -22,6 +22,8 @@ namespace OpenSatelliteProject {
         private ImageManager SHImageManager;
         private ImageManager USImageManager;
 
+        private DirectoryHandler directoryHandler;
+
         private Mutex mtx;
         private Connector cn;
         private DemuxManager demuxManager;
@@ -51,11 +53,14 @@ namespace OpenSatelliteProject {
             string nhFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_NORTHERN);
             string shFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_SOUTHERN);
             string usFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_UNITEDSTATES);
+
             FDImageManager = new ImageManager(Path.Combine("channels", fdFolder));
             XXImageManager = new ImageManager(Path.Combine("channels", xxFolder));
             NHImageManager = new ImageManager(Path.Combine("channels", nhFolder));
             SHImageManager = new ImageManager(Path.Combine("channels", shFolder));
             USImageManager = new ImageManager(Path.Combine("channels", usFolder));
+
+            directoryHandler = new DirectoryHandler("channels", "/data");
 
             mtx = new Mutex();
             cn = new Connector();            
@@ -110,9 +115,16 @@ namespace OpenSatelliteProject {
             if (path == "/")
                 path += "index.html";
 
+            if (path.StartsWith(directoryHandler.BasePath)) {
+                directoryHandler.HandleAccess(httpsv, e);
+                return;
+            }
+
             var content = httpsv.GetFile(path);
             if (content == null) {
                 res.StatusCode = (int)HttpStatusCode.NotFound;
+                string res404 = "File not found";
+                res.WriteContent(Encoding.UTF8.GetBytes(res404));
                 return;
             }
 
@@ -140,12 +152,14 @@ namespace OpenSatelliteProject {
             SHImageManager.Start();
             USImageManager.Start();
 
-            cn.Start();
+            //cn.Start();
             httpsv.Start();
             running = true;
+
             while (running) {
                 Thread.Sleep(10);
             }
+
             UIConsole.GlobalConsole.Log("Closing program...");
             cn.Stop();
             httpsv.Stop();
