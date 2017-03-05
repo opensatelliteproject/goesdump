@@ -116,8 +116,14 @@ namespace OpenSatelliteProject {
                 path += "index.html";
 
             if (path.StartsWith(directoryHandler.BasePath)) {
-                directoryHandler.HandleAccess(httpsv, e);
-                return;
+                try {
+                    directoryHandler.HandleAccess(httpsv, e);
+                    return;
+                } catch (Exception ex) {
+                    string output = string.Format("Error reading file: {0}", ex);
+                    res.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    res.WriteContent(Encoding.UTF8.GetBytes(output));
+                }
             }
 
             var content = httpsv.GetFile(path);
@@ -152,7 +158,7 @@ namespace OpenSatelliteProject {
             SHImageManager.Start();
             USImageManager.Start();
 
-            //cn.Start();
+            cn.Start();
             httpsv.Start();
             running = true;
 
