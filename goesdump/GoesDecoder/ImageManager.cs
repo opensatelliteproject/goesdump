@@ -5,10 +5,21 @@ using System.IO;
 
 namespace OpenSatelliteProject {
     public class ImageManager {
+
+        /// <summary>
+        /// Erase files after creating false color images.
+        /// </summary>
+        /// <value><c>true</c> if erase files; otherwise, <c>false</c>.</value>
+        public static bool EraseFiles { get; set; }
+
         private Thread imageThread;
         private bool running;
         private Organizer organizer;
         private string folder;
+
+        static ImageManager() {
+            EraseFiles = false;
+        }
 
         public ImageManager(string folder) {
             this.organizer = new Organizer(folder);
@@ -36,6 +47,33 @@ namespace OpenSatelliteProject {
             }
         }
 
+        private void EraseGroupDataFiles(GroupData mData) {
+            // Erase Infrared LRIT
+            foreach (var f in mData.Infrared.Segments) {
+                try {
+                    File.Delete(f.Value);
+                } catch (IOException e) {
+                    UIConsole.GlobalConsole.Error(string.Format("Error erasing file {0}: {1}", f.Value, e));
+                }
+            }
+            // Erase Visible LRIT
+            foreach (var f in mData.Visible.Segments) {
+                try {
+                    File.Delete(f.Value);
+                } catch (IOException e) {
+                    UIConsole.GlobalConsole.Error(string.Format("Error erasing file {0}: {1}", f.Value, e));
+                }
+            }
+            // Erase Water Vapour LRIT
+            foreach (var f in mData.WaterVapour.Segments) {
+                try {
+                    File.Delete(f.Value);
+                } catch (IOException e) {
+                    UIConsole.GlobalConsole.Error(string.Format("Error erasing file {0}: {1}", f.Value, e));
+                }
+            }
+        }
+
         private void ThreadLoop() {
             while (running) {
                 organizer.Update();
@@ -54,6 +92,9 @@ namespace OpenSatelliteProject {
                         if (File.Exists(filename)) {
                             UIConsole.GlobalConsole.Debug(string.Format("Skipping generating FLSCLR for {0}. Image already exists.", Path.GetFileName(filename)));
                             mData.IsProcessed = true;
+                            if (EraseFiles) {
+                                EraseGroupDataFiles(mData);
+                            }
                             continue;
                         }
 
@@ -66,6 +107,10 @@ namespace OpenSatelliteProject {
                                 bmp.Dispose();
                                 UIConsole.GlobalConsole.Log(string.Format("New False Colour Image: {0}", Path.GetFileName(filename)));
                                 mData.IsProcessed = true;
+
+                                if (EraseFiles) {
+                                    EraseGroupDataFiles(mData);
+                                }
                             } else {
                                 /*
                                 if (mData.Visible.IsComplete && mData.Visible.MaxSegments != 0 && !mData.IsVisibleProcessed) {

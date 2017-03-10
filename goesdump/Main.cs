@@ -7,12 +7,21 @@ using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.Input;
 using System.Threading;
 using System.IO;
+using OpenSatelliteProject.PacketData.Enums;
 
 namespace OpenSatelliteProject {
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
     public class Main : Game {
+
+        private ProgConfig configuration = new ProgConfig();
+        private ImageManager FDImageManager;
+        private ImageManager XXImageManager;
+        private ImageManager NHImageManager;
+        private ImageManager SHImageManager;
+        private ImageManager USImageManager;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Connector cn;
@@ -44,6 +53,35 @@ namespace OpenSatelliteProject {
             this.Exiting += (object sender, EventArgs e) => {
                 //cn.Stop();
             };
+
+            FileHandler.SkipEMWIN = !configuration.EnableEMWIN;
+            FileHandler.SkipDCS = !configuration.EnableDCS;
+            ImageManager.EraseFiles = configuration.EraseFilesAfterGeneratingFalseColor;
+
+            if (configuration.GenerateFDFalseColor) {
+                string fdFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_FULLDISK);
+                FDImageManager = new ImageManager(Path.Combine("channels", fdFolder));
+            }
+
+            if (configuration.GenerateXXFalseColor) {
+                string xxFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST);
+                XXImageManager = new ImageManager(Path.Combine("channels", xxFolder));
+            }
+
+            if (configuration.GenerateNHFalseColor) {
+                string nhFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_NORTHERN);
+                NHImageManager = new ImageManager(Path.Combine("channels", nhFolder));
+            }
+
+            if (configuration.GenerateSHFalseColor) {
+                string shFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_SOUTHERN);
+                SHImageManager = new ImageManager(Path.Combine("channels", shFolder));
+            }
+
+            if (configuration.GenerateUSFalseColor) {
+                string usFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_UNITEDSTATES);
+                USImageManager = new ImageManager(Path.Combine("channels", usFolder));
+            }
         }
 
         /// <summary>
@@ -78,6 +116,22 @@ namespace OpenSatelliteProject {
             cn.ConstellationDataAvailable += (float[] data) => cons.updateConstellationData(data);
             statistics = new Statistics_st();
             cn.Start();
+
+            if (configuration.GenerateFDFalseColor) {
+                FDImageManager.Start();
+            }
+            if (configuration.GenerateXXFalseColor) {
+                XXImageManager.Start();
+            }
+            if (configuration.GenerateNHFalseColor) {
+                NHImageManager.Start();
+            }
+            if (configuration.GenerateSHFalseColor) {
+                SHImageManager.Start();
+            }
+            if (configuration.GenerateUSFalseColor) {
+                USImageManager.Start();
+            }
         }
 
         /// <summary>
@@ -188,6 +242,21 @@ namespace OpenSatelliteProject {
         protected override void OnExiting(object sender, EventArgs args) {
             base.OnExiting(sender, args);
             cn.Stop();
+            if (configuration.GenerateFDFalseColor) {
+                FDImageManager.Stop();
+            }
+            if (configuration.GenerateXXFalseColor) {
+                XXImageManager.Stop();
+            }
+            if (configuration.GenerateNHFalseColor) {
+                NHImageManager.Stop();
+            }
+            if (configuration.GenerateSHFalseColor) {
+                SHImageManager.Stop();
+            }
+            if (configuration.GenerateUSFalseColor) {
+                USImageManager.Stop();
+            }
             Environment.Exit(Environment.ExitCode);
         }
     }

@@ -16,6 +16,8 @@ namespace OpenSatelliteProject {
 
         private static readonly int MAX_CACHED_MESSAGES = 10;
 
+        private ProgConfig configuration = new ProgConfig();
+
         private ImageManager FDImageManager;
         private ImageManager XXImageManager;
         private ImageManager NHImageManager;
@@ -47,18 +49,34 @@ namespace OpenSatelliteProject {
         }
 
         public HeadlessMain() {
-            
-            string fdFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_FULLDISK);
-            string xxFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST);
-            string nhFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_NORTHERN);
-            string shFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_SOUTHERN);
-            string usFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_UNITEDSTATES);
+            FileHandler.SkipEMWIN = !configuration.EnableEMWIN;
+            FileHandler.SkipDCS = !configuration.EnableDCS;
+            ImageManager.EraseFiles = configuration.EraseFilesAfterGeneratingFalseColor;
 
-            FDImageManager = new ImageManager(Path.Combine("channels", fdFolder));
-            XXImageManager = new ImageManager(Path.Combine("channels", xxFolder));
-            NHImageManager = new ImageManager(Path.Combine("channels", nhFolder));
-            SHImageManager = new ImageManager(Path.Combine("channels", shFolder));
-            USImageManager = new ImageManager(Path.Combine("channels", usFolder));
+            if (configuration.GenerateFDFalseColor) {
+                string fdFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_FULLDISK);
+                FDImageManager = new ImageManager(Path.Combine("channels", fdFolder));
+            }
+
+            if (configuration.GenerateXXFalseColor) {
+                string xxFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST);
+                XXImageManager = new ImageManager(Path.Combine("channels", xxFolder));
+            }
+
+            if (configuration.GenerateNHFalseColor) {
+                string nhFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_NORTHERN);
+                NHImageManager = new ImageManager(Path.Combine("channels", nhFolder));
+            }
+
+            if (configuration.GenerateSHFalseColor) {
+                string shFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_SOUTHERN);
+                SHImageManager = new ImageManager(Path.Combine("channels", shFolder));
+            }
+
+            if (configuration.GenerateUSFalseColor) {
+                string usFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_UNITEDSTATES);
+                USImageManager = new ImageManager(Path.Combine("channels", usFolder));
+            }
 
             directoryHandler = new DirectoryHandler("channels", "/data");
 
@@ -118,12 +136,12 @@ namespace OpenSatelliteProject {
             if (path.StartsWith(directoryHandler.BasePath)) {
                 try {
                     directoryHandler.HandleAccess(httpsv, e);
-                    return;
                 } catch (Exception ex) {
                     string output = string.Format("Error reading file: {0}", ex);
                     res.StatusCode = (int)HttpStatusCode.InternalServerError;
                     res.WriteContent(Encoding.UTF8.GetBytes(output));
                 }
+                return;
             }
 
             var content = httpsv.GetFile(path);
@@ -152,11 +170,22 @@ namespace OpenSatelliteProject {
             };
 
             UIConsole.GlobalConsole.Log("Headless Main Starting");
-            FDImageManager.Start();
-            XXImageManager.Start();
-            NHImageManager.Start();
-            SHImageManager.Start();
-            USImageManager.Start();
+
+            if (configuration.GenerateFDFalseColor) {
+                FDImageManager.Start();
+            }
+            if (configuration.GenerateXXFalseColor) {
+                XXImageManager.Start();
+            }
+            if (configuration.GenerateNHFalseColor) {
+                NHImageManager.Start();
+            }
+            if (configuration.GenerateSHFalseColor) {
+                SHImageManager.Start();
+            }
+            if (configuration.GenerateUSFalseColor) {
+                USImageManager.Start();
+            }
 
             cn.Start();
             httpsv.Start();
@@ -169,11 +198,22 @@ namespace OpenSatelliteProject {
             UIConsole.GlobalConsole.Log("Closing program...");
             cn.Stop();
             httpsv.Stop();
-            FDImageManager.Stop();
-            XXImageManager.Stop();
-            NHImageManager.Stop();
-            SHImageManager.Stop();
-            USImageManager.Stop();
+
+            if (configuration.GenerateFDFalseColor) {
+                FDImageManager.Stop();
+            }
+            if (configuration.GenerateXXFalseColor) {
+                XXImageManager.Stop();
+            }
+            if (configuration.GenerateNHFalseColor) {
+                NHImageManager.Stop();
+            }
+            if (configuration.GenerateSHFalseColor) {
+                SHImageManager.Stop();
+            }
+            if (configuration.GenerateUSFalseColor) {
+                USImageManager.Stop();
+            }
         }
     }
 }

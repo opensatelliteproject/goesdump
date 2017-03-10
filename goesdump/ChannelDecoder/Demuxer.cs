@@ -21,7 +21,6 @@ namespace OpenSatelliteProject {
         private string filename;
         private int channelId;
         private XRITHeader fileHeader;
-
         private byte[] buffer;
 
         public int CRCFails { get; set; }
