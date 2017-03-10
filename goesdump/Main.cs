@@ -58,6 +58,14 @@ namespace OpenSatelliteProject {
             FileHandler.SkipDCS = !configuration.EnableDCS;
             ImageManager.EraseFiles = configuration.EraseFilesAfterGeneratingFalseColor;
 
+            Connector.ChannelDataServerName = configuration.ChannelDataServerName;
+            Connector.StatisticsServerName = configuration.StatisticsServerName;
+            Connector.ConstellationServerName = configuration.ConstellationServerName;
+
+            Connector.ChannelDataServerPort = configuration.ChannelDataServerPort;
+            Connector.StatisticsServerPort = configuration.StatisticsServerPort;
+            Connector.ConstellationServerPort = configuration.ConstellationServerPort;
+
             if (configuration.GenerateFDFalseColor) {
                 string fdFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_FULLDISK);
                 FDImageManager = new ImageManager(Path.Combine("channels", fdFolder));

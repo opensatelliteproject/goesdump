@@ -3,6 +3,61 @@ using System.Configuration;
 
 namespace OpenSatelliteProject {
     sealed class ProgConfig: ApplicationSettingsBase {
+
+        #region Web Server
+        [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("8090")]
+        public int HTTPPort {
+            get { return (int)this["HTTPPort"]; }
+            set { this["HTTPPort"] = value; }
+        }
+        #endregion
+
+        #region Decoder Data
+        [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("5001")]
+        public int ChannelDataServerPort {
+            get { return (int)this["ChannelDataServerPort"]; }
+            set { this["ChannelDataServerPort"] = value; }
+        }
+
+        [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("5002")]
+        public int StatisticsServerPort {
+            get { return (int)this["StatisticsServerPort"]; }
+            set { this["StatisticsServerPort"] = value; }
+        }
+
+        [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("9000")]
+        public int ConstellationServerPort {
+            get { return (int)this["ConstellationServerPort"]; }
+            set { this["ConstellationServerPort"] = value; }
+        }
+
+        [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("localhost")]
+        public string ChannelDataServerName {
+            get { return (string)this["ChannelDataServerName"]; }
+            set { this["ChannelDataServerName"] = value; }
+        }
+
+        [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("localhost")]
+        public string StatisticsServerName {
+            get { return (string)this["StatisticsServerName"]; }
+            set { this["StatisticsServerName"] = value; }
+        }
+
+        [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("localhost")]
+        public string ConstellationServerName {
+            get { return (string)this["ConstellationServerName"]; }
+            set { this["ConstellationServerName"] = value; }
+        }
+        #endregion
+
+        #region Image Processing
         [UserScopedSettingAttribute()]
         [DefaultSettingValueAttribute("true")]
         public bool GenerateFDFalseColor {
@@ -44,7 +99,9 @@ namespace OpenSatelliteProject {
             get { return (bool)this["EraseFilesAfterGeneratingFalseColor"]; }
             set { this["EraseFilesAfterGeneratingFalseColor"] = value; }
         }
+        #endregion
 
+        #region Packet Processing
         [UserScopedSettingAttribute()]
         [DefaultSettingValueAttribute("false")]
         public bool EnableDCS {
@@ -58,6 +115,7 @@ namespace OpenSatelliteProject {
             get { return (bool)this["EnableEMWIN"]; }
             set { this["EnableEMWIN"] = value; }
         }
+        #endregion
     }
 }
 
