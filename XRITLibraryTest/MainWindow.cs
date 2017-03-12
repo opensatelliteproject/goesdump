@@ -5,6 +5,7 @@ using OpenSatelliteProject;
 using OpenSatelliteProject.Tools;
 using System.Drawing;
 using System.Drawing.Imaging;
+using OpenSatelliteProject.Log;
 
 public partial class MainWindow: Gtk.Window {
     public MainWindow() : base(Gtk.WindowType.Toplevel) {
@@ -16,7 +17,7 @@ public partial class MainWindow: Gtk.Window {
         };
 
         //ProcessFile("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Text/NWSTEXTdat043204159214.lrit");
-        ///*
+        /*
         Organizer organizer = new Organizer("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Images/Full Disk");
         organizer.Update();
 

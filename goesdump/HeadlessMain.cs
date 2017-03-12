@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenSatelliteProject.Tools;
 using OpenSatelliteProject.PacketData.Enums;
+using OpenSatelliteProject.Log;
 
 namespace OpenSatelliteProject {
     public class HeadlessMain {
@@ -49,6 +50,16 @@ namespace OpenSatelliteProject {
         }
 
         public HeadlessMain() {
+
+            if (LLTools.IsLinux) {
+                try {
+                    SyslogClient c = new SyslogClient();
+                    c.Send(new Message(Facility.User, Level.Information, "Your syslog connection is working! OpenSatelliteProject is enabled to send logs."));
+                } catch (WebSocketException) {
+                    UIConsole.GlobalConsole.Warn("Your syslog is not enabled to receive UDP request. Please refer to https://opensatelliteproject.github.io/OpenSatelliteProject/");
+                }
+            }
+
             FileHandler.SkipEMWIN = !configuration.EnableEMWIN;
             FileHandler.SkipDCS = !configuration.EnableDCS;
             ImageManager.EraseFiles = configuration.EraseFilesAfterGeneratingFalseColor;

@@ -1,15 +1,19 @@
-﻿<Properties StartupItem="goesdump/GOES Dumper.csproj" RefactoringSettings.EnableRefactorings="True">
+﻿<Properties StartupItem="XRITLibraryTest/XRITLibraryTest.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug Headless|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/HeadlessMain.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/Log/SyslogNative.cs">
     <Files>
-      <File FileName="XRIT/Tools/Organizer.cs" Line="107" Column="48" />
-      <File FileName="XRIT/Tools/ImageTools.cs" Line="1" Column="1" />
-      <File FileName="XRIT/Models/GroupData.cs" Line="29" Column="44" />
-      <File FileName="goesdump/GoesDecoder/ImageManager.cs" Line="49" Column="21" />
-      <File FileName="goesdump/HeadlessMain.cs" Line="165" Column="30" />
-      <File FileName="goesdump/WebManager/DirectoryHandler.cs" Line="61" Column="1" />
-      <File FileName="XRIT/Tools/Presets.cs" Line="625" Column="41" />
-      <File FileName="XRIT/Tools/LLTools.cs" Line="17" Column="44" />
+      <File FileName="XRIT/Tools/Organizer.cs" Line="1" Column="1" />
+      <File FileName="goesdump/HeadlessMain.cs" Line="48" Column="14" />
+      <File FileName="XRIT/Tools/LLTools.cs" Line="1" Column="1" />
+      <File FileName="goesdump/Models/ProgConfig.cs" Line="49" Column="45" />
+      <File FileName="goesdump/GoesDecoder/Connector.cs" Line="24" Column="9" />
+      <File FileName="goesdump/UIComponents/UIConsole.cs" Line="207" Column="1" />
+      <File FileName="XRIT/Log/Syslog.cs" Line="4" Column="1" />
+      <File FileName="XRIT/Log/SyslogClient.cs" Line="18" Column="27" />
+      <File FileName="XRIT/Log/Message.cs" Line="24" Column="31" />
+      <File FileName="XRIT/Log/SyslogNative.cs" Line="6" Column="1" />
+      <File FileName="XRIT/Tools/AEC.cs" Line="20" Column="23" />
+      <File FileName="XRITLibraryTest/MainWindow.cs" Line="19" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
