@@ -17,7 +17,7 @@ namespace OpenSatelliteProject {
 
         private static readonly int MAX_CACHED_MESSAGES = 10;
 
-        private ProgConfig configuration = new ProgConfig();
+        private ProgConfig config = new ProgConfig();
 
         private ImageManager FDImageManager;
         private ImageManager XXImageManager;
@@ -51,6 +51,24 @@ namespace OpenSatelliteProject {
 
         public HeadlessMain() {
 
+            #region Create Config File
+            config.ChannelDataServerName = config.ChannelDataServerName;
+            config.ChannelDataServerPort = config.ChannelDataServerPort;
+            config.ConstellationServerName = config.ConstellationServerName;
+            config.ConstellationServerPort = config.ConstellationServerPort;
+            config.StatisticsServerName = config.StatisticsServerName;
+            config.StatisticsServerPort = config.StatisticsServerPort;
+            config.EnableDCS = config.EnableDCS;
+            config.EnableEMWIN = config.EnableEMWIN;
+            config.EraseFilesAfterGeneratingFalseColor = config.EraseFilesAfterGeneratingFalseColor;
+            config.GenerateFDFalseColor = config.GenerateFDFalseColor;
+            config.GenerateNHFalseColor = config.GenerateNHFalseColor;
+            config.GenerateSHFalseColor = config.GenerateSHFalseColor;
+            config.GenerateUSFalseColor = config.GenerateXXFalseColor;
+            config.HTTPPort = config.HTTPPort;
+            config.Save();
+            #endregion
+
             if (LLTools.IsLinux) {
                 try {
                     SyslogClient c = new SyslogClient();
@@ -60,39 +78,39 @@ namespace OpenSatelliteProject {
                 }
             }
 
-            FileHandler.SkipEMWIN = !configuration.EnableEMWIN;
-            FileHandler.SkipDCS = !configuration.EnableDCS;
-            ImageManager.EraseFiles = configuration.EraseFilesAfterGeneratingFalseColor;
+            FileHandler.SkipEMWIN = !config.EnableEMWIN;
+            FileHandler.SkipDCS = !config.EnableDCS;
+            ImageManager.EraseFiles = config.EraseFilesAfterGeneratingFalseColor;
 
-            Connector.ChannelDataServerName = configuration.ChannelDataServerName;
-            Connector.StatisticsServerName = configuration.StatisticsServerName;
-            Connector.ConstellationServerName = configuration.ConstellationServerName;
+            Connector.ChannelDataServerName = config.ChannelDataServerName;
+            Connector.StatisticsServerName = config.StatisticsServerName;
+            Connector.ConstellationServerName = config.ConstellationServerName;
 
-            Connector.ChannelDataServerPort = configuration.ChannelDataServerPort;
-            Connector.StatisticsServerPort = configuration.StatisticsServerPort;
-            Connector.ConstellationServerPort = configuration.ConstellationServerPort;
+            Connector.ChannelDataServerPort = config.ChannelDataServerPort;
+            Connector.StatisticsServerPort = config.StatisticsServerPort;
+            Connector.ConstellationServerPort = config.ConstellationServerPort;
 
-            if (configuration.GenerateFDFalseColor) {
+            if (config.GenerateFDFalseColor) {
                 string fdFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_FULLDISK);
                 FDImageManager = new ImageManager(Path.Combine("channels", fdFolder));
             }
 
-            if (configuration.GenerateXXFalseColor) {
+            if (config.GenerateXXFalseColor) {
                 string xxFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST);
                 XXImageManager = new ImageManager(Path.Combine("channels", xxFolder));
             }
 
-            if (configuration.GenerateNHFalseColor) {
+            if (config.GenerateNHFalseColor) {
                 string nhFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_NORTHERN);
                 NHImageManager = new ImageManager(Path.Combine("channels", nhFolder));
             }
 
-            if (configuration.GenerateSHFalseColor) {
+            if (config.GenerateSHFalseColor) {
                 string shFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_SOUTHERN);
                 SHImageManager = new ImageManager(Path.Combine("channels", shFolder));
             }
 
-            if (configuration.GenerateUSFalseColor) {
+            if (config.GenerateUSFalseColor) {
                 string usFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_UNITEDSTATES);
                 USImageManager = new ImageManager(Path.Combine("channels", usFolder));
             }
@@ -122,7 +140,7 @@ namespace OpenSatelliteProject {
             statistics = new Statistics_st();
             stModel = new StatisticsModel(statistics);
             UIConsole.GlobalConsole.Log("Headless Main Created");
-            httpsv = new HttpServer(configuration.HTTPPort);
+            httpsv = new HttpServer(config.HTTPPort);
 
             httpsv.RootPath = Path.Combine(".", "web");
             httpsv.OnGet += HandleHTTPGet;
@@ -190,19 +208,19 @@ namespace OpenSatelliteProject {
 
             UIConsole.GlobalConsole.Log("Headless Main Starting");
 
-            if (configuration.GenerateFDFalseColor) {
+            if (config.GenerateFDFalseColor) {
                 FDImageManager.Start();
             }
-            if (configuration.GenerateXXFalseColor) {
+            if (config.GenerateXXFalseColor) {
                 XXImageManager.Start();
             }
-            if (configuration.GenerateNHFalseColor) {
+            if (config.GenerateNHFalseColor) {
                 NHImageManager.Start();
             }
-            if (configuration.GenerateSHFalseColor) {
+            if (config.GenerateSHFalseColor) {
                 SHImageManager.Start();
             }
-            if (configuration.GenerateUSFalseColor) {
+            if (config.GenerateUSFalseColor) {
                 USImageManager.Start();
             }
 
@@ -218,19 +236,19 @@ namespace OpenSatelliteProject {
             cn.Stop();
             httpsv.Stop();
 
-            if (configuration.GenerateFDFalseColor) {
+            if (config.GenerateFDFalseColor) {
                 FDImageManager.Stop();
             }
-            if (configuration.GenerateXXFalseColor) {
+            if (config.GenerateXXFalseColor) {
                 XXImageManager.Stop();
             }
-            if (configuration.GenerateNHFalseColor) {
+            if (config.GenerateNHFalseColor) {
                 NHImageManager.Stop();
             }
-            if (configuration.GenerateSHFalseColor) {
+            if (config.GenerateSHFalseColor) {
                 SHImageManager.Stop();
             }
-            if (configuration.GenerateUSFalseColor) {
+            if (config.GenerateUSFalseColor) {
                 USImageManager.Stop();
             }
         }
