@@ -3,7 +3,7 @@
 namespace OpenSatelliteProject.Log {
 
     public class Message {
-        public int Facility { get; set; }
+        public string Facility { get; set; }
 
         public int Level { get; set; }
 
@@ -15,29 +15,29 @@ namespace OpenSatelliteProject.Log {
             Name = "OpenSatelliteProject";
         }
 
-        public Message(int facility, int level, string text) {
+        public Message(string facility, int level, string text) {
             this.Facility = facility;
             this.Level = level;
             this.Text = text;
             this.Name = "OpenSatelliteProject";
         }
 
-        public Message(Facility facility, Level level, string text) {
-            this.Facility = (int)facility;
+        public Message(string facility, Level level, string text) {
+            this.Facility = facility;
             this.Level = (int)level;
             this.Text = text;
             this.Name = "OpenSatelliteProject";
         }
 
-        public Message(int facility, int level, string name, string text) {
+        public Message(string facility, int level, string name, string text) {
             this.Facility = facility;
             this.Level = level;
             this.Text = text;
             this.Name = name;
         }
 
-        public Message(Facility facility, Level level, string name, string text) {
-            this.Facility = (int)facility;
+        public Message(string facility, Level level, string name, string text) {
+            this.Facility = facility;
             this.Level = (int)level;
             this.Text = text;
             this.Name = name;

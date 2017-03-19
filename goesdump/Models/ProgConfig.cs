@@ -140,6 +140,22 @@ namespace OpenSatelliteProject {
             set { this["EnableEMWIN"] = value; }
         }
         #endregion
+
+        #region Syslog Configuration
+        [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("localhost")]
+        public string SysLogServer {
+            get { return (string)this["SysLogServer"]; }
+            set { this["SysLogServer"] = value; }
+        }
+
+        [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("LOG_USER")]
+        public string SysLogFacility {
+            get { return (string)this["SysLogFacility"]; }
+            set { this["SysLogFacility"] = value; }
+        }
+        #endregion
     }
 }
 

@@ -17,7 +17,7 @@ namespace OpenSatelliteProject {
 
         private static readonly int MAX_CACHED_MESSAGES = 10;
 
-        private ProgConfig config = new ProgConfig();
+        private static ProgConfig config = new ProgConfig();
 
         private ImageManager FDImageManager;
         private ImageManager XXImageManager;
@@ -70,17 +70,10 @@ namespace OpenSatelliteProject {
             config.GenerateVisibleImages = config.GenerateVisibleImages;
             config.GenerateWaterVapourImages = config.GenerateWaterVapourImages;
             config.MaxGenerateRetry = config.MaxGenerateRetry;
+            config.SysLogServer = config.SysLogServer;
+            config.SysLogFacility = config.SysLogFacility;
             config.Save();
             #endregion
-
-            if (LLTools.IsLinux) {
-                try {
-                    SyslogClient c = new SyslogClient();
-                    c.Send(new Message(Facility.User, Level.Information, "Your syslog connection is working! OpenSatelliteProject is enabled to send logs."));
-                } catch (WebSocketException) {
-                    UIConsole.GlobalConsole.Warn("Your syslog is not enabled to receive UDP request. Please refer to https://opensatelliteproject.github.io/OpenSatelliteProject/");
-                }
-            }
 
             FileHandler.SkipEMWIN = !config.EnableEMWIN;
             FileHandler.SkipDCS = !config.EnableDCS;
@@ -97,6 +90,16 @@ namespace OpenSatelliteProject {
             Connector.ChannelDataServerPort = config.ChannelDataServerPort;
             Connector.StatisticsServerPort = config.StatisticsServerPort;
             Connector.ConstellationServerPort = config.ConstellationServerPort;
+
+            SyslogClient.SysLogServerIp = config.SysLogServer;
+
+            if (LLTools.IsLinux) {
+                try {
+                    SyslogClient.Send(new Message(config.SysLogFacility, Level.Information, "Your syslog connection is working! OpenSatelliteProject is enabled to send logs."));
+                } catch (WebSocketException) {
+                    UIConsole.GlobalConsole.Warn("Your syslog is not enabled to receive UDP request. Please refer to https://opensatelliteproject.github.io/OpenSatelliteProject/");
+                }
+            }
 
             if (config.GenerateFDFalseColor) {
                 string fdFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_FULLDISK);
@@ -126,7 +129,7 @@ namespace OpenSatelliteProject {
             directoryHandler = new DirectoryHandler("channels", "/data");
 
             mtx = new Mutex();
-            cn = new Connector();            
+            cn = new Connector();
             demuxManager = new DemuxManager();
             cn.StatisticsAvailable += (Statistics_st data) => {
                 mtx.WaitOne();
