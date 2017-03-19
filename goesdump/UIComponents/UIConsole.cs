@@ -142,7 +142,7 @@ namespace OpenSatelliteProject {
 
             if (syslog != null) {
                 try {
-                    syslog.Send(new Message(config.SysLogFacility, Level.Information, cm.Message));
+                    SyslogClient.Send(new Message(config.SysLogFacility, Level.Information, cm.Message));
                 } catch (SocketException) {
                     // Syslog not configured, ignore.
                 }
@@ -166,7 +166,7 @@ namespace OpenSatelliteProject {
 
             if (syslog != null) {
                 try {
-                    syslog.Send(new Message(config.SysLogFacility, Level.Warning, cm.Message));
+                    SyslogClient.Send(new Message(config.SysLogFacility, Level.Warning, cm.Message));
                 } catch (SocketException) {
                     // Syslog not configured, ignore.
                 }
@@ -190,7 +190,7 @@ namespace OpenSatelliteProject {
 
             if (syslog != null) {
                 try {
-                    syslog.Send(new Message(config.SysLogFacility, Level.Error, cm.Message));
+                    SyslogClient.Send(new Message(config.SysLogFacility, Level.Error, cm.Message));
                 } catch (SocketException) {
                     // Syslog not configured, ignore.
                 }
@@ -214,7 +214,7 @@ namespace OpenSatelliteProject {
 
             if (syslog != null) {
                 try {
-                    syslog.Send(new Message(config.SysLogFacility, Level.Debug, cm.Message));
+                    SyslogClient.Send(new Message(config.SysLogFacility, Level.Debug, cm.Message));
                 } catch (SocketException) {
                     // Syslog not configured, ignore.
                 }

@@ -36,7 +36,6 @@ namespace OpenSatelliteProject {
 
         private static List<ConsoleMessage> messageList = new List<ConsoleMessage>();
         private static Mutex messageListMutex = new Mutex();
-        private SyslogClient syslog = new SyslogClient();
 
         private bool running = false;
 
@@ -96,7 +95,7 @@ namespace OpenSatelliteProject {
 
             if (LLTools.IsLinux) {
                 try {
-                    syslog.Send(new Message(config.SysLogFacility, Level.Information, "Your syslog connection is working! OpenSatelliteProject is enabled to send logs."));
+                    SyslogClient.Send(new Message(config.SysLogFacility, Level.Information, "Your syslog connection is working! OpenSatelliteProject is enabled to send logs."));
                 } catch (WebSocketException) {
                     UIConsole.GlobalConsole.Warn("Your syslog is not enabled to receive UDP request. Please refer to https://opensatelliteproject.github.io/OpenSatelliteProject/");
                 }

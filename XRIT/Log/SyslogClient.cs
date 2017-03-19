@@ -34,7 +34,7 @@ namespace OpenSatelliteProject.Log {
             }
         }
 
-        public void Send(Message message) {
+        public static void Send(Message message) {
             if (!IsActive) {
                 udpClient.Connect(SysLogServerIp, Port);
                 IsActive = true;
@@ -48,7 +48,7 @@ namespace OpenSatelliteProject.Log {
             }
         }
 
-        public static void InitFacilityMap() {
+        private static void InitFacilityMap() {
             FacilityMap = new Dictionary<string, Facility>();
 
             FacilityMap["LOG_KERNEL"] = Facility.Kernel;
