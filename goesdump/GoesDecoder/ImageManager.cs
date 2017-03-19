@@ -149,19 +149,19 @@ namespace OpenSatelliteProject {
                                     mData.IsWaterVapourProcessed = true;
                                 }
                             }
-                        } catch (Exception e) {
-                            UIConsole.GlobalConsole.Error(string.Format("Error processing image {0}: {1}", filename, e));
-                            mData.RetryCount++;
-                            if (mData.RetryCount == ImageManager.MaxRetryCount) {
-                                mData.IsProcessed = true;
-                            }
                         } catch (SystemException e) {
                             UIConsole.GlobalConsole.Error(string.Format("Error processing image (SysExcpt) {0}: {1}", filename, e));                            
                             mData.RetryCount++;
                             if (mData.RetryCount == ImageManager.MaxRetryCount) {
                                 mData.IsProcessed = true;
                             }
-                        }
+                        } catch (Exception e) {
+                            UIConsole.GlobalConsole.Error(string.Format("Error processing image {0}: {1}", filename, e));
+                            mData.RetryCount++;
+                            if (mData.RetryCount == ImageManager.MaxRetryCount) {
+                                mData.IsProcessed = true;
+                            }
+                        } 
                     }
                 }
 

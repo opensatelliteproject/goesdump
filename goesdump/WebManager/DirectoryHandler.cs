@@ -24,11 +24,17 @@ namespace OpenSatelliteProject {
             var req = e.Request;
             var res = e.Response;
 
+            var upperPath = "";
             var path = req.RawUrl;
             var relPath = path.Replace(BasePath, "").UrlDecode();
 
             if (relPath.StartsWith("/")) {
                 relPath = relPath.Substring(1);
+            }
+
+            if (relPath.Length > 0) {
+                var tmp = !relPath.EndsWith("/") ? relPath + "/" : relPath;
+                upperPath = Path.Combine(BasePath, Path.GetDirectoryName(Path.GetDirectoryName(tmp)));
             }
 
             var folder = Path.Combine(dataFolder, relPath);
@@ -68,6 +74,15 @@ namespace OpenSatelliteProject {
                 List<string> dirs = Directory.GetDirectories(folder).OrderBy(a => a).ToList();
                 string dirList = "";
                 string fileList = "";
+
+                if (upperPath.Length > 0) {
+                    dirList += string.Format("\t<tr>\n" +
+                    "\t\t<td><img src=\"/static/folder.gif\"></td>\n" +
+                    "\t\t<td><a href=\"{0}\">{1}</a></td>\n" +
+                    "\t\t<td>{2}</td>\n" +
+                    "\t\t<td>{3}</td>\n" +
+                    "\t</tr>\n", upperPath, "..", "", "-");
+                }
 
                 foreach (var file in dirs) {
                     var name = Path.GetFileName(file);
