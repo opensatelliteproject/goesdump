@@ -31,7 +31,7 @@ namespace OpenSatelliteProject.PacketData {
 
         public TimestampHeader TimestampHeader { get; set; }
 
-        public List<XRITBaseHeader> UnknownHeaders { get; }
+        public List<XRITBaseHeader> UnknownHeaders { get; set; }
 
         #endregion
 

@@ -1,4 +1,8 @@
 ﻿using System;
+using OpenSatelliteProject.Log;
+using System.Net.Sockets;
+
+
 #if !HEADLESS
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -21,6 +25,8 @@ namespace OpenSatelliteProject {
     public class UIConsole {
     #endif
         public static UIConsole GlobalConsole;
+
+        public SyslogClient syslog;
 
         public bool LogConsole { get; set; }
         #if !HEADLESS
@@ -58,6 +64,10 @@ namespace OpenSatelliteProject {
             messages = new List<ConsoleMessage>();
             Position = new Vector2(0, 0);
             #endif
+
+            if (Tools.LLTools.IsLinux) {
+                syslog = new SyslogClient();
+            }
         }
         #if !HEADLESS
         public float MaxHeight {
@@ -133,6 +143,14 @@ namespace OpenSatelliteProject {
                 Console.WriteLine(cm.ToString());
                 Console.ForegroundColor = oldColor;
             }
+
+            if (syslog != null) {
+                try {
+                    syslog.Send(new Message(Facility.User, Level.Information, cm.Message));
+                } catch (SocketException) {
+                    // Syslog not configured, ignore.
+                }
+            }
             MessageAvailable?.Invoke(cm);
             messageMutex.ReleaseMutex();
         }
@@ -148,6 +166,14 @@ namespace OpenSatelliteProject {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine(cm.ToString());
                 Console.ForegroundColor = oldColor;
+            }
+
+            if (syslog != null) {
+                try {
+                    syslog.Send(new Message(Facility.User, Level.Warning, cm.Message));
+                } catch (SocketException) {
+                    // Syslog not configured, ignore.
+                }
             }
             MessageAvailable?.Invoke(cm);
             messageMutex.ReleaseMutex();
@@ -165,6 +191,14 @@ namespace OpenSatelliteProject {
                 Console.WriteLine(cm.ToString());
                 Console.ForegroundColor = oldColor;
             }
+
+            if (syslog != null) {
+                try {
+                    syslog.Send(new Message(Facility.User, Level.Error, cm.Message));
+                } catch (SocketException) {
+                    // Syslog not configured, ignore.
+                }
+            }
             MessageAvailable?.Invoke(cm);
             messageMutex.ReleaseMutex();
         }
@@ -180,6 +214,14 @@ namespace OpenSatelliteProject {
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 Console.WriteLine(cm.ToString());
                 Console.ForegroundColor = oldColor;
+            }
+
+            if (syslog != null) {
+                try {
+                    syslog.Send(new Message(Facility.User, Level.Debug, cm.Message));
+                } catch (SocketException) {
+                    // Syslog not configured, ignore.
+                }
             }
             MessageAvailable?.Invoke(cm);
             messageMutex.ReleaseMutex();

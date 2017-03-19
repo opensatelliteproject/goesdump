@@ -5,6 +5,23 @@ using System.Net.Sockets;
 
 namespace OpenSatelliteProject {
     public class Connector {
+
+        public static string StatisticsServerName { get; set; }
+        public static string ChannelDataServerName { get; set; }
+        public static string ConstellationServerName { get; set; }
+        public static int StatisticsServerPort { get; set; }
+        public static int ChannelDataServerPort { get; set; }
+        public static int ConstellationServerPort { get; set; }
+
+        static Connector() {
+            StatisticsServerName = "localhost";
+            ChannelDataServerName = "localhost";
+            ConstellationServerName = "localhost";
+            StatisticsServerPort = 5002;
+            ChannelDataServerPort = 5001;
+            ConstellationServerPort = 9000;
+        }
+
         #region Delegate
 
         public delegate void StatisticsEvent(Statistics_st data);
@@ -105,7 +122,7 @@ namespace OpenSatelliteProject {
             UIConsole.GlobalConsole.Log("Statistics Thread Started");
             byte[] buffer = new byte[4165];
 
-            IPHostEntry ipHostInfo = Dns.GetHostEntry("localhost");
+            IPHostEntry ipHostInfo = Dns.GetHostEntry(StatisticsServerName);
             IPAddress ipAddress = new IPAddress(new byte[] { 127, 0, 0, 1 });
             foreach (IPAddress ip in ipHostInfo.AddressList) {
               if (ip.AddressFamily != AddressFamily.InterNetworkV6) {
@@ -114,7 +131,7 @@ namespace OpenSatelliteProject {
               }
             }
 
-            IPEndPoint remoteEP = new IPEndPoint(ipAddress, 5002);
+            IPEndPoint remoteEP = new IPEndPoint(ipAddress, StatisticsServerPort);
             Socket sender = null;
             bool isConnected;
 
@@ -190,7 +207,7 @@ namespace OpenSatelliteProject {
             UIConsole.GlobalConsole.Log("Channel Data Loop started");
             byte[] buffer = new byte[892];
 
-            IPHostEntry ipHostInfo = Dns.GetHostEntry("localhost");
+            IPHostEntry ipHostInfo = Dns.GetHostEntry(ChannelDataServerName);
             IPAddress ipAddress = new IPAddress(new byte[] { 127, 0, 0, 1 });
             foreach (IPAddress ip in ipHostInfo.AddressList) {
                 if (ip.AddressFamily != AddressFamily.InterNetworkV6) {
@@ -198,7 +215,7 @@ namespace OpenSatelliteProject {
                     break;
                 }
             }
-            IPEndPoint remoteEP = new IPEndPoint(ipAddress, 5001);
+            IPEndPoint remoteEP = new IPEndPoint(ipAddress, ChannelDataServerPort);
             Socket sender = null;
 
             while (channelDataThreadRunning) {
@@ -277,7 +294,7 @@ namespace OpenSatelliteProject {
                 data[i] = 0;
             }
 
-            IPHostEntry ipHostInfo = Dns.GetHostEntry("localhost");
+            IPHostEntry ipHostInfo = Dns.GetHostEntry(ConstellationServerName);
             IPAddress ipAddress = new IPAddress(new byte[] { 127, 0, 0, 1 });
             foreach (IPAddress ip in ipHostInfo.AddressList) {
                 if (ip.AddressFamily != AddressFamily.InterNetworkV6) {
@@ -286,8 +303,8 @@ namespace OpenSatelliteProject {
                 }
             }
 
-            IPEndPoint remoteEP = new IPEndPoint(ipAddress, 9000);
-            UdpClient udpClient = new UdpClient(9000);
+            IPEndPoint remoteEP = new IPEndPoint(ipAddress, ConstellationServerPort);
+            UdpClient udpClient = new UdpClient(ConstellationServerPort);
             udpClient.Client.ReceiveTimeout = 200;
 
             while (constellationDataThreadRunning) {

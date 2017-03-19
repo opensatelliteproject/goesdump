@@ -4,9 +4,41 @@ using System.Linq;
 using OpenSatelliteProject.PacketData;
 using OpenSatelliteProject.PacketData.Enums;
 using OpenSatelliteProject.PacketData.Structs;
+using System.IO;
 
 namespace OpenSatelliteProject.Tools {
     public static class FileParser {
+
+        public static XRITHeader GetHeaderFromFile(string filename) {
+            FileStream f = File.OpenRead(filename);
+            var firstHeader = new byte[3];
+            f.Read(firstHeader, 0, 3);
+            if (firstHeader[0] == 0) {
+                var tmp = firstHeader.Skip(1).Take(2).ToArray();
+                if (BitConverter.IsLittleEndian) {
+                    Array.Reverse(tmp);
+                }
+
+                int size = BitConverter.ToUInt16(tmp, 0);
+                firstHeader = new byte[size - 3];
+                f.Seek(0, SeekOrigin.Begin);
+                f.Read(firstHeader, 0, size - 3);
+
+                PrimaryRecord fh = LLTools.ByteArrayToStruct<PrimaryRecord>(firstHeader);
+                fh = LLTools.StructToSystemEndian(fh);
+
+                f.Seek(0, SeekOrigin.Begin);
+                tmp = new byte[fh.HeaderLength];
+                f.Read(tmp, 0, (int)fh.HeaderLength);
+                var header = FileParser.GetHeader(tmp);
+                f.Close();
+                return header;
+            } else {
+                f.Close();
+                throw new Exception("Invalid file");
+            }
+        }
+
         public static XRITHeader GetHeader(byte[] data) {
             List<XRITBaseHeader> headers = GetHeaderData(data);
             return new XRITHeader(headers);

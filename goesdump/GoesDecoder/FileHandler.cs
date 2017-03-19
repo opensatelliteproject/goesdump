@@ -2,6 +2,7 @@
 using OpenSatelliteProject.PacketData;
 using System.Collections.Generic;
 using System.IO;
+using OpenSatelliteProject.PacketData.Enums;
 
 namespace OpenSatelliteProject {
     public delegate void FileHandlerFunction(string filename, XRITHeader fileHeader);
@@ -11,10 +12,15 @@ namespace OpenSatelliteProject {
         private static Dictionary<int, FileHandlerFunction> byCompressionTypeHandler;
         private static Dictionary<int, FileHandlerFunction> byProductIdHandler;
 
+        public static bool SkipDCS { get; set; }
+        public static bool SkipEMWIN { get; set; }
+
 
         static FileHandler() {
             byProductIdHandler = new Dictionary<int, FileHandlerFunction>();
             byCompressionTypeHandler = new Dictionary<int, FileHandlerFunction>();
+            SkipDCS = false;
+            SkipEMWIN = false;
         }
 
         public static void AttachByCompressionHandler(int compressionType, FileHandlerFunction handler) {
@@ -39,6 +45,15 @@ namespace OpenSatelliteProject {
             string dir = Path.GetDirectoryName(filename);
             string ofilename = fileHeader.Filename == null ? Path.GetFileName(filename) : fileHeader.Filename; 
             string f = PacketManager.FixFileFolder(dir, ofilename, fileHeader.Product, fileHeader.SubProduct);
+
+            if ((fileHeader.Product.ID == (int)NOAAProductID.DCS && SkipDCS) || (fileHeader.Product.ID == (int)NOAAProductID.EMWIN && SkipEMWIN)) {
+                try {
+                    File.Delete(filename);
+                } catch (IOException e) {
+                    UIConsole.GlobalConsole.Error(String.Format("Error deleting file {0}: {1}", filename, e));
+                }
+                return;
+            }
 
             if (File.Exists(f)) {
                 string timestamp = DateTime.Now.ToString("yyyyMMddHHmmssffff");

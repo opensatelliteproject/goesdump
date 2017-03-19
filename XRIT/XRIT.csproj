@@ -91,10 +91,21 @@
     <Compile Include="Tools\ImageHandler.cs" />
     <Compile Include="Tools\TextHandler.cs" />
     <Compile Include="Tools\AEC.cs" />
+    <Compile Include="Tools\Organizer.cs" />
+    <Compile Include="Models\OrganizerData.cs" />
+    <Compile Include="Models\GroupData.cs" />
+    <Compile Include="Tools\ImageTools.cs" />
+    <Compile Include="Tools\Presets.cs" />
+    <Compile Include="Log\Level.cs" />
+    <Compile Include="Log\Facility.cs" />
+    <Compile Include="Log\Message.cs" />
+    <Compile Include="Log\SyslogClient.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="PacketData\" />
     <Folder Include="Tools\" />
+    <Folder Include="Models\" />
+    <Folder Include="Log\" />
   </ItemGroup>
 </Project>
