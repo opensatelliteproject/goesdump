@@ -26,15 +26,14 @@ namespace OpenSatelliteProject {
     #endif
         public static UIConsole GlobalConsole;
 
-        public SyslogClient syslog;
-
         public bool LogConsole { get; set; }
         #if !HEADLESS
         public Vector2 Position { get; set; }
         public SpriteFont Font { get; set; }
         #endif
         private Mutex messageMutex;
-
+        private static ProgConfig config = new ProgConfig();
+        private static SyslogClient syslog = new SyslogClient();
         public delegate void ConsoleEvent(ConsoleMessage data);
 
         public event ConsoleEvent MessageAvailable;
@@ -64,10 +63,7 @@ namespace OpenSatelliteProject {
             messages = new List<ConsoleMessage>();
             Position = new Vector2(0, 0);
             #endif
-
-            if (Tools.LLTools.IsLinux) {
-                syslog = new SyslogClient();
-            }
+            SyslogClient.SysLogServerIp = config.SysLogServer;
         }
         #if !HEADLESS
         public float MaxHeight {
@@ -146,7 +142,7 @@ namespace OpenSatelliteProject {
 
             if (syslog != null) {
                 try {
-                    syslog.Send(new Message(Facility.User, Level.Information, cm.Message));
+                    syslog.Send(new Message(config.SysLogFacility, Level.Information, cm.Message));
                 } catch (SocketException) {
                     // Syslog not configured, ignore.
                 }
@@ -170,7 +166,7 @@ namespace OpenSatelliteProject {
 
             if (syslog != null) {
                 try {
-                    syslog.Send(new Message(Facility.User, Level.Warning, cm.Message));
+                    syslog.Send(new Message(config.SysLogFacility, Level.Warning, cm.Message));
                 } catch (SocketException) {
                     // Syslog not configured, ignore.
                 }
@@ -194,7 +190,7 @@ namespace OpenSatelliteProject {
 
             if (syslog != null) {
                 try {
-                    syslog.Send(new Message(Facility.User, Level.Error, cm.Message));
+                    syslog.Send(new Message(config.SysLogFacility, Level.Error, cm.Message));
                 } catch (SocketException) {
                     // Syslog not configured, ignore.
                 }
@@ -218,7 +214,7 @@ namespace OpenSatelliteProject {
 
             if (syslog != null) {
                 try {
-                    syslog.Send(new Message(Facility.User, Level.Debug, cm.Message));
+                    syslog.Send(new Message(config.SysLogFacility, Level.Debug, cm.Message));
                 } catch (SocketException) {
                     // Syslog not configured, ignore.
                 }

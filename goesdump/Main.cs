@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Input;
 using System.Threading;
 using System.IO;
 using OpenSatelliteProject.PacketData.Enums;
+using OpenSatelliteProject.Log;
 
 namespace OpenSatelliteProject {
     /// <summary>
@@ -21,6 +22,7 @@ namespace OpenSatelliteProject {
         private ImageManager NHImageManager;
         private ImageManager SHImageManager;
         private ImageManager USImageManager;
+        private SyslogClient syslog;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -63,6 +65,8 @@ namespace OpenSatelliteProject {
             config.GenerateVisibleImages = config.GenerateVisibleImages;
             config.GenerateWaterVapourImages = config.GenerateWaterVapourImages;
             config.MaxGenerateRetry = config.MaxGenerateRetry;
+            config.SysLogServer = config.SysLogServer;
+            config.SysLogFacility = config.SysLogFacility;
             config.Save();
             #endregion
 
@@ -92,6 +96,8 @@ namespace OpenSatelliteProject {
             Connector.ChannelDataServerPort = config.ChannelDataServerPort;
             Connector.StatisticsServerPort = config.StatisticsServerPort;
             Connector.ConstellationServerPort = config.ConstellationServerPort;
+
+            SyslogClient.SysLogServerIp = config.SysLogServer;
 
             if (config.GenerateFDFalseColor) {
                 string fdFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_FULLDISK);

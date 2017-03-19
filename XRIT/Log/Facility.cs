@@ -10,14 +10,14 @@
         News=7,
         UUCP=8,
         Cron=9,
-        Local0=10,
-        Local1=11,
-        Local2=12,
-        Local3=13,
-        Local4=14,
-        Local5=15,
-        Local6=16,
-        Local7=17
+        Local0=16,
+        Local1=17,
+        Local2=18,
+        Local3=19,
+        Local4=20,
+        Local5=21,
+        Local6=22,
+        Local7=23
     }
 }
 
