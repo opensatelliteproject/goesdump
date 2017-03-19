@@ -66,6 +66,10 @@ namespace OpenSatelliteProject {
             config.GenerateSHFalseColor = config.GenerateSHFalseColor;
             config.GenerateUSFalseColor = config.GenerateXXFalseColor;
             config.HTTPPort = config.HTTPPort;
+            config.GenerateInfraredImages = config.GenerateInfraredImages;
+            config.GenerateVisibleImages = config.GenerateVisibleImages;
+            config.GenerateWaterVapourImages = config.GenerateWaterVapourImages;
+            config.MaxGenerateRetry = config.MaxGenerateRetry;
             config.Save();
             #endregion
 
@@ -81,6 +85,10 @@ namespace OpenSatelliteProject {
             FileHandler.SkipEMWIN = !config.EnableEMWIN;
             FileHandler.SkipDCS = !config.EnableDCS;
             ImageManager.EraseFiles = config.EraseFilesAfterGeneratingFalseColor;
+            ImageManager.GenerateInfrared = config.GenerateInfraredImages;
+            ImageManager.GenerateVisible = config.GenerateVisibleImages;
+            ImageManager.GenerateWaterVapour = config.GenerateWaterVapourImages;
+            ImageManager.MaxRetryCount = config.MaxGenerateRetry;
 
             Connector.ChannelDataServerName = config.ChannelDataServerName;
             Connector.StatisticsServerName = config.StatisticsServerName;

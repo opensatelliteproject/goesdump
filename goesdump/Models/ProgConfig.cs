@@ -59,6 +59,30 @@ namespace OpenSatelliteProject {
 
         #region Image Processing
         [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("false")]
+        public bool GenerateVisibleImages {
+            get { return (bool)this["GenerateVisibleImages"]; }
+            set { this["GenerateVisibleImages"] = value; }
+        }
+        [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("false")]
+        public bool GenerateInfraredImages {
+            get { return (bool)this["GenerateInfraredImages"]; }
+            set { this["GenerateInfraredImages"] = value; }
+        }
+        [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("false")]
+        public bool GenerateWaterVapourImages {
+            get { return (bool)this["GenerateWaterVapourImages"]; }
+            set { this["GenerateWaterVapourImages"] = value; }
+        }
+        [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("3")]
+        public int MaxGenerateRetry {
+            get { return (int)this["MaxGenerateRetry"]; }
+            set { this["MaxGenerateRetry"] = value; }
+        }
+        [UserScopedSettingAttribute()]
         [DefaultSettingValueAttribute("true")]
         public bool GenerateFDFalseColor {
             get { return (bool)this["GenerateFDFalseColor"]; }

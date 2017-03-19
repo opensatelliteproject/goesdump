@@ -14,6 +14,9 @@ namespace OpenSatelliteProject {
         public bool IsInfraredProcessed { get; set; }
         public bool IsWaterVapourProcessed { get; set; }
 
+        public int RetryCount { get; set; }
+        public bool Failed { get; set; }
+
         public bool IsComplete { get { return Visible.IsComplete && Infrared.IsComplete && WaterVapour.IsComplete; } }
 
         public GroupData() {
@@ -27,6 +30,8 @@ namespace OpenSatelliteProject {
             IsVisibleProcessed = false;
             IsInfraredProcessed = false;
             IsWaterVapourProcessed = false;
+            Failed = false;
+            RetryCount = 0;
         }
 
         public override string ToString() {

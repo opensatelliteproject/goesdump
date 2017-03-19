@@ -12,6 +12,17 @@ namespace OpenSatelliteProject {
         /// <value><c>true</c> if erase files; otherwise, <c>false</c>.</value>
         public static bool EraseFiles { get; set; }
 
+        /// <summary>
+        /// Max Retry Count for generating false colors. After that it will be considered as done and ignored.
+        /// </summary>
+        /// <value>The max retry count.</value>
+        public static int MaxRetryCount { get; set; }
+
+        public static bool GenerateFalseColor { get; set; }
+        public static bool GenerateVisible { get; set; }
+        public static bool GenerateInfrared { get; set; }
+        public static bool GenerateWaterVapour { get; set; }
+
         private Thread imageThread;
         private bool running;
         private Organizer organizer;
@@ -19,6 +30,11 @@ namespace OpenSatelliteProject {
 
         static ImageManager() {
             EraseFiles = false;
+            MaxRetryCount = 3;
+            GenerateFalseColor = true;
+            GenerateVisible = true;
+            GenerateInfrared = true;
+            GenerateWaterVapour = true;
         }
 
         public ImageManager(string folder) {
@@ -112,30 +128,34 @@ namespace OpenSatelliteProject {
                                     EraseGroupDataFiles(mData);
                                 }
                             } else {
-                                /*
-                                if (mData.Visible.IsComplete && mData.Visible.MaxSegments != 0 && !mData.IsVisibleProcessed) {
-                                    bmp = ImageTools.GenerateFullImage(mData.Visible);
+                                if (ImageManager.GenerateVisible && mData.Visible.IsComplete && mData.Visible.MaxSegments != 0 && !mData.IsVisibleProcessed) {
+                                    var bmp = ImageTools.GenerateFullImage(mData.Visible);
                                     bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "VIS", z.Key), ImageFormat.Jpeg);
                                     bmp.Dispose();
                                     mData.IsVisibleProcessed = true;
                                 }
-                                if (mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
-                                    bmp = ImageTools.GenerateFullImage(mData.Infrared);
+
+                                if (ImageManager.GenerateInfrared && mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
+                                    var bmp = ImageTools.GenerateFullImage(mData.Infrared);
                                     bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "IR", z.Key), ImageFormat.Jpeg);
                                     bmp.Dispose();
                                     mData.IsInfraredProcessed = true;
                                 }
-                                if (mData.WaterVapour.IsComplete && mData.WaterVapour.MaxSegments != 0 && !mData.IsWaterVapourProcessed) {
-                                    bmp = ImageTools.GenerateFullImage(mData.WaterVapour);
+
+                                if (ImageManager.GenerateWaterVapour && mData.WaterVapour.IsComplete && mData.WaterVapour.MaxSegments != 0 && !mData.IsWaterVapourProcessed) {
+                                    var bmp = ImageTools.GenerateFullImage(mData.WaterVapour);
                                     bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "WV", z.Key), ImageFormat.Jpeg);
                                     bmp.Dispose();
                                     mData.IsWaterVapourProcessed = true;
                                 }
-                                Console.WriteLine("Not all segments available!");
-                                */
                             }
                         } catch (Exception e) {
                             UIConsole.GlobalConsole.Error(string.Format("Error processing image {0}: {1}", filename, e));
+                            mData.RetryCount++;
+                            if (mData.RetryCount == ImageManager.MaxRetryCount) {
+                                mData.IsProcessed = true;
+                            }
+                           
                         }
                     }
                 }
