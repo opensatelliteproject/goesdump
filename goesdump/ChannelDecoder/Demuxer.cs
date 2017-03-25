@@ -15,29 +15,37 @@ namespace OpenSatelliteProject {
 
         private int lastAPID;
         private int lastFrame;
-        private long frameDrops;
         private int startnum = -1;
         private int endnum = -1;
         private string filename;
         private int channelId;
         private XRITHeader fileHeader;
         private byte[] buffer;
+        private DemuxManager manager;
+        private bool lossFrameBefore;
 
         public int CRCFails { get; set; }
-
         public int Bugs { get; set; }
-
         public int Packets { get; set; }
+        public int LengthFails { get; set; }
+        public long FrameLoss { get; set; }
 
         public Demuxer() {
             temporaryStorage = new Dictionary<int, MSDU>();
             buffer = new byte[0];
             lastAPID = -1;
             lastFrame = -1;
-            frameDrops = 0;
+            FrameLoss = 0;
+            LengthFails = 0;
             CRCFails = 0;
             Bugs = 0;
             Packets = 0;
+            manager = null;
+            lossFrameBefore = false;
+        }
+
+        public Demuxer(DemuxManager manager) : this() {
+            this.manager = manager;
         }
 
         public Tuple<int, byte[]> CreatePacket(byte[] data) {
@@ -79,15 +87,32 @@ namespace OpenSatelliteProject {
                 bool firstOrSinglePacket = msdu.Sequence == SequenceType.FIRST_SEGMENT || msdu.Sequence == SequenceType.SINGLE_DATA;
 
                 Packets++;
+                if (manager != null) {
+                    manager.Packets++;
+                }
 
                 if (!msdu.Valid) {
                     CRCFails++;
+                    if (manager != null) {
+                        manager.CRCFails++;
+                    }
+                }
+
+                if (manager != null) {
+                    LengthFails++;
+                    if (!msdu.Full) {
+                        manager.LengthFails++;
+                    }
                 }
 
                 if (!msdu.Valid || !msdu.Full) {
-                    UIConsole.GlobalConsole.Error("Got a invalid MSDU :(");
-                    UIConsole.GlobalConsole.Debug(String.Format("New Packet for APID {0} - Valid CRC: {1} - Full: {2} - Remaining Bytes: {3} - Frame Lost: {4}", msdu.APID, msdu.Valid, msdu.Full, msdu.RemainingData.Length, msdu.FrameLost));
-                    UIConsole.GlobalConsole.Debug(String.Format("\t\tTotal Size: {0} Current Size: {1}", msdu.PacketLength + 2, msdu.Data.Length)); 
+                    if (msdu.FrameLost) {
+                        UIConsole.GlobalConsole.Error("Lost some frames on MSDU, the file will be corrupted.");
+                    } else {
+                        UIConsole.GlobalConsole.Error("Got a invalid MSDU :(");
+                        UIConsole.GlobalConsole.Debug(String.Format("New Packet for APID {0} - Valid CRC: {1} - Full: {2} - Remaining Bytes: {3} - Frame Lost: {4}", msdu.APID, msdu.Valid, msdu.Full, msdu.RemainingData.Length, msdu.FrameLost));
+                        UIConsole.GlobalConsole.Debug(String.Format("\t\tTotal Size: {0} Current Size: {1}", msdu.PacketLength + 2, msdu.Data.Length)); 
+                    }
                 }
 
                 if (msdu.Sequence == SequenceType.FIRST_SEGMENT || msdu.Sequence == SequenceType.SINGLE_DATA) {
@@ -170,15 +195,20 @@ namespace OpenSatelliteProject {
             counter >>= 8;
 
             if (lastFrame != -1 && lastFrame + 1 != counter) {
-                UIConsole.GlobalConsole.Error(String.Format("Lost {0} frames.", counter - lastFrame - 1));
+                UIConsole.GlobalConsole.Error(String.Format("Lost {0} frames. Last Frame #{1} - Current Frame #{2}", counter - lastFrame - 1, lastFrame, counter));
                 if (lastAPID != -1) {
                     temporaryStorage[lastAPID].FrameLost = true;
                 }
             }
 
             if (lastFrame != -1) {
-                frameDrops += counter - lastFrame - 1;
+                FrameLoss += counter - lastFrame - 1;
+                if (manager != null) {
+                    manager.FrameLoss += counter - lastFrame - 1;
+                }
             }
+
+            lastFrame = (int)counter;
 
             cb = data.Skip(6).Take(2).ToArray();
             if (BitConverter.IsLittleEndian) {
@@ -196,27 +226,28 @@ namespace OpenSatelliteProject {
                     //  There was not enough data to packetize last time. So lets fill the buffer until the fhp and create packet.
                     if (fhp > 0) {
                         buffer = buffer.Concat(data.Take(fhp)).ToArray();
+                        data = data.Skip(fhp).ToArray();
+                        fhp = 0;
                     }           
 
                     p = CreatePacket(buffer);
                     lastAPID = p.Item1;
-
-                    if (lastAPID == -1) {
-                        buffer = p.Item2;
-                    } else {
-                        buffer = new byte[0];
-                    }
-
+                    buffer = p.Item2;
                 } 
 
                 if (lastAPID != -1) {
                     if (fhp > 0) {
                         temporaryStorage[lastAPID].addDataBytes(buffer.Concat(data.Take(fhp)).ToArray());
+                        data = data.Skip(fhp).ToArray();
+                        fhp = 0;
                     }
 
-                    if (!temporaryStorage[lastAPID].Full) {
+                    if (!temporaryStorage[lastAPID].Full && !temporaryStorage[lastAPID].FrameLost) {
                         Bugs++;
-                        StackFrame callStack = new StackFrame(1, true);
+                        if (manager != null) {
+                            manager.Bugs++;
+                        }
+                        StackFrame callStack = new StackFrame(0, true);
                         UIConsole.GlobalConsole.Debug(String.Format("Problem at line {0} in file {1}! Not full! Check code for bugs!", callStack.GetFileLineNumber(), callStack.GetFileName()));
                     }
                     FinishMSDU(temporaryStorage[lastAPID]);
@@ -227,30 +258,18 @@ namespace OpenSatelliteProject {
                 buffer = buffer.Concat(data.Skip(fhp)).ToArray();
                 p = CreatePacket(buffer);
                 lastAPID = p.Item1;
-                if (lastAPID == -1) {
-                    buffer = p.Item2;
-                } else {
-                    buffer = new byte[0];
-                }
+                buffer = p.Item2;
             } else {
                 if (buffer.Length > 0 && lastAPID != -1) {
                     buffer = buffer.Concat(data).ToArray();
                     p = CreatePacket(buffer);
                     lastAPID = p.Item1;
-                    if (lastAPID == -1) {
-                        buffer = p.Item2;
-                    } else {
-                        buffer = new byte[0];
-                    }
+                    buffer = p.Item2;
                 } else if (lastAPID == -1) {
                     buffer = buffer.Concat(data).ToArray();
                     p = CreatePacket(buffer);
                     lastAPID = p.Item1;
-                    if (lastAPID == -1) {
-                        buffer = p.Item2;
-                    } else {
-                        buffer = new byte[0];
-                    }
+                    buffer = p.Item2;
                 } else {
                     temporaryStorage[lastAPID].addDataBytes(data);
                 }
