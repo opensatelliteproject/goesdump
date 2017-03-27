@@ -130,6 +130,7 @@ namespace OpenSatelliteProject {
 
             mtx = new Mutex();
             cn = new Connector();
+            DemuxManager.RecordToFile = true;
             demuxManager = new DemuxManager();
             cn.StatisticsAvailable += (Statistics_st data) => {
                 mtx.WaitOne();
