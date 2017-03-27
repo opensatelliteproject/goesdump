@@ -46,7 +46,12 @@ namespace OpenSatelliteProject.PacketData {
 
         public bool Valid {
             get {
-                return Data.Take(Data.Length - 2).ToArray().CRC() == CRC;
+                if (Data.Length > 2) {
+                    return Data.Take(Data.Length - 2).ToArray().CRC() == CRC;
+                } else {
+                    // Not enough data
+                    return false;
+                }
             }
         }
 
@@ -69,7 +74,8 @@ namespace OpenSatelliteProject.PacketData {
 
         public void addDataBytes(byte[] data) {            
             if (data.Length + Data.Length > PacketLength + 2) {
-                Console.WriteLine("(MSDU) Overflow in MSDU!");
+                Console.WriteLine("(MSDU) Overflow in MSDU--!");
+                Console.WriteLine(Environment.StackTrace);
             }
             byte[] newData = new byte[Data.Length + data.Length];
             Array.Copy(Data, newData, Data.Length);

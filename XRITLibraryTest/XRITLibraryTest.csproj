@@ -97,5 +97,9 @@
       <Project>{31BC62BD-1EE9-4B14-A931-19C572126A51}</Project>
       <Name>XRIT</Name>
     </ProjectReference>
+    <ProjectReference Include="..\goesdump\GOES Dumper.csproj">
+      <Project>{E1B44542-24FF-409C-A2A3-237A00A8520D}</Project>
+      <Name>GOES Dumper</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

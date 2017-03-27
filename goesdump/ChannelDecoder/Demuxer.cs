@@ -22,7 +22,7 @@ namespace OpenSatelliteProject {
         private XRITHeader fileHeader;
         private byte[] buffer;
         private DemuxManager manager;
-        private bool lossFrameBefore;
+       
 
         public int CRCFails { get; set; }
         public int Bugs { get; set; }
@@ -41,7 +41,6 @@ namespace OpenSatelliteProject {
             Bugs = 0;
             Packets = 0;
             manager = null;
-            lossFrameBefore = false;
         }
 
         public Demuxer(DemuxManager manager) : this() {
@@ -57,12 +56,8 @@ namespace OpenSatelliteProject {
 
                 MSDU msdu = MSDU.parseMSDU(data);
 
-                if (msdu.APID != 2047) {
-                    temporaryStorage[msdu.APID] = msdu;
-                    apid = msdu.APID;
-                } else {
-                    apid = -1;
-                }
+                temporaryStorage[msdu.APID] = msdu;
+                apid = msdu.APID;
 
                 if (msdu.RemainingData.Length > 0 || msdu.Full) {
                     data = msdu.RemainingData;
@@ -270,6 +265,8 @@ namespace OpenSatelliteProject {
                     p = CreatePacket(buffer);
                     lastAPID = p.Item1;
                     buffer = p.Item2;
+                //} else if (buffer.Length > 0) {
+                //    Console.WriteLine("EDGE CASE!");
                 } else {
                     temporaryStorage[lastAPID].addDataBytes(data);
                 }

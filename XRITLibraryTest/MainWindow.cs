@@ -8,6 +8,9 @@ using System.Drawing.Imaging;
 using OpenSatelliteProject.Log;
 
 public partial class MainWindow: Gtk.Window {
+
+    DemuxManager dm;
+
     public MainWindow() : base(Gtk.WindowType.Toplevel) {
         Build();
 
@@ -15,6 +18,30 @@ public partial class MainWindow: Gtk.Window {
             Console.WriteLine(fileChooser.Filename);
             ProcessFile(fileChooser.Filename);
         };
+
+        string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
+        dm = new DemuxManager();
+        //FileHandler.SkipDCS = true;
+        FileHandler.SkipEMWIN = true;
+        int startFrame = 83000;
+        FileStream file = File.OpenRead(debugFrames);
+        byte[] data = new byte[892];
+        long bytesRead = startFrame * 892;
+        long bytesToRead = file.Length;
+        int frameN = startFrame;
+        file.Position = bytesRead;
+        while (bytesRead < bytesToRead) {
+            Console.WriteLine("Injecting Frame {0}", frameN);
+            bytesRead += file.Read(data, 0, 892);
+            dm.parseBytes(data);
+            frameN++;
+        }
+
+        Console.WriteLine("CRC Fails: {0}", dm.CRCFails);
+        Console.WriteLine("Bugs: {0}", dm.Bugs);
+        Console.WriteLine("Frame Loss: {0}", dm.FrameLoss);
+        Console.WriteLine("Length Fails: {0}", dm.LengthFails);
+        Console.WriteLine("Packets: {0}", dm.Packets);
 
         //ProcessFile("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Text/NWSTEXTdat043204159214.lrit");
         /*
