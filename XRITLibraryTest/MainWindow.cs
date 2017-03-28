@@ -19,11 +19,13 @@ public partial class MainWindow: Gtk.Window {
             ProcessFile(fileChooser.Filename);
         };
 
-        string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
+        //string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
+        string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
         dm = new DemuxManager();
-        //FileHandler.SkipDCS = true;
+        FileHandler.SkipDCS = true;
         FileHandler.SkipEMWIN = true;
-        int startFrame = 83000;
+        //int startFrame = 83000;
+        int startFrame = 0;
         FileStream file = File.OpenRead(debugFrames);
         byte[] data = new byte[892];
         long bytesRead = startFrame * 892;
@@ -31,7 +33,7 @@ public partial class MainWindow: Gtk.Window {
         int frameN = startFrame;
         file.Position = bytesRead;
         while (bytesRead < bytesToRead) {
-            Console.WriteLine("Injecting Frame {0}", frameN);
+            //Console.WriteLine("Injecting Frame {0}", frameN);
             bytesRead += file.Read(data, 0, 892);
             dm.parseBytes(data);
             frameN++;

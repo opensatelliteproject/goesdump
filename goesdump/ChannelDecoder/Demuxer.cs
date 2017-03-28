@@ -154,9 +154,9 @@ namespace OpenSatelliteProject {
                     if (fileHeader.Compression == CompressionType.LRIT_RICE) { // # Rice
                         string decompressed;
                         if (msdu.Sequence == SequenceType.SINGLE_DATA) {
-                            decompressed = PacketManager.Decompressor(filename, fileHeader.ImageStructureHeader.Columns);
+                            decompressed = PacketManager.Decompressor(filename, fileHeader.ImageStructureHeader.Columns, fileHeader.RiceCompressionHeader.Pixel, fileHeader.RiceCompressionHeader.Flags);
                         } else {
-                            decompressed = PacketManager.Decompressor(String.Format("channels/{0}/{1}_{2}_", channelId, msdu.APID, msdu.Version), fileHeader.ImageStructureHeader.Columns, startnum, endnum);
+                            decompressed = PacketManager.Decompressor(String.Format("channels/{0}/{1}_{2}_", channelId, msdu.APID, msdu.Version), fileHeader.ImageStructureHeader.Columns, startnum, endnum, fileHeader.RiceCompressionHeader.Pixel, fileHeader.RiceCompressionHeader.Flags);
                         }
 
                         FileHandler.HandleFile(decompressed, fileHeader);

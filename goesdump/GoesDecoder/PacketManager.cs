@@ -293,7 +293,7 @@ namespace OpenSatelliteProject {
             File.Move(filename, f.Replace("." + newExt, ".lrit"));
         }
 
-        public static string Decompressor(string filename, int pixels) {
+        public static string Decompressor(string filename, int pixels, int pixelsPerBlock, int mask) {
             /**
              *  Temporary Workarround. Needs to change directly on Demuxer
              */
@@ -306,7 +306,7 @@ namespace OpenSatelliteProject {
 
             try {
                 byte[] inputData = File.ReadAllBytes(filename);
-                AEC.LritRiceDecompress(ref outputData, inputData, 8, 16, pixels, AEC.ALLOW_K13_OPTION_MASK | AEC.MSB_OPTION_MASK | AEC.NN_OPTION_MASK);
+                AEC.LritRiceDecompress(ref outputData, inputData, 8, pixelsPerBlock, pixels, mask); //  AEC.ALLOW_K13_OPTION_MASK | AEC.MSB_OPTION_MASK | AEC.NN_OPTION_MASK
                 File.Delete(filename);
             } catch (Exception e) {
                 if (e is AECException) {
@@ -322,7 +322,7 @@ namespace OpenSatelliteProject {
         }
 
 
-        public static string Decompressor(string prefix, int pixels, int startnum, int endnum) {
+        public static string Decompressor(string prefix, int pixels, int startnum, int endnum, int pixelsPerBlock, int mask) {
             /**
              *  Temporary Workarround. Needs to change directly on Demuxer
              */
@@ -355,11 +355,11 @@ namespace OpenSatelliteProject {
                     }
 
                     try {
-                        AEC.LritRiceDecompress(ref outputData, input, 8, 16, pixels, AEC.ALLOW_K13_OPTION_MASK | AEC.MSB_OPTION_MASK | AEC.NN_OPTION_MASK);
+                        AEC.LritRiceDecompress(ref outputData, input, 8, pixelsPerBlock, pixels, mask);
                         File.Delete(ifile);
                     } catch (AECException e) {
                         Console.WriteLine("AEC Decompress problem decompressing file {0}: {1}", ifile, e.status.ToString());
-                        Console.WriteLine("AEC Params: {0} - {1} - {2}", 8, 16, pixels);
+                        Console.WriteLine("AEC Params: {0} - {1} - {2} - {3}", 8, pixelsPerBlock, pixels, mask);
                     }
 
                     f.Write(outputData, 0, outputData.Length);
@@ -374,7 +374,7 @@ namespace OpenSatelliteProject {
                         }
 
                         try {
-                            AEC.LritRiceDecompress(ref outputData, input, 8, 16, pixels, AEC.ALLOW_K13_OPTION_MASK | AEC.MSB_OPTION_MASK | AEC.NN_OPTION_MASK);
+                            AEC.LritRiceDecompress(ref outputData, input, 8, pixelsPerBlock, pixels, mask);
                             File.Delete(ifile);
                         } catch (AECException e) {
                             Console.WriteLine("AEC Decompress problem decompressing file {0}", ifile);
