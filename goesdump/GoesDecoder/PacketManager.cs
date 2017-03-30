@@ -36,7 +36,9 @@ namespace OpenSatelliteProject {
         public static string GetFolderByProduct(NOAAProductID product, int subProduct) {
             // TODO: Unify with other functions that use the same thing
             string folderName = UnknownDataFolder;
-            if (product == NOAAProductID.SCANNER_DATA_1 || product == NOAAProductID.SCANNER_DATA_2) {
+            if (product == NOAAProductID.SCANNER_DATA_3) {
+                folderName = Path.Combine(ImagesFolder, "FM1");
+            } else  if (product == NOAAProductID.SCANNER_DATA_1 || product == NOAAProductID.SCANNER_DATA_2) {
                 switch (subProduct) {
                     case (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST:
                     case (int)ScannerSubProduct.VISIBLE_AREA_OF_INTEREST:
@@ -100,7 +102,9 @@ namespace OpenSatelliteProject {
             if (product != null && product.ID != -1) {
                 // New way
                 string folderName = UnknownDataFolder;
-                if (product.ID == (int)NOAAProductID.SCANNER_DATA_1 || product.ID == (int)NOAAProductID.SCANNER_DATA_2) {
+                if (product.ID == (int)NOAAProductID.SCANNER_DATA_3) {
+                    folderName = Path.Combine(ImagesFolder, "FM1");
+                } else if (product.ID == (int)NOAAProductID.SCANNER_DATA_1 || product.ID == (int)NOAAProductID.SCANNER_DATA_2) {
                     switch (subProduct.ID) {
                         case (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST:
                         case (int)ScannerSubProduct.VISIBLE_AREA_OF_INTEREST:
@@ -147,10 +151,18 @@ namespace OpenSatelliteProject {
                             folderName = OtherSatellitesFolder;
                             break;
                         case (int)NOAAProductID.WEATHER_DATA:
-                            folderName = WeatherDataFolder;
+                            if (filename.Contains("KWIN")) {
+                                folderName = EMWINFolder; // HRIT EMWIN
+                            } else {
+                                folderName = WeatherDataFolder;
+                            }
                             break;
                         default:
-                            folderName = UnknownDataFolder;
+                            if (filename.Contains("KWIN")) {
+                                folderName = EMWINFolder; // HRIT EMWIN
+                            } else {
+                                folderName = UnknownDataFolder;
+                            }
                             break;
                     }
                 }
@@ -201,10 +213,38 @@ namespace OpenSatelliteProject {
             FileHandler.AttachByProductIdHandler((int)NOAAProductID.OTHER_SATELLITES_1, HandleWeatherData);
             FileHandler.AttachByProductIdHandler((int)NOAAProductID.OTHER_SATELLITES_2, HandleWeatherData);
             FileHandler.AttachByProductIdHandler((int)NOAAProductID.NOAA_TEXT, HandleTextData);
+            FileHandler.AttachByProductIdHandler((int)NOAAProductID.HRIT_EMWIN_TEXT, (filename, fileHeader) => DumpFile(filename, fileHeader, "txt"));
         }
 
         public static void HandleWeatherData(string filename, XRITHeader header) {
-            if (header.PrimaryHeader.FileType == FileTypeCode.IMAGE) {
+            if (header.Filename.Contains("KWIN")) {
+                // HRIT EMWIN
+                string fz = null;
+                switch (header.Compression) {
+                    case CompressionType.ZIP:
+                        fz = DumpFile(filename, header, "zip");
+                        break;
+                    case CompressionType.GIF:
+                        fz = DumpFile(filename, header, "gif");
+                        break;
+                    case CompressionType.JPEG:
+                        fz = DumpFile(filename, header, "jpg");
+                        break;
+                    case CompressionType.NO_COMPRESSION:
+                        fz = DumpFile(filename, header, "txt");
+                        break;
+                    default:
+                        fz = DumpFile(filename, header, "bin");
+                        break;
+                }
+                if (fz != null) {
+                    try {
+                        File.Delete(fz);
+                    } catch (Exception) {
+                        // Do nothing, file doesn't exists
+                    }
+                }
+            } else if (header.PrimaryHeader.FileType == FileTypeCode.IMAGE) {
                 string basedir = new DirectoryInfo(Path.GetDirectoryName(filename)).Parent.FullName;
                 if (header.Product.ID == (int)NOAAProductID.OTHER_SATELLITES_1 || header.Product.ID == (int)NOAAProductID.OTHER_SATELLITES_2) {
                     basedir = Path.Combine(basedir, OtherSatellitesFolder);
@@ -247,7 +287,7 @@ namespace OpenSatelliteProject {
             }
         }
 
-        public static void DumpFile(string filename, XRITHeader fileHeader, string newExt) {
+        public static string DumpFile(string filename, XRITHeader fileHeader, string newExt) {
             string dir = Path.GetDirectoryName(filename);
             string f = FixFileFolder(dir, fileHeader.Filename, fileHeader.Product, fileHeader.SubProduct);
             f = f.Replace(".lrit", "." + newExt);
@@ -291,6 +331,7 @@ namespace OpenSatelliteProject {
 
             // Keep the original lrit file
             File.Move(filename, f.Replace("." + newExt, ".lrit"));
+            return f.Replace("." + newExt, ".lrit");
         }
 
         public static string Decompressor(string filename, int pixels, int pixelsPerBlock, int mask) {
@@ -328,12 +369,12 @@ namespace OpenSatelliteProject {
              */
 
             string outputFile = String.Format("{0}_decomp{1}.lrit", prefix, startnum);
-
+            FileStream f = null;
             try {
                 byte[] input = File.ReadAllBytes(string.Format("{0}{1}.lrit", prefix, startnum));
                 byte[] outputData = new byte[pixels];
 
-                FileStream f = File.OpenWrite(outputFile);
+                f = File.OpenWrite(outputFile);
                 startnum++;
                 // First file only contains header
                 f.Write(input, 0, input.Length);
@@ -386,12 +427,17 @@ namespace OpenSatelliteProject {
                     }
                 }
 
-                f.Close();
-
             } catch (Exception e) {
                 UIConsole.GlobalConsole.Error(string.Format("There was an error decompressing data: {0}", e));
             }
 
+            try {
+                if (f != null) {
+                    f.Close();
+                }
+            } catch (Exception e) {
+
+            }
             return outputFile;
         }
     }

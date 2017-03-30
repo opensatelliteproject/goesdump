@@ -147,6 +147,7 @@ namespace OpenSatelliteProject {
                     using (BinaryWriter sw = new BinaryWriter(fs)) {
                         byte[] dataToSave = msdu.Data.Skip(firstOrSinglePacket ? 10 : 0).Take(firstOrSinglePacket ? msdu.PacketLength - 10 : msdu.PacketLength).ToArray(); 
                         sw.Write(dataToSave);
+                        sw.Flush();
                     }
                 }
 
