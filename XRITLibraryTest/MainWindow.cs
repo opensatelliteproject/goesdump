@@ -19,8 +19,9 @@ public partial class MainWindow: Gtk.Window {
             ProcessFile(fileChooser.Filename);
         };
 
-        //string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
         string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
+        //string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
+        //string debugFrames = "/media/ELTN/tmp/debug2/debug_frames.bin";
         dm = new DemuxManager();
         FileHandler.SkipDCS = true;
         FileHandler.SkipEMWIN = true;

@@ -262,6 +262,16 @@ namespace OpenSatelliteProject {
                 } catch (Exception e) {
                     UIConsole.GlobalConsole.Warn(string.Format("Failed to parse Weather Data Image at {0}: {1}", filename, e));
                 }
+            } else if (header.PrimaryHeader.FileType == FileTypeCode.TEXT) {
+                string fz = DumpFile(filename, header, "txt");
+
+                if (fz != null) {
+                    try {
+                        File.Delete(fz);
+                    } catch (Exception) {
+                        // Do nothing, file doesn't exists
+                    }
+                }
             } else {
                 FileHandler.DefaultHandler(filename, header);
             }
@@ -369,10 +379,18 @@ namespace OpenSatelliteProject {
              */
 
             string outputFile = String.Format("{0}_decomp{1}.lrit", prefix, startnum);
+            string ifile;
             FileStream f = null;
             try {
-                byte[] input = File.ReadAllBytes(string.Format("{0}{1}.lrit", prefix, startnum));
+                ifile = string.Format("{0}{1}.lrit", prefix, startnum);
+                byte[] input = File.ReadAllBytes(ifile);
                 byte[] outputData = new byte[pixels];
+
+                try {
+                    File.Delete(ifile);
+                } catch (IOException e) {
+                    UIConsole.GlobalConsole.Warn(String.Format("Cannot delete file {0}: {1}", ifile, e));
+                }
 
                 f = File.OpenWrite(outputFile);
                 startnum++;
@@ -388,19 +406,22 @@ namespace OpenSatelliteProject {
                 }
 
                 for (int i = startnum; i <= endnum; i++) {
-                    string ifile = string.Format("{0}{1}.lrit", prefix, i);
-                    input = File.ReadAllBytes(ifile);
-
+                    ifile = string.Format("{0}{1}.lrit", prefix, i);
                     for (int z = 0; z < outputData.Length; z++) {
                         outputData[z] = 0x00;
                     }
 
                     try {
-                        AEC.LritRiceDecompress(ref outputData, input, 8, pixelsPerBlock, pixels, mask);
+                        input = File.ReadAllBytes(ifile);
                         File.Delete(ifile);
+                        AEC.LritRiceDecompress(ref outputData, input, 8, pixelsPerBlock, pixels, mask);
+                    } catch (FileNotFoundException) {
+                        UIConsole.GlobalConsole.Error(String.Format("Decompressor cannot find file {0}", ifile));
                     } catch (AECException e) {
                         Console.WriteLine("AEC Decompress problem decompressing file {0}: {1}", ifile, e.status.ToString());
                         Console.WriteLine("AEC Params: {0} - {1} - {2} - {3}", 8, pixelsPerBlock, pixels, mask);
+                    } catch (IOException e) {
+                        Console.WriteLine(e);
                     }
 
                     f.Write(outputData, 0, outputData.Length);
@@ -408,16 +429,17 @@ namespace OpenSatelliteProject {
 
                 if (overflowCaseLast != -1) {
                     for (int i = 0; i < overflowCaseLast; i++) {
-                        string ifile = string.Format("{0}{1}.lrit", prefix, i);
-                        input = File.ReadAllBytes(ifile);
+                        ifile = string.Format("{0}{1}.lrit", prefix, i);
                         for (int z = 0; z < outputData.Length; z++) {
                             outputData[z] = 0x00;
                         }
-
                         try {
-                            AEC.LritRiceDecompress(ref outputData, input, 8, pixelsPerBlock, pixels, mask);
+                            input = File.ReadAllBytes(ifile);
                             File.Delete(ifile);
-                        } catch (AECException e) {
+                            AEC.LritRiceDecompress(ref outputData, input, 8, pixelsPerBlock, pixels, mask);
+                        } catch (FileNotFoundException) {
+                            UIConsole.GlobalConsole.Error(String.Format("Decompressor cannot find file {0}", ifile));
+                        } catch (AECException) {
                             Console.WriteLine("AEC Decompress problem decompressing file {0}", ifile);
                         } catch (IOException e) {
                             Console.WriteLine("Error deleting file {0}: {1}", ifile, e);
@@ -435,9 +457,10 @@ namespace OpenSatelliteProject {
                 if (f != null) {
                     f.Close();
                 }
-            } catch (Exception e) {
+            } catch (Exception) {
 
             }
+
             return outputFile;
         }
     }

@@ -22,6 +22,7 @@ namespace OpenSatelliteProject {
         private XRITHeader fileHeader;
         private byte[] buffer;
         private DemuxManager manager;
+        private MSDU lastMSDU;
        
 
         public int CRCFails { get; set; }
@@ -102,18 +103,39 @@ namespace OpenSatelliteProject {
 
                 if (!msdu.Valid || !msdu.Full) {
                     if (msdu.FrameLost) {
-                        UIConsole.GlobalConsole.Error("Lost some frames on MSDU, the file will be corrupted.");
+                        UIConsole.GlobalConsole.Error(String.Format("Lost some frames on MSDU, the file will be corrupted. CRC Match: {0} - Size Match: {1}", msdu.Valid, msdu.Full));
                     } else {
+                        UIConsole.GlobalConsole.Error(String.Format("Corrupted MSDU. CRC Match: {0} - Size Match: {1}", msdu.Valid, msdu.Full));
+                        /*
                         UIConsole.GlobalConsole.Error("Got a invalid MSDU :(");
                         UIConsole.GlobalConsole.Debug(String.Format("New Packet for APID {0} - Valid CRC: {1} - Full: {2} - Remaining Bytes: {3} - Frame Lost: {4}", msdu.APID, msdu.Valid, msdu.Full, msdu.RemainingData.Length, msdu.FrameLost));
                         UIConsole.GlobalConsole.Debug(String.Format("\t\tTotal Size: {0} Current Size: {1}", msdu.PacketLength + 2, msdu.Data.Length)); 
+                        */
                     }
                 }
 
                 if (msdu.Sequence == SequenceType.FIRST_SEGMENT || msdu.Sequence == SequenceType.SINGLE_DATA) {
+                    if (startnum != -1) {
+                        UIConsole.GlobalConsole.Error("Received First Segment but last data wasn't finished! Forcing dump.");
+                        // This can only happen for multi-segment file.
+                        try {
+                            if (fileHeader.Compression == CompressionType.LRIT_RICE) {
+                                string decompressed = PacketManager.Decompressor(String.Format("channels/{0}/{1}_{2}_", channelId, lastMSDU.APID, lastMSDU.Version), fileHeader.ImageStructureHeader.Columns, startnum, endnum, fileHeader.RiceCompressionHeader.Pixel, fileHeader.RiceCompressionHeader.Flags);
+                                FileHandler.HandleFile(decompressed, fileHeader);
+                            } else {
+                                FileHandler.HandleFile(filename, fileHeader);
+                            }
+                        } catch (Exception e) {
+                            UIConsole.GlobalConsole.Error(String.Format("Error handling unfinished file: {0}", e));
+                        }
+                        startnum = -1;
+                        endnum = -1;
+                    }
+
                     fileHeader = FileParser.GetHeader(msdu.Data.Skip(10).ToArray());
                     //compressionFlag = PacketManager.IsCompressed(msdu.Data.Skip(10).ToArray());
                     //pixels = PacketManager.GetPixels(msdu.Data.Skip(10).ToArray());
+
                     if (msdu.Sequence == SequenceType.FIRST_SEGMENT) {
                         startnum = msdu.PacketNumber;
                     }
@@ -122,12 +144,17 @@ namespace OpenSatelliteProject {
 
                     if (startnum == -1) {
                         //UIConsole.GlobalConsole.Debug("Orphan Packet. Dropping");
+                        endnum = -1;
                         return;
                     }
                 } else if (msdu.Sequence != SequenceType.SINGLE_DATA && startnum == -1) {
                     //UIConsole.GlobalConsole.Debug("Orphan Packet. Dropping");
                     return;
+                } else if (msdu.Sequence == SequenceType.CONTINUED_SEGMENT) {
+                    endnum = msdu.PacketNumber;
                 }
+
+                lastMSDU = msdu;
 
                 string path = String.Format("channels/{0}", channelId);
                 if (!Directory.Exists(path)) {
@@ -140,6 +167,8 @@ namespace OpenSatelliteProject {
                         break;
                     default: // For 0, 2, 5 runs the default
                         filename = String.Format("channels/{0}/{1}_{2}.lrit", channelId, msdu.APID, msdu.Version);
+                        startnum = -1;
+                        endnum = -1;
                         break;
                 }
 
@@ -165,6 +194,8 @@ namespace OpenSatelliteProject {
                         endnum = -1;
                     } else {
                         FileHandler.HandleFile(filename, fileHeader);
+                        startnum = -1;
+                        endnum = -1;
                     }
                 }
             } catch (Exception e) {
@@ -174,6 +205,7 @@ namespace OpenSatelliteProject {
 
         public void ParseBytes(byte[] data) {
             uint counter;
+            bool replayFlag;
 
             if (data.Length < FRAMESIZE) {
                 throw new Exception(String.Format("Not enough data. Expected {0} and got {1}", FRAMESIZE, data.Length));
@@ -182,16 +214,31 @@ namespace OpenSatelliteProject {
             channelId = (data[1] & 0x3F);
 
             byte[] cb = data.Skip(2).Take(4).ToArray();
+
             if (BitConverter.IsLittleEndian) {
                 Array.Reverse(cb);
             }
 
+            cb[0] = 0x00;
+
+
             counter = BitConverter.ToUInt32(cb, 0);
-            counter &= 0xFFFFFF00;
+            //counter &= 0xFFFFFF00;
             counter >>= 8;
+            replayFlag = (data[5] & 0x80) > 0;
+
+            if (replayFlag) {
+                UIConsole.GlobalConsole.Log("Replay Flag set. Skipping packet.");
+                return;
+            }
+
+            if (counter - lastFrame - 1 == -1) {
+                UIConsole.GlobalConsole.Warn("Last packet same ID as the current one but no replay bit set! Skipping packet.");
+                return;
+            }
 
             if (lastFrame != -1 && lastFrame + 1 != counter) {
-                UIConsole.GlobalConsole.Error(String.Format("Lost {0} frames. Last Frame #{1} - Current Frame #{2}", counter - lastFrame - 1, lastFrame, counter));
+                UIConsole.GlobalConsole.Error(String.Format("Lost {0} frames. Last Frame #{1} - Current Frame #{2} on VCID {3}", counter - lastFrame - 1, lastFrame, counter, channelId));
                 if (lastAPID != -1) {
                     temporaryStorage[lastAPID].FrameLost = true;
                 }
@@ -238,7 +285,7 @@ namespace OpenSatelliteProject {
                         fhp = 0;
                     }
 
-                    if (!temporaryStorage[lastAPID].Full && !temporaryStorage[lastAPID].FrameLost) {
+                    if (!temporaryStorage[lastAPID].Full && !temporaryStorage[lastAPID].FrameLost && lastAPID != 2047) {
                         Bugs++;
                         if (manager != null) {
                             manager.Bugs++;
@@ -266,8 +313,8 @@ namespace OpenSatelliteProject {
                     p = CreatePacket(buffer);
                     lastAPID = p.Item1;
                     buffer = p.Item2;
-                //} else if (buffer.Length > 0) {
-                //    Console.WriteLine("EDGE CASE!");
+                } else if (buffer.Length > 0) {
+                    Console.WriteLine("EDGE CASE!");
                 } else {
                     temporaryStorage[lastAPID].addDataBytes(data);
                 }
