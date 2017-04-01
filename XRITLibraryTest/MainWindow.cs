@@ -19,17 +19,17 @@ public partial class MainWindow: Gtk.Window {
             ProcessFile(fileChooser.Filename);
         };
 
-        string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
-        //string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
+        //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
+        string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
         //string debugFrames = "/media/ELTN/tmp/debug3/raw_data.bin";
-        var im = new ImageManager("channels/Images/FM1");
+        var im = new ImageManager("channels/Images/Full Disk/");
         ImageManager.GenerateVisible = true;
         ImageManager.GenerateInfrared = true;
         ImageManager.GenerateFalseColor = true;
         im.Start();
         dm = new DemuxManager();
-        //FileHandler.SkipDCS = true;
-        //FileHandler.SkipEMWIN = true;
+        FileHandler.SkipDCS = true;
+        FileHandler.SkipEMWIN = true;
         //int startFrame = 83000;
         int startFrame = 0;
         FileStream file = File.OpenRead(debugFrames);

@@ -31,7 +31,7 @@ namespace OpenSatelliteProject.PacketData {
 
             noaaProducts.Add((int)NOAAProductID.HRIT_EMWIN_TEXT, new NOAAProduct(NOAAProductID.HRIT_EMWIN_TEXT, "HRIT EMWIN TEXT"));
 
-            noaaProducts.Add((int)NOAAProductID.SCANNER_DATA_1, new NOAAProduct(NOAAProductID.SCANNER_DATA_1, "Scanner Image", new Dictionary<int, NOAASubproduct>() { // So far, only received GOES 13 images. Coecidence?
+            noaaProducts.Add((int)NOAAProductID.GOES13_ABI, new NOAAProduct(NOAAProductID.GOES13_ABI, "GOES 13 ABI", new Dictionary<int, NOAASubproduct>() { // So far, only received GOES 13 images. Coecidence?
                 { (int) ScannerSubProduct.NONE,                         new NOAASubproduct(ScannerSubProduct.NONE,                          "None") },
                 { (int) ScannerSubProduct.INFRARED_FULLDISK,            new NOAASubproduct(ScannerSubProduct.INFRARED_FULLDISK,             "Infrared Full Disk") },
                 { (int) ScannerSubProduct.INFRARED_NORTHERN,            new NOAASubproduct(ScannerSubProduct.INFRARED_NORTHERN,             "Infrared Northern Hemisphere") },
@@ -50,7 +50,7 @@ namespace OpenSatelliteProject.PacketData {
                 { (int) ScannerSubProduct.WATERVAPOUR_AREA_OF_INTEREST, new NOAASubproduct(ScannerSubProduct.WATERVAPOUR_AREA_OF_INTEREST,  "Water Vapour Area of Interest") }
             }));
 
-            noaaProducts.Add((int)NOAAProductID.SCANNER_DATA_2, new NOAAProduct(NOAAProductID.SCANNER_DATA_2, "Scanner Image", new Dictionary<int, NOAASubproduct>() { // So far, only received GOES 15 images. Coecidence? 
+            noaaProducts.Add((int)NOAAProductID.GOES15_ABI, new NOAAProduct(NOAAProductID.GOES15_ABI, "GOES 15 ABI", new Dictionary<int, NOAASubproduct>() { // So far, only received GOES 15 images. Coecidence? 
                 { (int) ScannerSubProduct.NONE,                         new NOAASubproduct(ScannerSubProduct.NONE,                          "None") },
                 { (int) ScannerSubProduct.INFRARED_FULLDISK,            new NOAASubproduct(ScannerSubProduct.INFRARED_FULLDISK,             "Infrared Full Disk") },
                 { (int) ScannerSubProduct.INFRARED_NORTHERN,            new NOAASubproduct(ScannerSubProduct.INFRARED_NORTHERN,             "Infrared Northern Hemisphere") },
@@ -69,7 +69,7 @@ namespace OpenSatelliteProject.PacketData {
                 { (int) ScannerSubProduct.WATERVAPOUR_AREA_OF_INTEREST, new NOAASubproduct(ScannerSubProduct.WATERVAPOUR_AREA_OF_INTEREST,  "Water Vapour Area of Interest") }
             }));
 
-            noaaProducts.Add((int)NOAAProductID.SCANNER_DATA_3, new NOAAProduct(NOAAProductID.SCANNER_DATA_3, "GOES 16 ABI", new Dictionary<int, NOAASubproduct>() {
+            noaaProducts.Add((int)NOAAProductID.GOES16_ABI, new NOAAProduct(NOAAProductID.GOES16_ABI, "GOES 16 ABI", new Dictionary<int, NOAASubproduct>() {
                 { (int) ScannerSubProduct.NONE,                         new NOAASubproduct(ScannerSubProduct.NONE,                          "None") },
                 {                            1,                         new NOAASubproduct(                     1,                          "Channel 1") },
                 {                            2,                         new NOAASubproduct(                     2,                          "Channel 2") },
@@ -89,8 +89,25 @@ namespace OpenSatelliteProject.PacketData {
                 {                           16,                         new NOAASubproduct(                    16,                          "Channel 16") }
             }));
 
-
-
+            noaaProducts.Add((int)NOAAProductID.HIMAWARI8_ABI, new NOAAProduct(NOAAProductID.HIMAWARI8_ABI, "HIMAWARI8 ABI", new Dictionary<int, NOAASubproduct>() {
+                { (int) ScannerSubProduct.NONE,                         new NOAASubproduct(ScannerSubProduct.NONE,                          "None") },
+                {                            1,                         new NOAASubproduct(                     1,                          "Channel 1") },
+                {                            2,                         new NOAASubproduct(                     2,                          "Channel 2") },
+                {                            3,                         new NOAASubproduct(                     3,                          "Channel 3") },
+                {                            4,                         new NOAASubproduct(                     4,                          "Channel 4") },
+                {                            5,                         new NOAASubproduct(                     5,                          "Channel 5") },
+                {                            6,                         new NOAASubproduct(                     6,                          "Channel 6") },
+                {                            7,                         new NOAASubproduct(                     7,                          "Channel 7") },
+                {                            8,                         new NOAASubproduct(                     8,                          "Channel 8") },
+                {                            9,                         new NOAASubproduct(                     9,                          "Channel 9") },
+                {                           10,                         new NOAASubproduct(                    10,                          "Channel 10") },
+                {                           11,                         new NOAASubproduct(                    11,                          "Channel 11") },
+                {                           12,                         new NOAASubproduct(                    12,                          "Channel 12") },
+                {                           13,                         new NOAASubproduct(                    13,                          "Channel 13") },
+                {                           14,                         new NOAASubproduct(                    14,                          "Channel 14") },
+                {                           15,                         new NOAASubproduct(                    15,                          "Channel 15") },
+                {                           16,                         new NOAASubproduct(                    16,                          "Channel 16") }
+            }));
 
             noaaProducts.Add((int)NOAAProductID.EMWIN, new NOAAProduct(NOAAProductID.EMWIN, "EMWIN"));
         }

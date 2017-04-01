@@ -102,27 +102,27 @@ namespace OpenSatelliteProject {
             }
 
             if (config.GenerateFDFalseColor) {
-                string fdFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_FULLDISK);
+                string fdFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_FULLDISK);
                 FDImageManager = new ImageManager(Path.Combine("channels", fdFolder));
             }
 
             if (config.GenerateXXFalseColor) {
-                string xxFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST);
+                string xxFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST);
                 XXImageManager = new ImageManager(Path.Combine("channels", xxFolder));
             }
 
             if (config.GenerateNHFalseColor) {
-                string nhFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_NORTHERN);
+                string nhFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_NORTHERN);
                 NHImageManager = new ImageManager(Path.Combine("channels", nhFolder));
             }
 
             if (config.GenerateSHFalseColor) {
-                string shFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_SOUTHERN);
+                string shFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_SOUTHERN);
                 SHImageManager = new ImageManager(Path.Combine("channels", shFolder));
             }
 
             if (config.GenerateUSFalseColor) {
-                string usFolder = PacketManager.GetFolderByProduct(NOAAProductID.SCANNER_DATA_1, (int)ScannerSubProduct.INFRARED_UNITEDSTATES);
+                string usFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_UNITEDSTATES);
                 USImageManager = new ImageManager(Path.Combine("channels", usFolder));
             }
 

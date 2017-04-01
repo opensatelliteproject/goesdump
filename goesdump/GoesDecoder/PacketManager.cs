@@ -37,9 +37,9 @@ namespace OpenSatelliteProject {
         public static string GetFolderByProduct(NOAAProductID product, int subProduct) {
             // TODO: Unify with other functions that use the same thing
             string folderName = UnknownDataFolder;
-            if (product == NOAAProductID.SCANNER_DATA_3) {
+            if (product == NOAAProductID.GOES16_ABI) {
                 folderName = Path.Combine(ImagesFolder, "FM1");
-            } else  if (product == NOAAProductID.SCANNER_DATA_1 || product == NOAAProductID.SCANNER_DATA_2) {
+            } else  if (product == NOAAProductID.GOES13_ABI || product == NOAAProductID.GOES15_ABI) {
                 switch (subProduct) {
                     case (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST:
                     case (int)ScannerSubProduct.VISIBLE_AREA_OF_INTEREST:
@@ -103,9 +103,11 @@ namespace OpenSatelliteProject {
             if (product != null && product.ID != -1) {
                 // New way
                 string folderName = UnknownDataFolder;
-                if (product.ID == (int)NOAAProductID.SCANNER_DATA_3) {
+                if (product.ID == (int)NOAAProductID.GOES16_ABI) {
                     folderName = Path.Combine(ImagesFolder, "FM1");
-                } else if (product.ID == (int)NOAAProductID.SCANNER_DATA_1 || product.ID == (int)NOAAProductID.SCANNER_DATA_2) {
+                } else if (product.ID == (int)NOAAProductID.HIMAWARI8_ABI) {
+                    folderName = Path.Combine(ImagesFolder, "Full Disk");
+                } else if (product.ID == (int)NOAAProductID.GOES13_ABI || product.ID == (int)NOAAProductID.GOES15_ABI) {
                     switch (subProduct.ID) {
                         case (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST:
                         case (int)ScannerSubProduct.VISIBLE_AREA_OF_INTEREST:
