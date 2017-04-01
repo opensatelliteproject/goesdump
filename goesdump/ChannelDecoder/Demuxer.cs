@@ -137,6 +137,17 @@ namespace OpenSatelliteProject {
                     return;
                 }
 
+                // LRIT EMWIN
+                /* Uncomment to enable EMWIN Ingestor 
+                 * Its broken right now
+                if (fileHeader.PrimaryHeader.FileType == FileTypeCode.EMWIN) {
+                    //Ingestor
+                    int offset = 10 + (int)fileHeader.PrimaryHeader.HeaderLength;
+                    EMWIN.Ingestor.Process(msdu.Data.Skip(offset).ToArray());
+                    return;
+                }
+                */
+
                 string path = String.Format("channels/{0}", channelId);
                 if (!Directory.Exists(path)) {
                     Directory.CreateDirectory(path);

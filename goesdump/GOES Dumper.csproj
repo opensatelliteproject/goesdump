@@ -109,6 +109,7 @@
     <Compile Include="GoesDecoder\ImageManager.cs" />
     <Compile Include="WebManager\DirectoryHandler.cs" />
     <Compile Include="Models\ProgConfig.cs" />
+    <Compile Include="GoesDecoder\EMWIN.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

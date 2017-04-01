@@ -102,6 +102,8 @@
     <Compile Include="Log\Facility.cs" />
     <Compile Include="Log\Message.cs" />
     <Compile Include="Log\SyslogClient.cs" />
+    <Compile Include="PacketData\EMWINHeader.cs" />
+    <Compile Include="PacketData\EmwinFile.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

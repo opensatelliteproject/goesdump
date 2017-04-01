@@ -254,9 +254,11 @@ namespace OpenSatelliteProject {
                             using (FileStream streamWriter = File.Create(fileName)) {
 
                                 int size = 2048;
+                                int readBytes = 0;
                                 byte[] data = new byte[2048];
-                                while (true) {
+                                while (readBytes < s.Length) {
                                     size = s.Read(data, 0, data.Length);
+                                    readBytes+= size;
                                     if (size > 0) {
                                         streamWriter.Write(data, 0, size);
                                     } else {
