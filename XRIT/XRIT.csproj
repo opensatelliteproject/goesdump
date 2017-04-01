@@ -104,6 +104,8 @@
     <Compile Include="Log\SyslogClient.cs" />
     <Compile Include="PacketData\EMWINHeader.cs" />
     <Compile Include="PacketData\EmwinFile.cs" />
+    <Compile Include="DCS\DCSHeader.cs" />
+    <Compile Include="DCS\DCSParser.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -111,5 +113,6 @@
     <Folder Include="Tools\" />
     <Folder Include="Models\" />
     <Folder Include="Log\" />
+    <Folder Include="DCS\" />
   </ItemGroup>
 </Project>

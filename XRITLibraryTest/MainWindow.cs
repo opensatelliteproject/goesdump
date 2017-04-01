@@ -6,6 +6,8 @@ using OpenSatelliteProject.Tools;
 using System.Drawing;
 using System.Drawing.Imaging;
 using OpenSatelliteProject.Log;
+using OpenSatelliteProject.DCS;
+using System.Collections.Generic;
 
 public partial class MainWindow: Gtk.Window {
 
@@ -19,6 +21,9 @@ public partial class MainWindow: Gtk.Window {
             ProcessFile(fileChooser.Filename);
         };
 
+        string dcsFile = "/home/lucas/Works/OpenSatelliteProject/split/goesdump/XRITLibraryTest/bin/Debug/channels/DCS/pM-17085003239-A.dcs";
+        List<DCSHeader> d = DCSParser.parseDCS(dcsFile);
+        /*
         //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
         string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
         //string debugFrames = "/media/ELTN/tmp/debug3/raw_data.bin";
@@ -51,7 +56,7 @@ public partial class MainWindow: Gtk.Window {
         Console.WriteLine("Length Fails: {0}", dm.LengthFails);
         Console.WriteLine("Packets: {0}", dm.Packets);
         im.Stop();
-
+        */
         //ProcessFile("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Text/NWSTEXTdat043204159214.lrit");
         /*
         Organizer organizer = new Organizer("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Images/Full Disk");
