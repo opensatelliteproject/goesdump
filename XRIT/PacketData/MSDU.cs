@@ -73,10 +73,9 @@ namespace OpenSatelliteProject.PacketData {
         #region Methods
 
         public void addDataBytes(byte[] data) {            
-            if (data.Length + Data.Length > PacketLength + 2) {
-                Console.WriteLine("(MSDU) Overflow in MSDU--!");
-                Console.WriteLine(Environment.StackTrace);
-            }
+            /*if (data.Length + Data.Length > PacketLength + 2) {
+                Console.WriteLine("Overflow in MSDU!");
+            }*/
             byte[] newData = new byte[Data.Length + data.Length];
             Array.Copy(Data, newData, Data.Length);
             Array.Copy(data, 0, newData, Data.Length, data.Length);

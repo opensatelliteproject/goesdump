@@ -1,25 +1,30 @@
-﻿<Properties StartupItem="XRITLibraryTest/XRITLibraryTest.csproj" RefactoringSettings.EnableRefactorings="True">
+﻿<Properties StartupItem="goesdump/GOES Dumper.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug Headless|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/ChannelDecoder/Demuxer.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/PacketData/MSDU.cs">
     <Files>
       <File FileName="goesdump/UIComponents/UIConsole.cs" Line="1" Column="1" />
       <File FileName="goesdump/HeadlessMain.cs" Line="1" Column="1" />
-      <File FileName="XRITLibraryTest/MainWindow.cs" Line="24" Column="11" />
-      <File FileName="goesdump/ChannelDecoder/Demuxer.cs" Line="240" Column="1" />
-      <File FileName="goesdump/GoesDecoder/FileHandler.cs" Line="1" Column="1" />
-      <File FileName="goesdump/ChannelDecoder/DemuxManager.cs" Line="28" Column="44" />
-      <File FileName="XRIT/PacketData/MSDU.cs" Line="77" Column="1" />
+      <File FileName="goesdump/GoesDecoder/PacketManager.cs" Line="428" Column="18" />
+      <File FileName="goesdump/ChannelDecoder/Demuxer.cs" Line="201" Column="36" />
+      <File FileName="XRITLibraryTest/MainWindow.cs" Line="22" Column="71" />
+      <File FileName="goesdump/ChannelDecoder/DemuxManager.cs" Line="49" Column="34" />
+      <File FileName="XRIT/PacketData/MSDU.cs" Line="87" Column="13" />
     </Files>
+    <Pads>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State>
+          <Value>temporaryStorage[lastAPID]</Value>
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/ChannelDecoder/Demuxer.cs" line="175" column="1" />
-      <Breakpoint file="/home/lucas/Works/OpenSatelliteProject/split/goesdump/XRIT/PacketData/MSDU.cs" line="77" column="23" />
-    </BreakpointStore>
+    <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches>
     <Watch file="XRIT/Tools/AEC.cs" line="32" offsetX="528" offsetY="496" expression="param" liveUpdate="False" />
     <Watch file="XRIT/Tools/ImageTools.cs" line="56" offsetX="608" offsetY="880" expression="filename" liveUpdate="False" />
+    <Watch file="goesdump/GoesDecoder/FileHandler.cs" line="81" offsetX="360" offsetY="1280" expression="e" liveUpdate="False" />
   </MonoDevelop.Ide.DebuggingService.PinnedWatches>
   <AuthorInfo Name="Lucas Teske" Email="lucas@teske.com.br" Copyright="OpenSatelliteProject @ 2016" Company="OpenSatelliteProject" Trademark="" />
 </Properties>

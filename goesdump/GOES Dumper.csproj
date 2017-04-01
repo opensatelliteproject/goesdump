@@ -78,6 +78,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -106,6 +109,7 @@
     <Compile Include="GoesDecoder\ImageManager.cs" />
     <Compile Include="WebManager\DirectoryHandler.cs" />
     <Compile Include="Models\ProgConfig.cs" />
+    <Compile Include="GoesDecoder\EMWIN.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

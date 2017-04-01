@@ -8,6 +8,7 @@ using OpenSatelliteProject.PacketData;
 using OpenSatelliteProject.PacketData.Enums;
 using OpenSatelliteProject.PacketData.Structs;
 using OpenSatelliteProject.Tools;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace OpenSatelliteProject {
     public static class PacketManager {
@@ -36,7 +37,9 @@ namespace OpenSatelliteProject {
         public static string GetFolderByProduct(NOAAProductID product, int subProduct) {
             // TODO: Unify with other functions that use the same thing
             string folderName = UnknownDataFolder;
-            if (product == NOAAProductID.SCANNER_DATA_1 || product == NOAAProductID.SCANNER_DATA_2) {
+            if (product == NOAAProductID.GOES16_ABI) {
+                folderName = Path.Combine(ImagesFolder, "FM1");
+            } else  if (product == NOAAProductID.GOES13_ABI || product == NOAAProductID.GOES15_ABI) {
                 switch (subProduct) {
                     case (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST:
                     case (int)ScannerSubProduct.VISIBLE_AREA_OF_INTEREST:
@@ -100,7 +103,11 @@ namespace OpenSatelliteProject {
             if (product != null && product.ID != -1) {
                 // New way
                 string folderName = UnknownDataFolder;
-                if (product.ID == (int)NOAAProductID.SCANNER_DATA_1 || product.ID == (int)NOAAProductID.SCANNER_DATA_2) {
+                if (product.ID == (int)NOAAProductID.GOES16_ABI) {
+                    folderName = Path.Combine(ImagesFolder, "FM1");
+                } else if (product.ID == (int)NOAAProductID.HIMAWARI8_ABI) {
+                    folderName = Path.Combine(ImagesFolder, "Full Disk");
+                } else if (product.ID == (int)NOAAProductID.GOES13_ABI || product.ID == (int)NOAAProductID.GOES15_ABI) {
                     switch (subProduct.ID) {
                         case (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST:
                         case (int)ScannerSubProduct.VISIBLE_AREA_OF_INTEREST:
@@ -147,10 +154,18 @@ namespace OpenSatelliteProject {
                             folderName = OtherSatellitesFolder;
                             break;
                         case (int)NOAAProductID.WEATHER_DATA:
-                            folderName = WeatherDataFolder;
+                            if (filename.Contains("KWIN")) {
+                                folderName = EMWINFolder; // HRIT EMWIN
+                            } else {
+                                folderName = WeatherDataFolder;
+                            }
                             break;
                         default:
-                            folderName = UnknownDataFolder;
+                            if (filename.Contains("KWIN")) {
+                                folderName = EMWINFolder; // HRIT EMWIN
+                            } else {
+                                folderName = UnknownDataFolder;
+                            }
                             break;
                     }
                 }
@@ -201,10 +216,99 @@ namespace OpenSatelliteProject {
             FileHandler.AttachByProductIdHandler((int)NOAAProductID.OTHER_SATELLITES_1, HandleWeatherData);
             FileHandler.AttachByProductIdHandler((int)NOAAProductID.OTHER_SATELLITES_2, HandleWeatherData);
             FileHandler.AttachByProductIdHandler((int)NOAAProductID.NOAA_TEXT, HandleTextData);
+            FileHandler.AttachByProductIdHandler((int)NOAAProductID.HRIT_EMWIN_TEXT, (filename, fileHeader) => DumpFile(filename, fileHeader, "txt"));
+        }
+
+        public static void ExtractZipFile(string zipfile) {
+            try {
+                string basepath = Path.GetDirectoryName(zipfile);
+
+                using (ZipInputStream s = new ZipInputStream(File.OpenRead(zipfile))) {
+                    ZipEntry theEntry;
+                    while ((theEntry = s.GetNextEntry()) != null) {
+                        string directoryName = Path.GetDirectoryName(theEntry.Name);
+                        string fileName      = Path.GetFileName(theEntry.Name);
+                        string baseFileName  = Path.GetFileName(theEntry.Name);
+
+                        directoryName = Path.Combine(basepath, directoryName);
+
+                        if ( directoryName.Length > 0 ) {
+                            Directory.CreateDirectory(directoryName);
+                        }
+
+                        fileName = Path.Combine(directoryName, fileName);
+
+                        if (fileName != String.Empty) {
+                            int count = 1;
+                            while (File.Exists(fileName)) {
+                                fileName = String.Format("{0}__{1}{2}", Path.GetFileNameWithoutExtension(baseFileName), count, Path.GetExtension(baseFileName));
+                                fileName = Path.Combine(directoryName, fileName);
+                                if (count == 1000) {
+                                    count = 0;
+                                    break;
+                                }
+                                count++;
+                            }
+                            UIConsole.GlobalConsole.Debug(String.Format("Saving file {0}", fileName));
+
+                            using (FileStream streamWriter = File.Create(fileName)) {
+
+                                int size = 2048;
+                                int readBytes = 0;
+                                byte[] data = new byte[2048];
+                                while (readBytes < s.Length) {
+                                    size = s.Read(data, 0, data.Length);
+                                    readBytes+= size;
+                                    if (size > 0) {
+                                        streamWriter.Write(data, 0, size);
+                                    } else {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                UIConsole.GlobalConsole.Error(String.Format("Error extracting file {0}: {1}", zipfile, e));
+            }
+
+            try {
+                File.Delete(zipfile);
+            } catch (Exception) {
+            
+            }
         }
 
         public static void HandleWeatherData(string filename, XRITHeader header) {
-            if (header.PrimaryHeader.FileType == FileTypeCode.IMAGE) {
+            if (header.Filename.Contains("KWIN")) {
+                // HRIT EMWIN
+                string fz = null;
+                switch (header.Compression) {
+                    case CompressionType.ZIP:
+                        fz = DumpFile(filename, header, "zip");
+                        break;
+                    case CompressionType.GIF:
+                        fz = DumpFile(filename, header, "gif");
+                        break;
+                    case CompressionType.JPEG:
+                        fz = DumpFile(filename, header, "jpg");
+                        break;
+                    case CompressionType.NO_COMPRESSION:
+                        fz = DumpFile(filename, header, "txt");
+                        break;
+                    default:
+                        fz = DumpFile(filename, header, "bin");
+                        break;
+                }
+                if (fz != null) {
+                    try {
+                        File.Delete(fz);
+                    } catch (Exception) {
+                        // Do nothing, file doesn't exists
+                    }
+                }
+            } else if (header.PrimaryHeader.FileType == FileTypeCode.IMAGE) {
                 string basedir = new DirectoryInfo(Path.GetDirectoryName(filename)).Parent.FullName;
                 if (header.Product.ID == (int)NOAAProductID.OTHER_SATELLITES_1 || header.Product.ID == (int)NOAAProductID.OTHER_SATELLITES_2) {
                     basedir = Path.Combine(basedir, OtherSatellitesFolder);
@@ -221,6 +325,16 @@ namespace OpenSatelliteProject {
                     File.Delete(filename);
                 } catch (Exception e) {
                     UIConsole.GlobalConsole.Warn(string.Format("Failed to parse Weather Data Image at {0}: {1}", filename, e));
+                }
+            } else if (header.PrimaryHeader.FileType == FileTypeCode.TEXT) {
+                string fz = DumpFile(filename, header, "txt");
+
+                if (fz != null) {
+                    try {
+                        File.Delete(fz);
+                    } catch (Exception) {
+                        // Do nothing, file doesn't exists
+                    }
                 }
             } else {
                 FileHandler.DefaultHandler(filename, header);
@@ -247,7 +361,7 @@ namespace OpenSatelliteProject {
             }
         }
 
-        public static void DumpFile(string filename, XRITHeader fileHeader, string newExt) {
+        public static string DumpFile(string filename, XRITHeader fileHeader, string newExt) {
             string dir = Path.GetDirectoryName(filename);
             string f = FixFileFolder(dir, fileHeader.Filename, fileHeader.Product, fileHeader.SubProduct);
             f = f.Replace(".lrit", "." + newExt);
@@ -289,11 +403,44 @@ namespace OpenSatelliteProject {
             fs.Close();
             os.Close();
 
+            if (f.Contains(".zip")) {
+                UIConsole.GlobalConsole.Log(String.Format("Extracting Zip File {0}", f));
+                ExtractZipFile(f);
+            }
+
             // Keep the original lrit file
             File.Move(filename, f.Replace("." + newExt, ".lrit"));
+            return f.Replace("." + newExt, ".lrit");
         }
 
-        public static string Decompressor(string filename, int pixels) {
+        public static byte[] GenerateFillData(int pixels) {
+            byte[] outputData = new byte[pixels];
+
+            for (int i = 0; i < pixels; i++) {
+                outputData[i] = 0x00;
+            }
+
+            return outputData;
+        }
+
+        public static byte[] InMemoryDecompress(byte[] compressedData, int pixels, int pixelsPerBlock, int mask) {
+            byte[] outputData = GenerateFillData(pixels);
+
+            try {
+                AEC.LritRiceDecompress(ref outputData, compressedData, 8, pixelsPerBlock, pixels, mask);
+            } catch (Exception e) {
+                if (e is AECException) {
+                    AECException aece = (AECException)e;
+                    UIConsole.GlobalConsole.Error(string.Format("AEC Decompress Error: {0}", aece.status.ToString()));
+                } else {
+                    UIConsole.GlobalConsole.Error(string.Format("Decompress error: {0}", e.ToString()));
+                }
+            }
+
+            return outputData;
+        }
+
+        public static string Decompressor(string filename, int pixels, int pixelsPerBlock, int mask) {
             /**
              *  Temporary Workarround. Needs to change directly on Demuxer
              */
@@ -306,7 +453,7 @@ namespace OpenSatelliteProject {
 
             try {
                 byte[] inputData = File.ReadAllBytes(filename);
-                AEC.LritRiceDecompress(ref outputData, inputData, 8, 16, pixels, AEC.ALLOW_K13_OPTION_MASK | AEC.MSB_OPTION_MASK | AEC.NN_OPTION_MASK);
+                AEC.LritRiceDecompress(ref outputData, inputData, 8, pixelsPerBlock, pixels, mask); //  AEC.ALLOW_K13_OPTION_MASK | AEC.MSB_OPTION_MASK | AEC.NN_OPTION_MASK
                 File.Delete(filename);
             } catch (Exception e) {
                 if (e is AECException) {
@@ -322,18 +469,26 @@ namespace OpenSatelliteProject {
         }
 
 
-        public static string Decompressor(string prefix, int pixels, int startnum, int endnum) {
+        public static string Decompressor(string prefix, int pixels, int startnum, int endnum, int pixelsPerBlock, int mask) {
             /**
              *  Temporary Workarround. Needs to change directly on Demuxer
              */
 
             string outputFile = String.Format("{0}_decomp{1}.lrit", prefix, startnum);
-
+            string ifile;
+            FileStream f = null;
             try {
-                byte[] input = File.ReadAllBytes(string.Format("{0}{1}.lrit", prefix, startnum));
+                ifile = string.Format("{0}{1}.lrit", prefix, startnum);
+                byte[] input = File.ReadAllBytes(ifile);
                 byte[] outputData = new byte[pixels];
 
-                FileStream f = File.OpenWrite(outputFile);
+                try {
+                    File.Delete(ifile);
+                } catch (IOException e) {
+                    UIConsole.GlobalConsole.Warn(String.Format("Cannot delete file {0}: {1}", ifile, e));
+                }
+
+                f = File.OpenWrite(outputFile);
                 startnum++;
                 // First file only contains header
                 f.Write(input, 0, input.Length);
@@ -347,19 +502,22 @@ namespace OpenSatelliteProject {
                 }
 
                 for (int i = startnum; i <= endnum; i++) {
-                    string ifile = string.Format("{0}{1}.lrit", prefix, i);
-                    input = File.ReadAllBytes(ifile);
-
+                    ifile = string.Format("{0}{1}.lrit", prefix, i);
                     for (int z = 0; z < outputData.Length; z++) {
                         outputData[z] = 0x00;
                     }
 
                     try {
-                        AEC.LritRiceDecompress(ref outputData, input, 8, 16, pixels, AEC.ALLOW_K13_OPTION_MASK | AEC.MSB_OPTION_MASK | AEC.NN_OPTION_MASK);
+                        input = File.ReadAllBytes(ifile);
                         File.Delete(ifile);
+                        AEC.LritRiceDecompress(ref outputData, input, 8, pixelsPerBlock, pixels, mask);
+                    } catch (FileNotFoundException) {
+                        UIConsole.GlobalConsole.Error(String.Format("Decompressor cannot find file {0}", ifile));
                     } catch (AECException e) {
                         Console.WriteLine("AEC Decompress problem decompressing file {0}: {1}", ifile, e.status.ToString());
-                        Console.WriteLine("AEC Params: {0} - {1} - {2}", 8, 16, pixels);
+                        Console.WriteLine("AEC Params: {0} - {1} - {2} - {3}", 8, pixelsPerBlock, pixels, mask);
+                    } catch (IOException e) {
+                        Console.WriteLine(e);
                     }
 
                     f.Write(outputData, 0, outputData.Length);
@@ -367,16 +525,17 @@ namespace OpenSatelliteProject {
 
                 if (overflowCaseLast != -1) {
                     for (int i = 0; i < overflowCaseLast; i++) {
-                        string ifile = string.Format("{0}{1}.lrit", prefix, i);
-                        input = File.ReadAllBytes(ifile);
+                        ifile = string.Format("{0}{1}.lrit", prefix, i);
                         for (int z = 0; z < outputData.Length; z++) {
                             outputData[z] = 0x00;
                         }
-
                         try {
-                            AEC.LritRiceDecompress(ref outputData, input, 8, 16, pixels, AEC.ALLOW_K13_OPTION_MASK | AEC.MSB_OPTION_MASK | AEC.NN_OPTION_MASK);
+                            input = File.ReadAllBytes(ifile);
                             File.Delete(ifile);
-                        } catch (AECException e) {
+                            AEC.LritRiceDecompress(ref outputData, input, 8, pixelsPerBlock, pixels, mask);
+                        } catch (FileNotFoundException) {
+                            UIConsole.GlobalConsole.Error(String.Format("Decompressor cannot find file {0}", ifile));
+                        } catch (AECException) {
                             Console.WriteLine("AEC Decompress problem decompressing file {0}", ifile);
                         } catch (IOException e) {
                             Console.WriteLine("Error deleting file {0}: {1}", ifile, e);
@@ -386,10 +545,16 @@ namespace OpenSatelliteProject {
                     }
                 }
 
-                f.Close();
-
             } catch (Exception e) {
                 UIConsole.GlobalConsole.Error(string.Format("There was an error decompressing data: {0}", e));
+            }
+
+            try {
+                if (f != null) {
+                    f.Close();
+                }
+            } catch (Exception) {
+
             }
 
             return outputFile;

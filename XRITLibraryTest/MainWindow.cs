@@ -6,6 +6,8 @@ using OpenSatelliteProject.Tools;
 using System.Drawing;
 using System.Drawing.Imaging;
 using OpenSatelliteProject.Log;
+using OpenSatelliteProject.DCS;
+using System.Collections.Generic;
 
 public partial class MainWindow: Gtk.Window {
 
@@ -19,11 +21,22 @@ public partial class MainWindow: Gtk.Window {
             ProcessFile(fileChooser.Filename);
         };
 
+        string dcsFile = "/home/lucas/Works/OpenSatelliteProject/split/goesdump/XRITLibraryTest/bin/Debug/channels/DCS/pM-17085003239-A.dcs";
+        List<DCSHeader> d = DCSParser.parseDCS(dcsFile);
+        /*
+        //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
         string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
+        //string debugFrames = "/media/ELTN/tmp/debug3/raw_data.bin";
+        var im = new ImageManager("channels/Images/Full Disk/");
+        ImageManager.GenerateVisible = true;
+        ImageManager.GenerateInfrared = true;
+        ImageManager.GenerateFalseColor = true;
+        im.Start();
         dm = new DemuxManager();
-        //FileHandler.SkipDCS = true;
+        FileHandler.SkipDCS = true;
         FileHandler.SkipEMWIN = true;
-        int startFrame = 83000;
+        //int startFrame = 83000;
+        int startFrame = 0;
         FileStream file = File.OpenRead(debugFrames);
         byte[] data = new byte[892];
         long bytesRead = startFrame * 892;
@@ -31,7 +44,7 @@ public partial class MainWindow: Gtk.Window {
         int frameN = startFrame;
         file.Position = bytesRead;
         while (bytesRead < bytesToRead) {
-            Console.WriteLine("Injecting Frame {0}", frameN);
+            //Console.WriteLine("Injecting Frame {0}", frameN);
             bytesRead += file.Read(data, 0, 892);
             dm.parseBytes(data);
             frameN++;
@@ -42,7 +55,8 @@ public partial class MainWindow: Gtk.Window {
         Console.WriteLine("Frame Loss: {0}", dm.FrameLoss);
         Console.WriteLine("Length Fails: {0}", dm.LengthFails);
         Console.WriteLine("Packets: {0}", dm.Packets);
-
+        im.Stop();
+        */
         //ProcessFile("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Text/NWSTEXTdat043204159214.lrit");
         /*
         Organizer organizer = new Organizer("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Images/Full Disk");

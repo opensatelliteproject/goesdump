@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using OpenSatelliteProject.Tools;
+using System.Globalization;
+using OpenSatelliteProject.PacketData.Enums;
 
 namespace OpenSatelliteProject {
     public class Organizer {
@@ -29,43 +31,54 @@ namespace OpenSatelliteProject {
                 }
                 try {
                     var header = FileParser.GetHeaderFromFile(file);
-                    var anciliary = header.AncillaryHeader.Values;
+                    var anciliary = header.AncillaryHeader != null ? header.AncillaryHeader.Values : null;
                     var satellite = "Unknown";
                     var region = "Unknown";
                     var datetime = header.TimestampHeader.DateTime; // Defaults to capture time
                     var channel = 99;
-                    var segmentId = header.SegmentIdentificationHeader.Sequence;
+                    var segmentId = header.SegmentIdentificationHeader != null ? header.SegmentIdentificationHeader.Sequence : 0;
 
-                    if (anciliary.ContainsKey("Satellite")) {
-                        satellite = anciliary["Satellite"];
+                    if (header.Product.ID == (int)NOAAProductID.HIMAWARI8_ABI) {
+                        channel = header.SubProduct.ID;
+                        satellite = "HIMAWARI8";
+                        region = "Full Disk";
                     }
 
-                    if (anciliary.ContainsKey("Region")) {
-                        region = anciliary["Region"];
-                    }
+                    if (anciliary != null) {
+                        if (anciliary.ContainsKey("Satellite")) {
+                            satellite = anciliary["Satellite"];
+                        }
 
-                    if (anciliary.ContainsKey("Channel")) {
-                        channel = int.Parse(anciliary["Channel"]);
-                    }
+                        if (anciliary.ContainsKey("Region")) {
+                            region = anciliary["Region"];
+                        }
 
-                    if (anciliary.ContainsKey("Time of frame start")) {
-                        var dtstring = anciliary["Time of frame start"];
-                        //2017/055/05:45:18
-                        var year = dtstring.Substring(0, 4);
-                        var dayOfYear = dtstring.Substring(5, 3);
-                        var hours = dtstring.Substring(9, 2);
-                        var minutes = dtstring.Substring(12, 2);
-                        var seconds = dtstring.Substring(15, 2);
-                        //Console.WriteLine("Year: {0}\nDay Of Year: {1}\nHours: {2}\nMinutes: {3}\nSeconds: {4}", year, dayOfYear, hours, minutes, seconds);
-                        datetime = new DateTime(int.Parse(year), 1, 1, int.Parse(hours), int.Parse(minutes), int.Parse(seconds));
-                        datetime = datetime.AddDays(int.Parse(dayOfYear));
-                    } else {
-                        Console.WriteLine("No Frame Time of Start found! Using capture time.");
+                        if (anciliary.ContainsKey("Channel")) {
+                            channel = int.Parse(anciliary["Channel"]);
+                        } 
+
+
+                        if (anciliary.ContainsKey("Time of frame start")) {
+                            var dtstring = anciliary["Time of frame start"];
+                            // 2017/055/05:45:18
+                            // or
+                            // 2017-03-27T15:45:38.2Z
+                            if (dtstring[4] == '/') {
+                                var year = dtstring.Substring(0, 4);
+                                var dayOfYear = dtstring.Substring(5, 3);
+                                var hours = dtstring.Substring(9, 2);
+                                var minutes = dtstring.Substring(12, 2);
+                                var seconds = dtstring.Substring(15, 2);
+                                //Console.WriteLine("Year: {0}\nDay Of Year: {1}\nHours: {2}\nMinutes: {3}\nSeconds: {4}", year, dayOfYear, hours, minutes, seconds);
+                                datetime = new DateTime(int.Parse(year), 1, 1, int.Parse(hours), int.Parse(minutes), int.Parse(seconds));
+                                datetime = datetime.AddDays(int.Parse(dayOfYear));
+                            } else {
+                                datetime = DateTime.Parse(dtstring, null, DateTimeStyles.RoundtripKind);
+                            }
+                        } else {
+                            Console.WriteLine("No Frame Time of Start found! Using capture time.");
+                        }
                     }
-                    /*
-                    foreach(var x in header.AncillaryHeader.Values) {
-                        Console.WriteLine("{0}: {1}", x.Key, x.Value);
-                    }*/
 
                     var timestamp = (int)Math.Floor((datetime - UnixEpoch).TotalSeconds);
 
@@ -82,14 +95,40 @@ namespace OpenSatelliteProject {
                         case 1: // Visible
                             od = grp.Visible;
                             break;
+                        case 2: // Visible for G16
+                            if (satellite == "G16") {
+                                od = grp.Visible;
+                            } else {
+                                Console.WriteLine("Unknown Channel {0}", channel);
+                            }
+                            break;
                         case 3: // Water Vapour
-                            od = grp.WaterVapour;
+                            if (satellite == "HIMAWARI8") {
+                                od = grp.Infrared;
+                            } else {
+                                od = grp.WaterVapour;
+                            }
                             break;
                         case 4: // Infrared
                             od = grp.Infrared;
                             break;
+                        case 7: 
+                            if (satellite == "HIMAWARI8") {
+                                od = grp.WaterVapour;
+                            }
+                            break;
+                        case 8:
+                            if (satellite == "G16") {
+                                od = grp.WaterVapour;
+                            }
+                            break;
+                        case 13: // Infrared for G16
+                            if (satellite == "G16") {
+                                od = grp.Infrared;
+                            }
+                            break;
                         default:
-                            Console.WriteLine("Unknown Channel {0}", channel);
+                            //Console.WriteLine("Unknown Channel {0}", channel);
                             continue;
                     } 
 
@@ -100,7 +139,11 @@ namespace OpenSatelliteProject {
                         od.Lines = header.ImageStructureHeader.Lines;
                         od.PixelAspect = header.ImageNavigationHeader.ColumnScalingFactor / (float)header.ImageNavigationHeader.LineScalingFactor;
                         od.StartColumn = header.ImageNavigationHeader.ColumnOffset;
-                        od.MaxSegments = header.SegmentIdentificationHeader.MaxSegments;
+                        if (header.SegmentIdentificationHeader != null) {
+                            od.MaxSegments = header.SegmentIdentificationHeader.MaxSegments;
+                        } else {
+                            od.MaxSegments = 1;
+                        }
                     } else {
                         od.Lines += header.ImageStructureHeader.Lines;
                     }

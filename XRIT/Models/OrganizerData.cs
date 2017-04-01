@@ -16,7 +16,7 @@ namespace OpenSatelliteProject {
             Columns = -1;
             PixelAspect = -1;
             StartColumn = 0;
-            MaxSegments = 0;
+            MaxSegments = 1;
         }
 
         public bool IsComplete { get { return Segments.Count == MaxSegments; }}
