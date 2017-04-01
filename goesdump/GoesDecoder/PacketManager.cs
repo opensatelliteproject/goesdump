@@ -8,6 +8,7 @@ using OpenSatelliteProject.PacketData;
 using OpenSatelliteProject.PacketData.Enums;
 using OpenSatelliteProject.PacketData.Structs;
 using OpenSatelliteProject.Tools;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace OpenSatelliteProject {
     public static class PacketManager {
@@ -216,6 +217,67 @@ namespace OpenSatelliteProject {
             FileHandler.AttachByProductIdHandler((int)NOAAProductID.HRIT_EMWIN_TEXT, (filename, fileHeader) => DumpFile(filename, fileHeader, "txt"));
         }
 
+        public static void ExtractZipFile(string zipfile) {
+            try {
+                string basepath = Path.GetDirectoryName(zipfile);
+
+                using (ZipInputStream s = new ZipInputStream(File.OpenRead(zipfile))) {
+                    ZipEntry theEntry;
+                    while ((theEntry = s.GetNextEntry()) != null) {
+                        Console.WriteLine(theEntry.Name);
+
+                        string directoryName = Path.GetDirectoryName(theEntry.Name);
+                        string fileName      = Path.GetFileName(theEntry.Name);
+                        string baseFileName  = Path.GetFileName(theEntry.Name);
+
+                        directoryName = Path.Combine(basepath, directoryName);
+
+                        if ( directoryName.Length > 0 ) {
+                            Directory.CreateDirectory(directoryName);
+                        }
+
+                        fileName = Path.Combine(directoryName, fileName);
+
+                        if (fileName != String.Empty) {
+                            int count = 1;
+                            while (File.Exists(fileName)) {
+                                fileName = String.Format("{0}__{1}{2}", Path.GetFileNameWithoutExtension(baseFileName), count, Path.GetExtension(baseFileName));
+                                fileName = Path.Combine(directoryName, fileName);
+                                if (count == 1000) {
+                                    count = 0;
+                                    break;
+                                }
+                                count++;
+                            }
+                            UIConsole.GlobalConsole.Debug(String.Format("Saving file {0}", fileName));
+
+                            using (FileStream streamWriter = File.Create(fileName)) {
+
+                                int size = 2048;
+                                byte[] data = new byte[2048];
+                                while (true) {
+                                    size = s.Read(data, 0, data.Length);
+                                    if (size > 0) {
+                                        streamWriter.Write(data, 0, size);
+                                    } else {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                UIConsole.GlobalConsole.Error(String.Format("Error extracting file {0}: {1}", zipfile, e));
+            }
+
+            try {
+                File.Delete(zipfile);
+            } catch (Exception) {
+            
+            }
+        }
+
         public static void HandleWeatherData(string filename, XRITHeader header) {
             if (header.Filename.Contains("KWIN")) {
                 // HRIT EMWIN
@@ -338,6 +400,11 @@ namespace OpenSatelliteProject {
 
             fs.Close();
             os.Close();
+
+            if (f.Contains(".zip")) {
+                UIConsole.GlobalConsole.Log(String.Format("Extracting Zip File {0}", f));
+                ExtractZipFile(f);
+            }
 
             // Keep the original lrit file
             File.Move(filename, f.Replace("." + newExt, ".lrit"));

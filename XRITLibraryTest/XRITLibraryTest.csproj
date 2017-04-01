@@ -78,6 +78,9 @@
     </Reference>
     <Reference Include="Mono.Posix" />
     <Reference Include="System.Drawing" />
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -101,5 +104,8 @@
       <Project>{E1B44542-24FF-409C-A2A3-237A00A8520D}</Project>
       <Name>GOES Dumper</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
