@@ -28,8 +28,8 @@ public partial class MainWindow: Gtk.Window {
         ImageManager.GenerateFalseColor = true;
         im.Start();
         dm = new DemuxManager();
-        FileHandler.SkipDCS = true;
-        FileHandler.SkipEMWIN = true;
+        //FileHandler.SkipDCS = true;
+        //FileHandler.SkipEMWIN = true;
         //int startFrame = 83000;
         int startFrame = 0;
         FileStream file = File.OpenRead(debugFrames);

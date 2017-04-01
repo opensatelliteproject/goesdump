@@ -224,8 +224,6 @@ namespace OpenSatelliteProject {
                 using (ZipInputStream s = new ZipInputStream(File.OpenRead(zipfile))) {
                     ZipEntry theEntry;
                     while ((theEntry = s.GetNextEntry()) != null) {
-                        Console.WriteLine(theEntry.Name);
-
                         string directoryName = Path.GetDirectoryName(theEntry.Name);
                         string fileName      = Path.GetFileName(theEntry.Name);
                         string baseFileName  = Path.GetFileName(theEntry.Name);

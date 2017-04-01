@@ -106,18 +106,18 @@ namespace OpenSatelliteProject {
                             if (satellite == "G16") {
                                 od = grp.WaterVapour;
                             } else {
-                                Console.WriteLine("Unknown Channel {0}", channel);
+                                //Console.WriteLine("Unknown Channel {0}", channel);
                             }
                             break;
                         case 13: // Infrared for G16
                             if (satellite == "G16") {
                                 od = grp.Infrared;
                             } else {
-                                Console.WriteLine("Unknown Channel {0}", channel);
+                                //Console.WriteLine("Unknown Channel {0}", channel);
                             }
                             break;
                         default:
-                            Console.WriteLine("Unknown Channel {0}", channel);
+                            //Console.WriteLine("Unknown Channel {0}", channel);
                             continue;
                     } 
 
