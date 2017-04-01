@@ -344,6 +344,33 @@ namespace OpenSatelliteProject {
             return f.Replace("." + newExt, ".lrit");
         }
 
+        public static byte[] GenerateFillData(int pixels) {
+            byte[] outputData = new byte[pixels];
+
+            for (int i = 0; i < pixels; i++) {
+                outputData[i] = 0x00;
+            }
+
+            return outputData;
+        }
+
+        public static byte[] InMemoryDecompress(byte[] compressedData, int pixels, int pixelsPerBlock, int mask) {
+            byte[] outputData = GenerateFillData(pixels);
+
+            try {
+                AEC.LritRiceDecompress(ref outputData, compressedData, 8, pixelsPerBlock, pixels, mask);
+            } catch (Exception e) {
+                if (e is AECException) {
+                    AECException aece = (AECException)e;
+                    UIConsole.GlobalConsole.Error(string.Format("AEC Decompress Error: {0}", aece.status.ToString()));
+                } else {
+                    UIConsole.GlobalConsole.Error(string.Format("Decompress error: {0}", e.ToString()));
+                }
+            }
+
+            return outputData;
+        }
+
         public static string Decompressor(string filename, int pixels, int pixelsPerBlock, int mask) {
             /**
              *  Temporary Workarround. Needs to change directly on Demuxer

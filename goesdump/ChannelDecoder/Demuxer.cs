@@ -106,11 +106,6 @@ namespace OpenSatelliteProject {
                         UIConsole.GlobalConsole.Error(String.Format("Lost some frames on MSDU, the file will be corrupted. CRC Match: {0} - Size Match: {1}", msdu.Valid, msdu.Full));
                     } else {
                         UIConsole.GlobalConsole.Error(String.Format("Corrupted MSDU. CRC Match: {0} - Size Match: {1}", msdu.Valid, msdu.Full));
-                        /*
-                        UIConsole.GlobalConsole.Error("Got a invalid MSDU :(");
-                        UIConsole.GlobalConsole.Debug(String.Format("New Packet for APID {0} - Valid CRC: {1} - Full: {2} - Remaining Bytes: {3} - Frame Lost: {4}", msdu.APID, msdu.Valid, msdu.Full, msdu.RemainingData.Length, msdu.FrameLost));
-                        UIConsole.GlobalConsole.Debug(String.Format("\t\tTotal Size: {0} Current Size: {1}", msdu.PacketLength + 2, msdu.Data.Length)); 
-                        */
                     }
                 }
 
@@ -118,23 +113,13 @@ namespace OpenSatelliteProject {
                     if (startnum != -1) {
                         UIConsole.GlobalConsole.Error("Received First Segment but last data wasn't finished! Forcing dump.");
                         // This can only happen for multi-segment file.
-                        try {
-                            if (fileHeader.Compression == CompressionType.LRIT_RICE) {
-                                string decompressed = PacketManager.Decompressor(String.Format("channels/{0}/{1}_{2}_", channelId, lastMSDU.APID, lastMSDU.Version), fileHeader.ImageStructureHeader.Columns, startnum, endnum, fileHeader.RiceCompressionHeader.Pixel, fileHeader.RiceCompressionHeader.Flags);
-                                FileHandler.HandleFile(decompressed, fileHeader);
-                            } else {
-                                FileHandler.HandleFile(filename, fileHeader);
-                            }
-                        } catch (Exception e) {
-                            UIConsole.GlobalConsole.Error(String.Format("Error handling unfinished file: {0}", e));
-                        }
+                        filename = String.Format("channels/{0}/{1}_{2}.lrit", channelId, lastMSDU.APID, lastMSDU.Version);
+                        FileHandler.HandleFile(filename, fileHeader);
                         startnum = -1;
                         endnum = -1;
                     }
 
                     fileHeader = FileParser.GetHeader(msdu.Data.Skip(10).ToArray());
-                    //compressionFlag = PacketManager.IsCompressed(msdu.Data.Skip(10).ToArray());
-                    //pixels = PacketManager.GetPixels(msdu.Data.Skip(10).ToArray());
 
                     if (msdu.Sequence == SequenceType.FIRST_SEGMENT) {
                         startnum = msdu.PacketNumber;
@@ -143,60 +128,60 @@ namespace OpenSatelliteProject {
                     endnum = msdu.PacketNumber;
 
                     if (startnum == -1) {
-                        //UIConsole.GlobalConsole.Debug("Orphan Packet. Dropping");
+                        // Orphan Packet
                         endnum = -1;
                         return;
                     }
                 } else if (msdu.Sequence != SequenceType.SINGLE_DATA && startnum == -1) {
-                    //UIConsole.GlobalConsole.Debug("Orphan Packet. Dropping");
+                    // Orphan Packet
                     return;
-                } else if (msdu.Sequence == SequenceType.CONTINUED_SEGMENT) {
-                    endnum = msdu.PacketNumber;
                 }
-
-                lastMSDU = msdu;
 
                 string path = String.Format("channels/{0}", channelId);
                 if (!Directory.Exists(path)) {
                     Directory.CreateDirectory(path);
                 }
 
-                switch (fileHeader.Compression) {
-                    case CompressionType.LRIT_RICE: 
-                        filename = String.Format("channels/{0}/{1}_{2}_{3}.lrit", channelId, msdu.APID, msdu.Version, msdu.PacketNumber);
-                        break;
-                    default: // For 0, 2, 5 runs the default
-                        filename = String.Format("channels/{0}/{1}_{2}.lrit", channelId, msdu.APID, msdu.Version);
-                        startnum = -1;
-                        endnum = -1;
-                        break;
+                filename = String.Format("channels/{0}/{1}_{2}.lrit", channelId, msdu.APID, msdu.Version);
+
+                byte[] dataToSave = msdu.Data.Skip(firstOrSinglePacket ? 10 : 0).Take(firstOrSinglePacket ? msdu.PacketLength - 10 : msdu.PacketLength).ToArray(); 
+
+                if (fileHeader.Compression == CompressionType.LRIT_RICE && !firstOrSinglePacket) {
+                    int missedPackets = lastMSDU.PacketNumber - msdu.PacketNumber - 1;
+
+                    if (lastMSDU.PacketNumber == 16383 && msdu.PacketNumber == 0) {
+                        missedPackets = 0;
+                    }
+
+                    if (missedPackets > 0)  {
+                        UIConsole.GlobalConsole.Warn(String.Format("Missed {0} packets on image. Filling with null bytes. Last Packet Number: {1} Current: {2}", missedPackets, lastMSDU.PacketNumber, msdu.PacketNumber));
+                        byte[] fill = PacketManager.GenerateFillData(fileHeader.ImageStructureHeader.Columns);
+                        using (FileStream fs = new FileStream(filename, FileMode.Append, FileAccess.Write)) {
+                            using (BinaryWriter sw = new BinaryWriter(fs)) {
+                                while (missedPackets > 0) {
+                                    sw.Write(fill);
+                                    missedPackets--;
+                                }
+                                sw.Flush();
+                            }
+                        }
+                    }
+                    dataToSave = PacketManager.InMemoryDecompress(dataToSave, fileHeader.ImageStructureHeader.Columns, fileHeader.RiceCompressionHeader.Pixel, fileHeader.RiceCompressionHeader.Flags);
                 }
 
-                using (FileStream fs = new FileStream(filename, firstOrSinglePacket || fileHeader.Compression == CompressionType.LRIT_RICE ? FileMode.Create : FileMode.Append, FileAccess.Write)) {
+                lastMSDU = msdu;
+
+                using (FileStream fs = new FileStream(filename, firstOrSinglePacket ? FileMode.Create : FileMode.Append, FileAccess.Write)) {
                     using (BinaryWriter sw = new BinaryWriter(fs)) {
-                        byte[] dataToSave = msdu.Data.Skip(firstOrSinglePacket ? 10 : 0).Take(firstOrSinglePacket ? msdu.PacketLength - 10 : msdu.PacketLength).ToArray(); 
                         sw.Write(dataToSave);
                         sw.Flush();
                     }
                 }
 
                 if (msdu.Sequence == SequenceType.LAST_SEGMENT || msdu.Sequence == SequenceType.SINGLE_DATA) {
-                    if (fileHeader.Compression == CompressionType.LRIT_RICE) { // # Rice
-                        string decompressed;
-                        if (msdu.Sequence == SequenceType.SINGLE_DATA) {
-                            decompressed = PacketManager.Decompressor(filename, fileHeader.ImageStructureHeader.Columns, fileHeader.RiceCompressionHeader.Pixel, fileHeader.RiceCompressionHeader.Flags);
-                        } else {
-                            decompressed = PacketManager.Decompressor(String.Format("channels/{0}/{1}_{2}_", channelId, msdu.APID, msdu.Version), fileHeader.ImageStructureHeader.Columns, startnum, endnum, fileHeader.RiceCompressionHeader.Pixel, fileHeader.RiceCompressionHeader.Flags);
-                        }
-
-                        FileHandler.HandleFile(decompressed, fileHeader);
-                        startnum = -1;
-                        endnum = -1;
-                    } else {
-                        FileHandler.HandleFile(filename, fileHeader);
-                        startnum = -1;
-                        endnum = -1;
-                    }
+                    FileHandler.HandleFile(filename, fileHeader);
+                    startnum = -1;
+                    endnum = -1;
                 }
             } catch (Exception e) {
                 UIConsole.GlobalConsole.Error(String.Format("Exception on FinishMSDU: {0}", e));
