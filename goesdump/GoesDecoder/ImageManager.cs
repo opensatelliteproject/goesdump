@@ -130,21 +130,21 @@ namespace OpenSatelliteProject {
                             } else {
                                 if (ImageManager.GenerateVisible && mData.Visible.IsComplete && mData.Visible.MaxSegments != 0 && !mData.IsVisibleProcessed) {
                                     var bmp = ImageTools.GenerateFullImage(mData.Visible);
-                                    bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "VIS", z.Key), ImageFormat.Jpeg);
+                                    bmp.Save(Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "VIS", z.Key)), ImageFormat.Jpeg);
                                     bmp.Dispose();
                                     mData.IsVisibleProcessed = true;
                                 }
 
                                 if (ImageManager.GenerateInfrared && mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
                                     var bmp = ImageTools.GenerateFullImage(mData.Infrared);
-                                    bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "IR", z.Key), ImageFormat.Jpeg);
+                                    bmp.Save(Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "IR", z.Key)), ImageFormat.Jpeg);
                                     bmp.Dispose();
                                     mData.IsInfraredProcessed = true;
                                 }
 
                                 if (ImageManager.GenerateWaterVapour && mData.WaterVapour.IsComplete && mData.WaterVapour.MaxSegments != 0 && !mData.IsWaterVapourProcessed) {
                                     var bmp = ImageTools.GenerateFullImage(mData.WaterVapour);
-                                    bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "WV", z.Key), ImageFormat.Jpeg);
+                                    bmp.Save(Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "WV", z.Key)), ImageFormat.Jpeg);
                                     bmp.Dispose();
                                     mData.IsWaterVapourProcessed = true;
                                 }

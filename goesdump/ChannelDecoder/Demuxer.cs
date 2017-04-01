@@ -191,6 +191,7 @@ namespace OpenSatelliteProject {
         public void ParseBytes(byte[] data) {
             uint counter;
             bool replayFlag;
+            bool ovfVcnt;
 
             if (data.Length < FRAMESIZE) {
                 throw new Exception(String.Format("Not enough data. Expected {0} and got {1}", FRAMESIZE, data.Length));
@@ -222,7 +223,9 @@ namespace OpenSatelliteProject {
                 return;
             }
 
-            if (lastFrame != -1 && lastFrame + 1 != counter) {
+            ovfVcnt = lastFrame == 0xFFFFFF && counter == 0;
+
+            if (lastFrame != -1 && lastFrame + 1 != counter && !ovfVcnt) {
                 UIConsole.GlobalConsole.Error(String.Format("Lost {0} frames. Last Frame #{1} - Current Frame #{2} on VCID {3}", counter - lastFrame - 1, lastFrame, counter, channelId));
                 if (lastAPID != -1) {
                     temporaryStorage[lastAPID].FrameLost = true;

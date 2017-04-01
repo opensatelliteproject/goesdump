@@ -22,6 +22,11 @@ public partial class MainWindow: Gtk.Window {
         //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
         //string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
         string debugFrames = "/media/ELTN/tmp/debug3/raw_data.bin";
+        var im = new ImageManager("channels/Images/FM1");
+        ImageManager.GenerateVisible = true;
+        ImageManager.GenerateInfrared = true;
+        ImageManager.GenerateFalseColor = true;
+        im.Start();
         dm = new DemuxManager();
         FileHandler.SkipDCS = true;
         FileHandler.SkipEMWIN = true;
@@ -45,6 +50,7 @@ public partial class MainWindow: Gtk.Window {
         Console.WriteLine("Frame Loss: {0}", dm.FrameLoss);
         Console.WriteLine("Length Fails: {0}", dm.LengthFails);
         Console.WriteLine("Packets: {0}", dm.Packets);
+        im.Stop();
 
         //ProcessFile("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Text/NWSTEXTdat043204159214.lrit");
         /*
