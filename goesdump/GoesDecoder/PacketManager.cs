@@ -253,10 +253,11 @@ namespace OpenSatelliteProject {
 
                             using (FileStream streamWriter = File.Create(fileName)) {
 
+                                const int MAXSIZE = 40 * 1024 * 1024;
                                 int size = 2048;
                                 int readBytes = 0;
                                 byte[] data = new byte[2048];
-                                while (readBytes < s.Length) {
+                                while (readBytes < MAXSIZE) {
                                     size = s.Read(data, 0, data.Length);
                                     readBytes+= size;
                                     if (size > 0) {
