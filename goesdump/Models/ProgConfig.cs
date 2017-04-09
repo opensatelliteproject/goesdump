@@ -14,6 +14,14 @@ namespace OpenSatelliteProject {
         #endregion
 
         #region Decoder Data
+
+        [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("false")]
+        public bool RecordIntermediateFile {
+            get { return (bool)this["RecordIntermediateFile"]; }
+            set { this["RecordIntermediateFile"] = value; }
+        }
+
         [UserScopedSettingAttribute()]
         [DefaultSettingValueAttribute("5001")]
         public int ChannelDataServerPort {

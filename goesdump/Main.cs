@@ -47,6 +47,7 @@ namespace OpenSatelliteProject {
         public Main() {
 
             #region Create Config File
+            config.RecordIntermediateFile = config.RecordIntermediateFile;
             config.ChannelDataServerName = config.ChannelDataServerName;
             config.ChannelDataServerPort = config.ChannelDataServerPort;
             config.ConstellationServerName = config.ConstellationServerName;
@@ -88,6 +89,8 @@ namespace OpenSatelliteProject {
             ImageManager.GenerateVisible = config.GenerateVisibleImages;
             ImageManager.GenerateWaterVapour = config.GenerateWaterVapourImages;
             ImageManager.MaxRetryCount = config.MaxGenerateRetry;
+
+            DemuxManager.RecordToFile = config.RecordIntermediateFile;
 
             Connector.ChannelDataServerName = config.ChannelDataServerName;
             Connector.StatisticsServerName = config.StatisticsServerName;

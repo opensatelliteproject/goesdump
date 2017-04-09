@@ -52,6 +52,7 @@ namespace OpenSatelliteProject {
         public HeadlessMain() {
 
             #region Create Config File
+            config.RecordIntermediateFile = config.RecordIntermediateFile;
             config.ChannelDataServerName = config.ChannelDataServerName;
             config.ChannelDataServerPort = config.ChannelDataServerPort;
             config.ConstellationServerName = config.ConstellationServerName;
@@ -90,6 +91,7 @@ namespace OpenSatelliteProject {
             Connector.ChannelDataServerPort = config.ChannelDataServerPort;
             Connector.StatisticsServerPort = config.StatisticsServerPort;
             Connector.ConstellationServerPort = config.ConstellationServerPort;
+            DemuxManager.RecordToFile = config.RecordIntermediateFile;
 
             SyslogClient.SysLogServerIp = config.SysLogServer;
 
