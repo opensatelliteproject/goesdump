@@ -1,6 +1,7 @@
 ﻿using System;
 using OpenSatelliteProject.Log;
 using System.Net.Sockets;
+using OpenSatelliteProject.Tools;
 
 
 #if !HEADLESS
@@ -52,7 +53,7 @@ namespace OpenSatelliteProject {
           return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
         }
 
-        static UIConsole() {
+        public static void Init() {
             GlobalConsole = new UIConsole();
         }
 
@@ -63,7 +64,9 @@ namespace OpenSatelliteProject {
             messages = new List<ConsoleMessage>();
             Position = new Vector2(0, 0);
             #endif
-            SyslogClient.SysLogServerIp = config.SysLogServer;
+            if (LLTools.IsLinux) {
+                SyslogClient.SysLogServerIp = config.SysLogServer;
+            }
         }
         #if !HEADLESS
         public float MaxHeight {

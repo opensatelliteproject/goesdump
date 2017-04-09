@@ -17,12 +17,14 @@ namespace OpenSatelliteProject {
         #if (HEADLESS)
         private static HeadlessMain main;
         internal static void RunProg() {
+            UIConsole.Init();
             main = new HeadlessMain();
             main.Start();
         }
         #else
         private static Main main;
         internal static void RunProg() {
+            UIConsole.Init();
             main = new Main();
             main.Run();
             main.Dispose();

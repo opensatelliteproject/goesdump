@@ -11,6 +11,7 @@ using System.Linq;
 using OpenSatelliteProject.Tools;
 using OpenSatelliteProject.PacketData.Enums;
 using OpenSatelliteProject.Log;
+using System.Net.Sockets;
 
 namespace OpenSatelliteProject {
     public class HeadlessMain {
@@ -93,12 +94,11 @@ namespace OpenSatelliteProject {
             Connector.ConstellationServerPort = config.ConstellationServerPort;
             DemuxManager.RecordToFile = config.RecordIntermediateFile;
 
-            SyslogClient.SysLogServerIp = config.SysLogServer;
-
             if (LLTools.IsLinux) {
+                SyslogClient.SysLogServerIp = config.SysLogServer;
                 try {
                     SyslogClient.Send(new Message(config.SysLogFacility, Level.Information, "Your syslog connection is working! OpenSatelliteProject is enabled to send logs."));
-                } catch (WebSocketException) {
+                } catch (SocketException) {
                     UIConsole.GlobalConsole.Warn("Your syslog is not enabled to receive UDP request. Please refer to https://opensatelliteproject.github.io/OpenSatelliteProject/");
                 }
             }

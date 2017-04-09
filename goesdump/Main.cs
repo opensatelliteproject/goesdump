@@ -9,6 +9,8 @@ using System.Threading;
 using System.IO;
 using OpenSatelliteProject.PacketData.Enums;
 using OpenSatelliteProject.Log;
+using OpenSatelliteProject.Tools;
+using System.Net.Sockets;
 
 namespace OpenSatelliteProject {
     /// <summary>
@@ -22,7 +24,6 @@ namespace OpenSatelliteProject {
         private ImageManager NHImageManager;
         private ImageManager SHImageManager;
         private ImageManager USImageManager;
-        private SyslogClient syslog;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -100,7 +101,14 @@ namespace OpenSatelliteProject {
             Connector.StatisticsServerPort = config.StatisticsServerPort;
             Connector.ConstellationServerPort = config.ConstellationServerPort;
 
-            SyslogClient.SysLogServerIp = config.SysLogServer;
+            if (LLTools.IsLinux) {
+                SyslogClient.SysLogServerIp = config.SysLogServer;
+                try {
+                    SyslogClient.Send(new Message(config.SysLogFacility, Level.Information, "Your syslog connection is working! OpenSatelliteProject is enabled to send logs."));
+                } catch (SocketException) {
+                    UIConsole.GlobalConsole.Warn("Your syslog is not enabled to receive UDP request. Please refer to https://opensatelliteproject.github.io/OpenSatelliteProject/");
+                }
+            }
 
             if (config.GenerateFDFalseColor) {
                 string fdFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_FULLDISK);
