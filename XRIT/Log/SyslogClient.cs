@@ -16,7 +16,8 @@ namespace OpenSatelliteProject.Log {
 
         static SyslogClient() {
             if (!Tools.LLTools.IsLinux) {
-                throw new ArgumentException("Syslog only works on Linux");
+                Console.WriteLine("Syslog only works on Linux");
+                return;
             }
 
             ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
@@ -35,16 +36,18 @@ namespace OpenSatelliteProject.Log {
         }
 
         public static void Send(Message message) {
-            if (!IsActive) {
-                udpClient.Connect(SysLogServerIp, Port);
-                IsActive = true;
-            }
+            if (Tools.LLTools.IsLinux) {
+                if (!IsActive) {
+                    udpClient.Connect(SysLogServerIp, Port);
+                    IsActive = true;
+                }
 
-            if (IsActive) {
-                int priority = (int)FacilityMap[message.Facility] * 8 + message.Level;
-                string msg = System.String.Format("<{0}>{1} {2} {3}", priority, DateTime.Now.ToString("MMM dd HH:mm:ss"), "XRIT", message.Text);
-                byte[] bytes = System.Text.Encoding.ASCII.GetBytes(msg);
-                udpClient.Send(bytes, bytes.Length);
+                if (IsActive) {
+                    int priority = (int)FacilityMap[message.Facility] * 8 + message.Level;
+                    string msg = System.String.Format("<{0}>{1} {2} {3}", priority, DateTime.Now.ToString("MMM dd HH:mm:ss"), "XRIT", message.Text);
+                    byte[] bytes = System.Text.Encoding.ASCII.GetBytes(msg);
+                    udpClient.Send(bytes, bytes.Length);
+                }
             }
         }
 
