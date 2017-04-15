@@ -1,19 +1,16 @@
 ﻿<Properties StartupItem="XRITLibraryTest/XRITLibraryTest.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug Headless|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/Main.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/ChannelDecoder/Demuxer.cs">
     <Files>
-      <File FileName="goesdump/UIComponents/UIConsole.cs" Line="1" Column="1" />
-      <File FileName="goesdump/HeadlessMain.cs" Line="1" Column="1" />
-      <File FileName="goesdump/GoesDecoder/PacketManager.cs" Line="267" Column="38" />
-      <File FileName="goesdump/ChannelDecoder/Demuxer.cs" Line="1" Column="1" />
-      <File FileName="XRITLibraryTest/MainWindow.cs" Line="1" Column="1" />
-      <File FileName="goesdump/ChannelDecoder/DemuxManager.cs" Line="1" Column="1" />
-      <File FileName="goesdump/GoesDecoder/ImageManager.cs" Line="1" Column="1" />
-      <File FileName="XRIT/DCS/DCSHeader.cs" Line="1" Column="1" />
-      <File FileName="XRIT/DCS/DCSParser.cs" Line="1" Column="1" />
-      <File FileName="goesdump/WebManager/DirectoryHandler.cs" Line="1" Column="1" />
-      <File FileName="goesdump/GoesDecoder/FileHandler.cs" Line="1" Column="1" />
-      <File FileName="goesdump/Main.cs" Line="158" Column="46" />
+      <File FileName="goesdump/HeadlessMain.cs" Line="47" Column="59" />
+      <File FileName="goesdump/Program.cs" Line="1" Column="1" />
+      <File FileName="goesdump/Main.cs" Line="21" Column="23" />
+      <File FileName="goesdump/ChannelDecoder/Demuxer.cs" Line="239" Column="1" />
+      <File FileName="goesdump/ChannelDecoder/DemuxManager.cs" Line="87" Column="41" />
+      <File FileName="goesdump/GoesDecoder/FileHandler.cs" Line="59" Column="24" />
+      <File FileName="XRITLibraryTest/MainWindow.cs" Line="37" Column="9" />
+      <File FileName="goesdump/GoesDecoder/PacketManager.cs" Line="341" Column="29" />
+      <File FileName="goesdump/UIComponents/UIConsole.cs" Line="63" Column="14" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
