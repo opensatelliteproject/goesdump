@@ -115,7 +115,7 @@ namespace OpenSatelliteProject {
                         }
 
                         try {
-                            if (ImageTools.CanGenerateFalseColor(mData)) {
+                            if (GenerateFalseColor && ImageTools.CanGenerateFalseColor(mData)) {
                                 UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of FSLCR for {0}.", Path.GetFileName(filename)));
                                 var bmp = ImageTools.GenerateFalseColor(mData);
 
