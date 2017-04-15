@@ -127,27 +127,35 @@ namespace OpenSatelliteProject {
                                 if (EraseFiles) {
                                     EraseGroupDataFiles(mData);
                                 }
-                            } else {
-                                if (ImageManager.GenerateVisible && mData.Visible.IsComplete && mData.Visible.MaxSegments != 0 && !mData.IsVisibleProcessed) {
-                                    var bmp = ImageTools.GenerateFullImage(mData.Visible);
-                                    bmp.Save(Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "VIS", z.Key)), ImageFormat.Jpeg);
-                                    bmp.Dispose();
-                                    mData.IsVisibleProcessed = true;
-                                }
+                            }
+                            if (ImageManager.GenerateVisible && mData.Visible.IsComplete && mData.Visible.MaxSegments != 0 && !mData.IsVisibleProcessed) {
+                                string ofilename = Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "VIS", z.Key));
+                                UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of Visible for {0}.", Path.GetFileName(ofilename)));
+                                var bmp = ImageTools.GenerateFullImage(mData.Visible);
+                                bmp.Save(ofilename, ImageFormat.Jpeg);
+                                bmp.Dispose();
+                                UIConsole.GlobalConsole.Log(string.Format("New Visible Image: {0}", Path.GetFileName(ofilename)));
+                                mData.IsVisibleProcessed = true;
+                            }
 
-                                if (ImageManager.GenerateInfrared && mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
-                                    var bmp = ImageTools.GenerateFullImage(mData.Infrared);
-                                    bmp.Save(Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "IR", z.Key)), ImageFormat.Jpeg);
-                                    bmp.Dispose();
-                                    mData.IsInfraredProcessed = true;
-                                }
+                            if (ImageManager.GenerateInfrared && mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
+                                string ofilename = Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "IR", z.Key));
+                                UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of Infrared for {0}.", Path.GetFileName(filename)));
+                                var bmp = ImageTools.GenerateFullImage(mData.Infrared);
+                                bmp.Save(ofilename, ImageFormat.Jpeg);
+                                bmp.Dispose();
+                                UIConsole.GlobalConsole.Log(string.Format("New Infrared Image: {0}", Path.GetFileName(ofilename)));
+                                mData.IsInfraredProcessed = true;
+                            }
 
-                                if (ImageManager.GenerateWaterVapour && mData.WaterVapour.IsComplete && mData.WaterVapour.MaxSegments != 0 && !mData.IsWaterVapourProcessed) {
-                                    var bmp = ImageTools.GenerateFullImage(mData.WaterVapour);
-                                    bmp.Save(Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "WV", z.Key)), ImageFormat.Jpeg);
-                                    bmp.Dispose();
-                                    mData.IsWaterVapourProcessed = true;
-                                }
+                            if (ImageManager.GenerateWaterVapour && mData.WaterVapour.IsComplete && mData.WaterVapour.MaxSegments != 0 && !mData.IsWaterVapourProcessed) {
+                                string ofilename = Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "WV", z.Key));
+                                UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of Water Vapour for {0}.", Path.GetFileName(ofilename)));
+                                var bmp = ImageTools.GenerateFullImage(mData.WaterVapour);
+                                bmp.Save(ofilename, ImageFormat.Jpeg);
+                                bmp.Dispose();
+                                UIConsole.GlobalConsole.Log(string.Format("New Water Vapour Image: {0}", Path.GetFileName(ofilename)));
+                                mData.IsWaterVapourProcessed = true;
                             }
                         } catch (SystemException e) {
                             UIConsole.GlobalConsole.Error(string.Format("Error processing image (SysExcpt) {0}: {1}", filename, e));                            
