@@ -53,8 +53,14 @@ namespace OpenSatelliteProject {
           return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
         }
 
+        static UIConsole() {
+            Init();
+        }
+
         public static void Init() {
-            GlobalConsole = new UIConsole();
+            if (GlobalConsole == null) {
+                GlobalConsole = new UIConsole();
+            }
         }
 
         public UIConsole() {

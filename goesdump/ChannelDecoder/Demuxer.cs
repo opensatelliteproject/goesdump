@@ -114,7 +114,7 @@ namespace OpenSatelliteProject {
                         UIConsole.GlobalConsole.Error("Received First Segment but last data wasn't finished! Forcing dump.");
                         // This can only happen for multi-segment file.
                         filename = String.Format("channels/{0}/{1}_{2}.lrit", channelId, lastMSDU.APID, lastMSDU.Version);
-                        FileHandler.HandleFile(filename, fileHeader);
+                        FileHandler.HandleFile(filename, fileHeader, manager);
                         startnum = -1;
                         endnum = -1;
                     }
@@ -190,7 +190,7 @@ namespace OpenSatelliteProject {
                 }
 
                 if (msdu.Sequence == SequenceType.LAST_SEGMENT || msdu.Sequence == SequenceType.SINGLE_DATA) {
-                    FileHandler.HandleFile(filename, fileHeader);
+                    FileHandler.HandleFile(filename, fileHeader, manager);
                     startnum = -1;
                     endnum = -1;
                 }
