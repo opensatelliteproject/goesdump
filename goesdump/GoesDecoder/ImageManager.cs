@@ -177,10 +177,6 @@ namespace OpenSatelliteProject {
                                 mData.IsProcessed = true;
                             }
                         } 
-
-                        if (EraseFiles) {
-                            EraseGroupDataFiles(mData);
-                        }
                     }
                 }
 
