@@ -100,76 +100,86 @@ namespace OpenSatelliteProject {
                     if (!running) {
                         break;
                     }
+                    string ImageName = string.Format("{0}-{1}-{2}", z.Key, mData.SatelliteName, mData.RegionName);
 
-                    if (!mData.IsProcessed) {
-                        string filename = string.Format("{0}-{1}-{2}-{3}.png", z.Key, mData.SatelliteName, mData.RegionName, "FLSCLR");
-                        filename = Path.Combine(folder, filename);
-
-                        if (File.Exists(filename)) {
-                            UIConsole.GlobalConsole.Debug(string.Format("Skipping generating FLSCLR for {0}. Image already exists.", Path.GetFileName(filename)));
-                            mData.IsProcessed = true;
-                            if (EraseFiles) {
-                                EraseGroupDataFiles(mData);
+                    try {
+                        if (ImageManager.GenerateVisible && mData.Visible.IsComplete && mData.Visible.MaxSegments != 0 && !mData.IsVisibleProcessed) {
+                            string ofilename = Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.png", mData.SatelliteName, mData.RegionName, "VIS", z.Key));
+                            if (File.Exists(ofilename)) {
+                                UIConsole.GlobalConsole.Debug(string.Format("Skipping generating Visible for {0}. Image already exists.", Path.GetFileName(ofilename)));
+                                mData.IsVisibleProcessed = true;
+                            } else {
+                                UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of Visible for {0}.", Path.GetFileName(ofilename)));
+                                var bmp = ImageTools.GenerateFullImage(mData.Visible);
+                                bmp.Save(ofilename, ImageFormat.Png);
+                                bmp.Dispose();
+                                UIConsole.GlobalConsole.Log(string.Format("New Visible Image: {0}", Path.GetFileName(ofilename)));
                             }
-                            continue;
+                            mData.IsVisibleProcessed = true;
                         }
 
-                        try {
-                            if (GenerateFalseColor && ImageTools.CanGenerateFalseColor(mData)) {
+                        if (ImageManager.GenerateInfrared && mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
+                            string ofilename = Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.png", mData.SatelliteName, mData.RegionName, "IR", z.Key));
+                            if (File.Exists(ofilename)) {
+                                UIConsole.GlobalConsole.Debug(string.Format("Skipping generating Visible for {0}. Image already exists.", Path.GetFileName(ofilename)));
+                            } else {
+                                UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of Infrared for {0}.", Path.GetFileName(ofilename)));
+                                var bmp = ImageTools.GenerateFullImage(mData.Infrared);
+                                bmp.Save(ofilename, ImageFormat.Png);
+                                bmp.Dispose();
+                                UIConsole.GlobalConsole.Log(string.Format("New Infrared Image: {0}", Path.GetFileName(ofilename)));
+                            }
+                            mData.IsInfraredProcessed = true;
+                        }
+
+                        if (ImageManager.GenerateWaterVapour && mData.WaterVapour.IsComplete && mData.WaterVapour.MaxSegments != 0 && !mData.IsWaterVapourProcessed) {
+                            string ofilename = Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.png", mData.SatelliteName, mData.RegionName, "WV", z.Key));
+                            if (File.Exists(ofilename)) {
+                                UIConsole.GlobalConsole.Debug(string.Format("Skipping generating Visible for {0}. Image already exists.", Path.GetFileName(ofilename)));
+                            } else {
+                                UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of Water Vapour for {0}.", Path.GetFileName(ofilename)));
+                                var bmp = ImageTools.GenerateFullImage(mData.WaterVapour);
+                                bmp.Save(ofilename, ImageFormat.Png);
+                                bmp.Dispose();
+                                UIConsole.GlobalConsole.Log(string.Format("New Water Vapour Image: {0}", Path.GetFileName(ofilename)));
+                            }
+                            mData.IsWaterVapourProcessed = true;
+                        }
+                        if (GenerateFalseColor && ImageTools.CanGenerateFalseColor(mData)) {
+                            string filename = string.Format("{0}-{1}-{2}-{3}.png", z.Key, mData.SatelliteName, mData.RegionName, "FLSCLR");
+                            filename = Path.Combine(folder, filename);
+
+                            if (File.Exists(filename)) {
+                                UIConsole.GlobalConsole.Debug(string.Format("Skipping generating FLSCLR for {0}. Image already exists.", Path.GetFileName(filename)));
+                                if (EraseFiles) {
+                                    EraseGroupDataFiles(mData);
+                                }
+                            } else {
                                 UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of FSLCR for {0}.", Path.GetFileName(filename)));
                                 var bmp = ImageTools.GenerateFalseColor(mData);
 
                                 bmp.Save(filename, ImageFormat.Png);
                                 bmp.Dispose();
                                 UIConsole.GlobalConsole.Log(string.Format("New False Colour Image: {0}", Path.GetFileName(filename)));
-                                mData.IsProcessed = true;
+                            }
+                            mData.IsFalseColorProcessed = true;
+                        }
+                    } catch (SystemException e) {
+                        UIConsole.GlobalConsole.Error(string.Format("Error processing image (SysExcpt) {0}: {1}", ImageName, e));                            
+                        mData.RetryCount++;
+                        if (mData.RetryCount == ImageManager.MaxRetryCount) {
+                            mData.IsProcessed = true;
+                        }
+                    } catch (Exception e) {
+                        UIConsole.GlobalConsole.Error(string.Format("Error processing image {0}: {1}", ImageName, e));
+                        mData.RetryCount++;
+                        if (mData.RetryCount == ImageManager.MaxRetryCount) {
+                            mData.IsProcessed = true;
+                        }
+                    } 
 
-                                if (EraseFiles) {
-                                    EraseGroupDataFiles(mData);
-                                }
-                            }
-                            if (ImageManager.GenerateVisible && mData.Visible.IsComplete && mData.Visible.MaxSegments != 0 && !mData.IsVisibleProcessed) {
-                                string ofilename = Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.png", mData.SatelliteName, mData.RegionName, "VIS", z.Key));
-                                UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of Visible for {0}.", Path.GetFileName(ofilename)));
-                                var bmp = ImageTools.GenerateFullImage(mData.Visible);
-                                bmp.Save(ofilename, ImageFormat.Png);
-                                bmp.Dispose();
-                                UIConsole.GlobalConsole.Log(string.Format("New Visible Image: {0}", Path.GetFileName(ofilename)));
-                                mData.IsVisibleProcessed = true;
-                            }
-
-                            if (ImageManager.GenerateInfrared && mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
-                                string ofilename = Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.png", mData.SatelliteName, mData.RegionName, "IR", z.Key));
-                                UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of Infrared for {0}.", Path.GetFileName(filename)));
-                                var bmp = ImageTools.GenerateFullImage(mData.Infrared);
-                                bmp.Save(ofilename, ImageFormat.Png);
-                                bmp.Dispose();
-                                UIConsole.GlobalConsole.Log(string.Format("New Infrared Image: {0}", Path.GetFileName(ofilename)));
-                                mData.IsInfraredProcessed = true;
-                            }
-
-                            if (ImageManager.GenerateWaterVapour && mData.WaterVapour.IsComplete && mData.WaterVapour.MaxSegments != 0 && !mData.IsWaterVapourProcessed) {
-                                string ofilename = Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.png", mData.SatelliteName, mData.RegionName, "WV", z.Key));
-                                UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of Water Vapour for {0}.", Path.GetFileName(ofilename)));
-                                var bmp = ImageTools.GenerateFullImage(mData.WaterVapour);
-                                bmp.Save(ofilename, ImageFormat.Png);
-                                bmp.Dispose();
-                                UIConsole.GlobalConsole.Log(string.Format("New Water Vapour Image: {0}", Path.GetFileName(ofilename)));
-                                mData.IsWaterVapourProcessed = true;
-                            }
-                        } catch (SystemException e) {
-                            UIConsole.GlobalConsole.Error(string.Format("Error processing image (SysExcpt) {0}: {1}", filename, e));                            
-                            mData.RetryCount++;
-                            if (mData.RetryCount == ImageManager.MaxRetryCount) {
-                                mData.IsProcessed = true;
-                            }
-                        } catch (Exception e) {
-                            UIConsole.GlobalConsole.Error(string.Format("Error processing image {0}: {1}", filename, e));
-                            mData.RetryCount++;
-                            if (mData.RetryCount == ImageManager.MaxRetryCount) {
-                                mData.IsProcessed = true;
-                            }
-                        } 
+                    if (EraseFiles) {
+                        EraseGroupDataFiles(mData);
                     }
                 }
 
