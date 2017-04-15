@@ -8,6 +8,7 @@ using System.Drawing.Imaging;
 using OpenSatelliteProject.Log;
 using OpenSatelliteProject.DCS;
 using System.Collections.Generic;
+using OpenSatelliteProject.PacketData.Enums;
 
 public partial class MainWindow: Gtk.Window {
 
@@ -20,18 +21,38 @@ public partial class MainWindow: Gtk.Window {
             Console.WriteLine(fileChooser.Filename);
             ProcessFile(fileChooser.Filename);
         };
-
-        string dcsFile = "/home/lucas/Works/OpenSatelliteProject/split/goesdump/XRITLibraryTest/bin/Debug/channels/DCS/pM-17085003239-A.dcs";
-        List<DCSHeader> d = DCSParser.parseDCS(dcsFile);
         /*
-        //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
-        string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
+        Bitmap test0 = (Bitmap) Bitmap.FromFile("test0.jpg");
+        Bitmap test1 = (Bitmap) Bitmap.FromFile("test1.jpg");
+        Bitmap overlay = (Bitmap) Bitmap.FromFile("goes13-fulldisk.jpg");
+
+        test0 = test0.ToFormat(PixelFormat.Format24bppRgb, true);
+
+        overlay.Save("hue.jpg", ImageFormat.Jpeg);
+
+        ImageTools.ApplyOverlay(ref test0, overlay);
+        test0.Save("test0-ovl.jpg", ImageFormat.Jpeg);
+
+        ImageTools.ApplyOverlay(ref test1, overlay);
+        test1.Save("test1-ovl.jpg", ImageFormat.Jpeg);
+
+        test0.Dispose();
+        test1.Dispose();
+        overlay.Dispose();
+        */
+
+        //string dcsFile = "/home/lucas/Works/OpenSatelliteProject/split/goesdump/XRITLibraryTest/bin/Debug/channels/DCS/pM-17085003239-A.dcs";
+        //List<DCSHeader> d = DCSParser.parseDCS(dcsFile);
+        ///*
+        string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
+        //string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
         //string debugFrames = "/media/ELTN/tmp/debug3/raw_data.bin";
-        var im = new ImageManager("channels/Images/Full Disk/");
+        var im = new ImageManager("channels/Images/FM1/");
         ImageManager.GenerateVisible = true;
         ImageManager.GenerateInfrared = true;
         ImageManager.GenerateFalseColor = true;
         im.Start();
+        ///*
         dm = new DemuxManager();
         FileHandler.SkipDCS = true;
         FileHandler.SkipEMWIN = true;
@@ -55,8 +76,14 @@ public partial class MainWindow: Gtk.Window {
         Console.WriteLine("Frame Loss: {0}", dm.FrameLoss);
         Console.WriteLine("Length Fails: {0}", dm.LengthFails);
         Console.WriteLine("Packets: {0}", dm.Packets);
+
+        Console.WriteLine("Received Products: ");
+        foreach (int pID in dm.productsReceived.Keys) {
+            Console.WriteLine("\t{0}: {1}", ((NOAAProductID)pID).ToString(), dm.productsReceived[pID]);
+        }
+        //*/
         im.Stop();
-        */
+        //*/
         //ProcessFile("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Text/NWSTEXTdat043204159214.lrit");
         /*
         Organizer organizer = new Organizer("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Images/Full Disk");

@@ -1,23 +1,24 @@
 ﻿<Properties StartupItem="XRITLibraryTest/XRITLibraryTest.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug Headless|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/Main.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/Tools/ImageTools.cs">
     <Files>
-      <File FileName="goesdump/UIComponents/UIConsole.cs" Line="1" Column="1" />
-      <File FileName="goesdump/HeadlessMain.cs" Line="1" Column="1" />
-      <File FileName="goesdump/GoesDecoder/PacketManager.cs" Line="267" Column="38" />
+      <File FileName="goesdump/Main.cs" Line="21" Column="23" />
       <File FileName="goesdump/ChannelDecoder/Demuxer.cs" Line="1" Column="1" />
-      <File FileName="XRITLibraryTest/MainWindow.cs" Line="1" Column="1" />
       <File FileName="goesdump/ChannelDecoder/DemuxManager.cs" Line="1" Column="1" />
-      <File FileName="goesdump/GoesDecoder/ImageManager.cs" Line="1" Column="1" />
-      <File FileName="XRIT/DCS/DCSHeader.cs" Line="1" Column="1" />
-      <File FileName="XRIT/DCS/DCSParser.cs" Line="1" Column="1" />
-      <File FileName="goesdump/WebManager/DirectoryHandler.cs" Line="1" Column="1" />
       <File FileName="goesdump/GoesDecoder/FileHandler.cs" Line="1" Column="1" />
-      <File FileName="goesdump/Main.cs" Line="158" Column="46" />
+      <File FileName="XRITLibraryTest/MainWindow.cs" Line="1" Column="1" />
+      <File FileName="goesdump/GoesDecoder/PacketManager.cs" Line="341" Column="29" />
+      <File FileName="goesdump/UIComponents/UIConsole.cs" Line="1" Column="1" />
+      <File FileName="goesdump/GoesDecoder/ImageManager.cs" Line="1" Column="1" />
+      <File FileName="XRIT/Tools/Organizer.cs" Line="20" Column="9" />
+      <File FileName="XRITLibraryTest/Program.cs" Line="10" Column="1" />
+      <File FileName="XRIT/Tools/ImageTools.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Catchpoint exceptionName="System.NullReferenceException" includeSubclasses="True" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches>
     <Watch file="XRIT/Tools/AEC.cs" line="32" offsetX="528" offsetY="496" expression="param" liveUpdate="False" />

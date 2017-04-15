@@ -12,6 +12,9 @@ using System.Diagnostics;
 namespace OpenSatelliteProject {
     public static class ImageTools {
 
+        private const int OVERLAY_THRESHOLD = 10;
+        private const float OVERLAY_ALPHA_HOLD = 100f;
+
         /// <summary>
         /// Determines if can generate false color for the specified data.
         /// </summary>
@@ -364,6 +367,71 @@ namespace OpenSatelliteProject {
                 (byte) (g * 255),
                 (byte) (b * 255)
             };
+        }
+
+        /// <summary>
+        /// Applies an overlay on the image.
+        /// </summary>
+        /// <param name="bmp">Bmp.</param>
+        /// <param name="overlay">Overlay.</param>
+        public static void ApplyOverlay(ref Bitmap bmp, Bitmap overlay) {
+            if (bmp.PixelFormat != PixelFormat.Format24bppRgb && bmp.PixelFormat != PixelFormat.Format32bppArgb) {
+                throw new Exception("bmp format needs to be either 24bpp or 32bpp RGB");
+            }
+
+            if (overlay.PixelFormat != bmp.PixelFormat) {
+                overlay = overlay.ToFormat(bmp.PixelFormat);
+            }
+
+
+            var overlaydata = overlay.LockBits(new Rectangle(0, 0, overlay.Width, overlay.Height), ImageLockMode.ReadOnly, overlay.PixelFormat);
+            var bmpdata = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
+            int readWidth = Math.Min(overlay.Width, bmp.Width);
+            int readHeight = Math.Min(overlay.Height, bmp.Height);
+
+            if (bmp.PixelFormat == PixelFormat.Format24bppRgb) {
+                unsafe {
+                    byte* ovPtr = (byte*)overlaydata.Scan0.ToPointer();
+                    byte* bPtr = (byte*)bmpdata.Scan0.ToPointer();
+
+                    for (int y = 0; y < readHeight; y++) {
+                        for (int x = 0; x < readWidth; x++) {
+                            int c = ((bmpdata.Stride / 3) * y + x) * 3;
+                            if (ovPtr[c] > OVERLAY_THRESHOLD || ovPtr[c + 1] > OVERLAY_THRESHOLD || ovPtr[c + 2] > OVERLAY_THRESHOLD) {
+                                float alpha = ovPtr[c] / OVERLAY_ALPHA_HOLD; 
+                                alpha = alpha > 1 ? 1 : alpha < 0 ? 0 : alpha;
+                                byte v = (byte) ((ovPtr[c] * 2 > 255) ? 255 : ovPtr[c] * 2);
+                                bPtr[c] =  (byte) ((int)(v * alpha + bPtr[c+0] * (1-alpha)));
+                                bPtr[c+1] =(byte) ((int)(v * alpha + bPtr[c+1] * (1-alpha)));
+                                bPtr[c+2] =(byte) ((int)(v * alpha + bPtr[c+2] * (1-alpha)));
+                            }
+                        }
+                    }
+                }
+            } else { // 32 ARGB
+                unsafe {
+                    byte* ovPtr = (byte*)overlaydata.Scan0.ToPointer();
+                    byte* bPtr = (byte*)bmpdata.Scan0.ToPointer();
+
+                    for (int y = 0; y < readHeight; y++) {
+                        for (int x = 0; x < readWidth; x++) {
+                            // TODO: Improve this
+                            int c = ((bmpdata.Stride / 4) * y + x) * 4;
+                            if (ovPtr[c] > OVERLAY_THRESHOLD || ovPtr[c + 1] > OVERLAY_THRESHOLD || ovPtr[c + 2] > OVERLAY_THRESHOLD) {
+                                float alpha = ovPtr[c] / OVERLAY_ALPHA_HOLD; 
+                                alpha = alpha > 1 ? 1 : alpha < 0 ? 0 : alpha;
+                                byte v = (byte) ((ovPtr[c] * 2 > 255) ? 255 : ovPtr[c] * 2);
+                                bPtr[c] =  (byte) ((int)(v * alpha + bPtr[c+0] * (1-alpha)));
+                                bPtr[c+1] =(byte) ((int)(v * alpha + bPtr[c+1] * (1-alpha)));
+                                bPtr[c+2] =(byte) ((int)(v * alpha + bPtr[c+2] * (1-alpha)));
+                            }
+                        }
+                    }
+                }
+            }
+
+            overlay.UnlockBits(overlaydata);
+            bmp.UnlockBits(bmpdata);
         }
 
         /// <summary>
