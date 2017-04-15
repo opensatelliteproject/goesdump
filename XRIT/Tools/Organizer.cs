@@ -150,6 +150,7 @@ namespace OpenSatelliteProject {
                     alreadyProcessed.Add(file);
                 } catch (Exception e) {
                     Console.WriteLine("Error reading file {0}: {1}", file, e);
+                    alreadyProcessed.Add(file);
                 }
             }
             /*

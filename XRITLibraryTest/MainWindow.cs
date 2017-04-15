@@ -21,6 +21,7 @@ public partial class MainWindow: Gtk.Window {
             Console.WriteLine(fileChooser.Filename);
             ProcessFile(fileChooser.Filename);
         };
+        /*
         Bitmap test0 = (Bitmap) Bitmap.FromFile("test0.jpg");
         Bitmap test1 = (Bitmap) Bitmap.FromFile("test1.jpg");
         Bitmap overlay = (Bitmap) Bitmap.FromFile("goes13-fulldisk.jpg");
@@ -38,10 +39,11 @@ public partial class MainWindow: Gtk.Window {
         test0.Dispose();
         test1.Dispose();
         overlay.Dispose();
+        */
 
         //string dcsFile = "/home/lucas/Works/OpenSatelliteProject/split/goesdump/XRITLibraryTest/bin/Debug/channels/DCS/pM-17085003239-A.dcs";
         //List<DCSHeader> d = DCSParser.parseDCS(dcsFile);
-        /*
+        ///*
         string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
         //string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
         //string debugFrames = "/media/ELTN/tmp/debug3/raw_data.bin";
@@ -80,7 +82,7 @@ public partial class MainWindow: Gtk.Window {
             Console.WriteLine("\t{0}: {1}", ((NOAAProductID)pID).ToString(), dm.productsReceived[pID]);
         }
         //*/
-        //im.Stop();
+        im.Stop();
         //*/
         //ProcessFile("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Text/NWSTEXTdat043204159214.lrit");
         /*
