@@ -10,6 +10,7 @@ namespace OpenSatelliteProject {
         public OrganizerData WaterVapour { get; set; }
 
         public bool IsProcessed { get; set; }
+        public bool IsFalseColorProcessed { get; set; }
         public bool IsVisibleProcessed { get; set; }
         public bool IsInfraredProcessed { get; set; }
         public bool IsWaterVapourProcessed { get; set; }
@@ -26,10 +27,11 @@ namespace OpenSatelliteProject {
             Visible = new OrganizerData();
             Infrared = new OrganizerData();
             WaterVapour = new OrganizerData();
-            IsProcessed = false;
+            IsFalseColorProcessed = false;
             IsVisibleProcessed = false;
             IsInfraredProcessed = false;
             IsWaterVapourProcessed = false;
+            IsProcessed = false;
             Failed = false;
             RetryCount = 0;
         }

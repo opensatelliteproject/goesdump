@@ -31,7 +31,11 @@ namespace OpenSatelliteProject {
             byProductIdHandler[productId] = handler;
         }
 
-        public static void HandleFile(string filename, XRITHeader fileHeader) {
+        public static void HandleFile(string filename, XRITHeader fileHeader, DemuxManager dm = null) {
+            if (dm != null) {
+                dm.incProductCount(fileHeader.Product.ID);
+            }
+
             if (byCompressionTypeHandler.ContainsKey((int)fileHeader.Compression)) {
                 byCompressionTypeHandler[(int)fileHeader.Compression](filename, fileHeader);
             } else if (byProductIdHandler.ContainsKey(fileHeader.Product.ID)) {

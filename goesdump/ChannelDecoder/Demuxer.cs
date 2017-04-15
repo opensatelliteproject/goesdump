@@ -114,7 +114,7 @@ namespace OpenSatelliteProject {
                         UIConsole.GlobalConsole.Error("Received First Segment but last data wasn't finished! Forcing dump.");
                         // This can only happen for multi-segment file.
                         filename = String.Format("channels/{0}/{1}_{2}.lrit", channelId, lastMSDU.APID, lastMSDU.Version);
-                        FileHandler.HandleFile(filename, fileHeader);
+                        FileHandler.HandleFile(filename, fileHeader, manager);
                         startnum = -1;
                         endnum = -1;
                     }
@@ -190,7 +190,7 @@ namespace OpenSatelliteProject {
                 }
 
                 if (msdu.Sequence == SequenceType.LAST_SEGMENT || msdu.Sequence == SequenceType.SINGLE_DATA) {
-                    FileHandler.HandleFile(filename, fileHeader);
+                    FileHandler.HandleFile(filename, fileHeader, manager);
                     startnum = -1;
                     endnum = -1;
                 }
@@ -250,7 +250,11 @@ namespace OpenSatelliteProject {
                 }
             }
 
-            lastFrame = (int)counter;
+            if (lastFrame < counter) {
+                lastFrame = (int)counter;
+            } else {
+                UIConsole.GlobalConsole.Warn($"LastFrame is bigger than currentFrame ({lastFrame} > {counter}). Not changing current number...");
+            }
 
             cb = data.Skip(6).Take(2).ToArray();
             if (BitConverter.IsLittleEndian) {
