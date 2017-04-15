@@ -250,7 +250,11 @@ namespace OpenSatelliteProject {
                 }
             }
 
-            lastFrame = (int)counter;
+            if (lastFrame < counter) {
+                lastFrame = (int)counter;
+            } else {
+                UIConsole.GlobalConsole.Warn($"LastFrame is bigger than currentFrame ({lastFrame} > {counter}). Not changing current number...");
+            }
 
             cb = data.Skip(6).Take(2).ToArray();
             if (BitConverter.IsLittleEndian) {
