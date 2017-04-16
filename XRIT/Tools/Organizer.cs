@@ -82,6 +82,20 @@ namespace OpenSatelliteProject {
 
                     var timestamp = (int)Math.Floor((datetime - UnixEpoch).TotalSeconds);
 
+                    if (timestamp < 0 && file.Contains("IMG_DK")) {
+                        // Himawari-8 relay BUG
+                        //IMG_DK01VIS_201704161550
+                        string bfile = Path.GetFileName(file);
+                        string hdt = bfile.Substring(12, 12);
+                        var year = hdt.Substring(0, 4);
+                        var month = hdt.Substring(4, 2);
+                        var day = hdt.Substring(6, 2);
+                        var hour = hdt.Substring(8, 2);
+                        var minute = hdt.Substring(10, 2);
+                        datetime = new DateTime(int.Parse(year), int.Parse(month), int.Parse(day), int.Parse(hour), int.Parse(minute), 0);
+                        timestamp = (int)Math.Floor((datetime - UnixEpoch).TotalSeconds);
+                    }
+
                     if (!groupData.ContainsKey(timestamp)) {
                         groupData[timestamp] = new GroupData();
                     }
