@@ -121,7 +121,7 @@ namespace OpenSatelliteProject {
                             if (ImageManager.GenerateInfrared && mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
                                 string ofilename = Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.png", mData.SatelliteName, mData.RegionName, "IR", z.Key));
                                 if (File.Exists(ofilename)) {
-                                    UIConsole.GlobalConsole.Debug(string.Format("Skipping generating Visible for {0}. Image already exists.", Path.GetFileName(ofilename)));
+                                    UIConsole.GlobalConsole.Debug(string.Format("Skipping generating Infrared for {0}. Image already exists.", Path.GetFileName(ofilename)));
                                 } else {
                                     UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of Infrared for {0}.", Path.GetFileName(ofilename)));
                                     var bmp = ImageTools.GenerateFullImage(mData.Infrared);
@@ -135,7 +135,7 @@ namespace OpenSatelliteProject {
                             if (ImageManager.GenerateWaterVapour && mData.WaterVapour.IsComplete && mData.WaterVapour.MaxSegments != 0 && !mData.IsWaterVapourProcessed) {
                                 string ofilename = Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.png", mData.SatelliteName, mData.RegionName, "WV", z.Key));
                                 if (File.Exists(ofilename)) {
-                                    UIConsole.GlobalConsole.Debug(string.Format("Skipping generating Visible for {0}. Image already exists.", Path.GetFileName(ofilename)));
+                                    UIConsole.GlobalConsole.Debug(string.Format("Skipping generating Water Vapour for {0}. Image already exists.", Path.GetFileName(ofilename)));
                                 } else {
                                     UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of Water Vapour for {0}.", Path.GetFileName(ofilename)));
                                     var bmp = ImageTools.GenerateFullImage(mData.WaterVapour);
