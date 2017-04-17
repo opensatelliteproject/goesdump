@@ -8,8 +8,8 @@ namespace OpenSatelliteProject.PacketData {
         public string ProjectionName { get; set; }
         public UInt32 ColumnScalingFactor { get; set; }
         public UInt32 LineScalingFactor { get; set; }
-        public UInt32 ColumnOffset { get; set; }
-        public UInt32 LineOffset { get; set; }
+        public Int32 ColumnOffset { get; set; }
+        public Int32 LineOffset { get; set; }
 
         public ImageNavigationHeader(ImageNavigationRecord data) {
             Type = HeaderType.ImageNavigationRecord;
