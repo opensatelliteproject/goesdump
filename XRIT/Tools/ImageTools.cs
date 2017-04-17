@@ -119,13 +119,14 @@ namespace OpenSatelliteProject {
             bmp.UnlockBits(pdata);
 
             // Crop
-            int sc = (int)data.StartColumn;
-            int hw = (int)Math.Min(data.Columns - sc, sc);
-            int cl = (int)data.StartColumn - hw;
-            int cf = cl + 2 * hw;
+            if (data.StartColumn > 0) {
+                int sc = (int)data.StartColumn;
+                int hw = (int)Math.Min(data.Columns - sc, sc);
+                int cl = (int)data.StartColumn - hw;
+                int cf = cl + 2 * hw;
 
-            bmp = bmp.Crop(cl, 0, cf - cl, bmp.Height, true);
-
+                bmp = bmp.Crop(cl, 0, cf - cl, bmp.Height, true);
+            }
             // Resize to match pixel aspect
             int newHeight = (int) Math.Round(bmp.Height * data.PixelAspect);
             bmp = ResizeImage(bmp, bmp.Width, newHeight, true);

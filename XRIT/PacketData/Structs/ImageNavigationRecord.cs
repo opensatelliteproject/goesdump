@@ -12,8 +12,8 @@ namespace OpenSatelliteProject.PacketData.Structs {
         public string ProjectionName;
         public UInt32 ColumnScalingFactor;
         public UInt32 LineScalingFactor;
-        public UInt32 ColumnOffset;
-        public UInt32 LineOffset;
+        public Int32 ColumnOffset;
+        public Int32 LineOffset;
     }
 }
 

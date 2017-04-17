@@ -7,7 +7,7 @@ namespace OpenSatelliteProject {
         public int Lines { get; set; }
         public int Columns { get; set; }
         public float PixelAspect { get; set; }
-        public uint StartColumn { get; set; }
+        public int StartColumn { get; set; }
         public int MaxSegments;
 
         public OrganizerData() {
