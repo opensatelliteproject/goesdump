@@ -33,6 +33,26 @@ namespace OpenSatelliteProject.PacketData {
 
         public List<XRITBaseHeader> UnknownHeaders { get; set; }
 
+        /// <summary>
+        /// Returns true if the the this is an instance of FullDisk
+        /// PS: It may return false for Himawari / Goes 16 fulldisks.
+        /// </summary>
+        /// <value><c>true</c> if this instance is full disk; otherwise, <c>false</c>.</value>
+        public bool IsFullDisk { get { return  PrimaryHeader.FileType == FileTypeCode.IMAGE &&
+            (
+                Product.ID == (int)NOAAProductID.GOES13_ABI ||
+                Product.ID == (int)NOAAProductID.GOES15_ABI ||
+                Product.ID == (int)NOAAProductID.GOES16_ABI ||
+                Product.ID == (int)NOAAProductID.HIMAWARI8_ABI
+            ) &&
+            (
+                SubProduct.ID == (int)ScannerSubProduct.INFRARED_FULLDISK ||
+                SubProduct.ID == (int)ScannerSubProduct.VISIBLE_FULLDISK ||
+                SubProduct.ID == (int)ScannerSubProduct.WATERVAPOUR_FULLDISK
+            );
+            } 
+        }
+
         #endregion
 
         #region Helper Getters

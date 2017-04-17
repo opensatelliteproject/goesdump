@@ -14,6 +14,7 @@ namespace OpenSatelliteProject {
         public bool IsVisibleProcessed { get; set; }
         public bool IsInfraredProcessed { get; set; }
         public bool IsWaterVapourProcessed { get; set; }
+        public bool CropImage { get; set; }
 
         public int RetryCount { get; set; }
         public bool Failed { get; set; }
@@ -34,6 +35,7 @@ namespace OpenSatelliteProject {
             IsProcessed = false;
             Failed = false;
             RetryCount = 0;
+            CropImage = false;
         }
 
         public override string ToString() {

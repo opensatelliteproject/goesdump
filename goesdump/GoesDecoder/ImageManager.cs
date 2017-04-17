@@ -151,9 +151,6 @@ namespace OpenSatelliteProject {
 
                                 if (File.Exists(filename)) {
                                     UIConsole.GlobalConsole.Debug(string.Format("Skipping generating FLSCLR for {0}. Image already exists.", Path.GetFileName(filename)));
-                                    if (EraseFiles) {
-                                        EraseGroupDataFiles(mData);
-                                    }
                                 } else {
                                     UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of FSLCR for {0}.", Path.GetFileName(filename)));
                                     var bmp = ImageTools.GenerateFalseColor(mData);
@@ -161,6 +158,9 @@ namespace OpenSatelliteProject {
                                     bmp.Save(filename, ImageFormat.Png);
                                     bmp.Dispose();
                                     UIConsole.GlobalConsole.Log(string.Format("New False Colour Image: {0}", Path.GetFileName(filename)));
+                                }
+                                if (EraseFiles) {
+                                    EraseGroupDataFiles(mData);
                                 }
                                 mData.IsFalseColorProcessed = true;
                             }
