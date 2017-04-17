@@ -44,6 +44,8 @@ namespace OpenSatelliteProject {
                         region = "Full Disk";
                     }
 
+                    var cropSection = region.ToLower().Contains("full disk") || header.IsFullDisk;
+
                     if (anciliary != null) {
                         if (anciliary.ContainsKey("Satellite")) {
                             satellite = anciliary["Satellite"];
@@ -103,6 +105,7 @@ namespace OpenSatelliteProject {
                     grp.SatelliteName = satellite;
                     grp.RegionName = region;
                     grp.FrameTime = datetime;
+                    grp.CropImage = cropSection;
 
                     var od = new OrganizerData();
                     switch (channel) {
@@ -152,7 +155,7 @@ namespace OpenSatelliteProject {
                         od.Columns = header.ImageStructureHeader.Columns;
                         od.Lines = header.ImageStructureHeader.Lines;
                         od.PixelAspect = header.ImageNavigationHeader.ColumnScalingFactor / (float)header.ImageNavigationHeader.LineScalingFactor;
-                        od.StartColumn = header.ImageNavigationHeader.ColumnOffset;
+                        od.ColumnOffset = header.ImageNavigationHeader.ColumnOffset;
                         if (header.SegmentIdentificationHeader != null) {
                             od.MaxSegments = header.SegmentIdentificationHeader.MaxSegments;
                         } else {

@@ -76,7 +76,7 @@ namespace OpenSatelliteProject {
         /// </summary>
         /// <returns>The full image</returns>
         /// <param name="data">The Organizer Data</param>
-        public static Bitmap GenerateFullImage(OrganizerData data) {
+        public static Bitmap GenerateFullImage(OrganizerData data, bool crop = false) {
             Bitmap bmp = new Bitmap(data.Columns, data.Lines, PixelFormat.Format8bppIndexed);
 
             ColorPalette pal = bmp.Palette;
@@ -119,10 +119,10 @@ namespace OpenSatelliteProject {
             bmp.UnlockBits(pdata);
 
             // Crop
-            if (data.StartColumn > 0) {
-                int sc = (int)data.StartColumn;
+            if (crop) {
+                int sc = (int)data.ColumnOffset;
                 int hw = (int)Math.Min(data.Columns - sc, sc);
-                int cl = (int)data.StartColumn - hw;
+                int cl = (int)data.ColumnOffset - hw;
                 int cf = cl + 2 * hw;
 
                 bmp = bmp.Crop(cl, 0, cf - cl, bmp.Height, true);
