@@ -110,7 +110,7 @@ namespace OpenSatelliteProject {
                                     mData.IsVisibleProcessed = true;
                                 } else {
                                     UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of Visible for {0}.", Path.GetFileName(ofilename)));
-                                    var bmp = ImageTools.GenerateFullImage(mData.Visible);
+                                    var bmp = ImageTools.GenerateFullImage(mData.Visible, mData.CropImage);
                                     bmp.Save(ofilename, ImageFormat.Png);
                                     bmp.Dispose();
                                     UIConsole.GlobalConsole.Log(string.Format("New Visible Image: {0}", Path.GetFileName(ofilename)));
@@ -124,7 +124,7 @@ namespace OpenSatelliteProject {
                                     UIConsole.GlobalConsole.Debug(string.Format("Skipping generating Infrared for {0}. Image already exists.", Path.GetFileName(ofilename)));
                                 } else {
                                     UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of Infrared for {0}.", Path.GetFileName(ofilename)));
-                                    var bmp = ImageTools.GenerateFullImage(mData.Infrared);
+                                    var bmp = ImageTools.GenerateFullImage(mData.Infrared, mData.CropImage);
                                     bmp.Save(ofilename, ImageFormat.Png);
                                     bmp.Dispose();
                                     UIConsole.GlobalConsole.Log(string.Format("New Infrared Image: {0}", Path.GetFileName(ofilename)));
@@ -138,7 +138,7 @@ namespace OpenSatelliteProject {
                                     UIConsole.GlobalConsole.Debug(string.Format("Skipping generating Water Vapour for {0}. Image already exists.", Path.GetFileName(ofilename)));
                                 } else {
                                     UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of Water Vapour for {0}.", Path.GetFileName(ofilename)));
-                                    var bmp = ImageTools.GenerateFullImage(mData.WaterVapour);
+                                    var bmp = ImageTools.GenerateFullImage(mData.WaterVapour, mData.CropImage);
                                     bmp.Save(ofilename, ImageFormat.Png);
                                     bmp.Dispose();
                                     UIConsole.GlobalConsole.Log(string.Format("New Water Vapour Image: {0}", Path.GetFileName(ofilename)));
