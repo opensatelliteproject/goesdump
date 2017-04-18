@@ -35,13 +35,13 @@ namespace OpenSatelliteProject {
                 #if DEBUG
                 Stopwatch watch = Stopwatch.StartNew();
                 #endif
-                var visible = GenerateFullImage(data.Visible);
+                var visible = GenerateFullImage(data.Visible, data.CropImage);
                 #if DEBUG
                 watch.Stop();
                 Console.WriteLine("Took {0} milisseconds to generate Visible Image", watch.ElapsedMilliseconds);
                 watch = Stopwatch.StartNew();
                 #endif
-                var infrared = GenerateFullImage(data.Infrared);
+                var infrared = GenerateFullImage(data.Infrared, data.CropImage);
                 #if DEBUG
                 watch.Stop();
                 Console.WriteLine("Took {0} milisseconds to generate Infrared Image", watch.ElapsedMilliseconds);

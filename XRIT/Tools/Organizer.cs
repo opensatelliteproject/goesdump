@@ -44,8 +44,6 @@ namespace OpenSatelliteProject {
                         region = "Full Disk";
                     }
 
-                    var cropSection = region.ToLower().Contains("full disk") || header.IsFullDisk;
-
                     if (anciliary != null) {
                         if (anciliary.ContainsKey("Satellite")) {
                             satellite = anciliary["Satellite"];
@@ -57,8 +55,7 @@ namespace OpenSatelliteProject {
 
                         if (anciliary.ContainsKey("Channel")) {
                             channel = int.Parse(anciliary["Channel"]);
-                        } 
-
+                        }
 
                         if (anciliary.ContainsKey("Time of frame start")) {
                             var dtstring = anciliary["Time of frame start"];
@@ -82,6 +79,7 @@ namespace OpenSatelliteProject {
                         }
                     }
 
+                    var cropSection = region.ToLower().Contains("full disk") || header.IsFullDisk;
                     var timestamp = (int)Math.Floor((datetime - UnixEpoch).TotalSeconds);
 
                     if (timestamp < 0 && file.Contains("IMG_DK")) {
