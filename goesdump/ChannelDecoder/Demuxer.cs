@@ -31,6 +31,16 @@ namespace OpenSatelliteProject {
         public int LengthFails { get; set; }
         public long FrameLoss { get; set; }
 
+        /// <summary>
+        /// Ignores the overflow-like jumps on Frame Loss counter
+        /// </summary>
+        /// <value><c>true</c> if ignore counter jump; otherwise, <c>false</c>.</value>
+        public static bool IgnoreCounterJump { get; set; }
+
+        static Demuxer() {
+            IgnoreCounterJump = true;
+        }
+
         public Demuxer() {
             temporaryStorage = new Dictionary<int, MSDU>();
             buffer = new byte[0];
@@ -203,6 +213,7 @@ namespace OpenSatelliteProject {
             uint counter;
             bool replayFlag;
             bool ovfVcnt;
+            bool ovfVcntProblem;
 
             if (data.Length < FRAMESIZE) {
                 throw new Exception(String.Format("Not enough data. Expected {0} and got {1}", FRAMESIZE, data.Length));
@@ -234,23 +245,41 @@ namespace OpenSatelliteProject {
                 return;
             }
 
-            ovfVcnt = lastFrame == 0xFFFFFF && counter == 0;
+            ovfVcnt = lastFrame > counter && counter == 0;
+            ovfVcntProblem = ovfVcnt && (0xFFFFFF - lastFrame) + counter - 1 > 0;
 
             if (lastFrame != -1 && lastFrame + 1 != counter && !ovfVcnt) {
                 UIConsole.GlobalConsole.Error(String.Format("Lost {0} frames. Last Frame #{1} - Current Frame #{2} on VCID {3}", counter - lastFrame - 1, lastFrame, counter, channelId));
                 if (lastAPID != -1) {
                     temporaryStorage[lastAPID].FrameLost = true;
                 }
-            }
-
-            if (lastFrame != -1) {
-                FrameLoss += counter - lastFrame - 1;
-                if (manager != null) {
-                    manager.FrameLoss += counter - lastFrame - 1;
+            } else if (!IgnoreCounterJump && lastFrame != -1 && ovfVcntProblem) {
+                UIConsole.GlobalConsole.Error(String.Format("Lost {0} frames. Last Frame #{1} - Current Frame #{2} on VCID {3}", (0xFFFFFF - lastFrame) + counter  - 1, lastFrame, counter, channelId));
+                if (lastAPID != -1) {
+                    temporaryStorage[lastAPID].FrameLost = true;
                 }
             }
 
-            if (lastFrame < counter) {
+            if (ovfVcntProblem && IgnoreCounterJump) {
+                UIConsole.GlobalConsole.Warn($"Frame Jump detected from {lastFrame} to {counter} on VCID {channelId} but IgnoreCounterJump is set to true. Ignoring...");
+            }
+
+            if (lastFrame != -1) {
+                if (!IgnoreCounterJump && ovfVcnt) {
+                    Console.WriteLine("Frame Loss: {0}", (0xFFFFFF - lastFrame) + counter - 1);
+                    FrameLoss += (0xFFFFFF - lastFrame) + counter;
+                    if (manager != null) {
+                        manager.FrameLoss += (0xFFFFFF - lastFrame) + counter - 1;
+                    }
+                } else if (!ovfVcnt) {
+                    FrameLoss += counter - lastFrame - 1;
+                    if (manager != null) {
+                        manager.FrameLoss += counter - lastFrame - 1;
+                    }
+                }
+            }
+
+            if (lastFrame < counter || ovfVcnt) {
                 lastFrame = (int)counter;
             } else {
                 UIConsole.GlobalConsole.Warn($"LastFrame is bigger than currentFrame ({lastFrame} > {counter}). Not changing current number...");
