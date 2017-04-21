@@ -9,6 +9,7 @@ using OpenSatelliteProject.Log;
 using OpenSatelliteProject.DCS;
 using System.Collections.Generic;
 using OpenSatelliteProject.PacketData.Enums;
+using System.Threading;
 
 public partial class MainWindow: Gtk.Window {
 
@@ -44,20 +45,31 @@ public partial class MainWindow: Gtk.Window {
         //string dcsFile = "/home/lucas/Works/OpenSatelliteProject/split/goesdump/XRITLibraryTest/bin/Debug/channels/DCS/pM-17085003239-A.dcs";
         //List<DCSHeader> d = DCSParser.parseDCS(dcsFile);
         ///*
-        string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
+        //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
+        string debugFrames = "/media/ELTN/tmp/debug5/demuxdump-1492732814.bin";
         //string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
         //string debugFrames = "/media/ELTN/tmp/debug3/raw_data.bin";
-        var im = new ImageManager("channels/Images/FM1/");
+        var im0 = new ImageManager("channels/Images/Full Disk/");
+        var im1 = new ImageManager("channels/Images/Northern Hemisphere/");
+        var im2 = new ImageManager("channels/Images/Southern Hemisphere/");
+        var im3 = new ImageManager("channels/Images/Area of Interest/");
+        var im4 = new ImageManager("channels/Images/United States/");
+
         ImageManager.GenerateVisible = true;
         ImageManager.GenerateInfrared = true;
         ImageManager.GenerateFalseColor = true;
-        im.Start();
+        ImageManager.EraseFiles = true;
+        im0.Start();
+        im1.Start();
+        im2.Start();
+        im3.Start();
+        im4.Start();
         ///*
         dm = new DemuxManager();
         FileHandler.SkipDCS = true;
         FileHandler.SkipEMWIN = true;
-        //int startFrame = 83000;
-        int startFrame = 0;
+        int startFrame = 956000;
+        //int startFrame = 0;
         FileStream file = File.OpenRead(debugFrames);
         byte[] data = new byte[892];
         long bytesRead = startFrame * 892;
@@ -65,7 +77,9 @@ public partial class MainWindow: Gtk.Window {
         int frameN = startFrame;
         file.Position = bytesRead;
         while (bytesRead < bytesToRead) {
-            //Console.WriteLine("Injecting Frame {0}", frameN);
+            if (frameN % 1000 == 0) {
+                Console.WriteLine("Injecting Frame {0}", frameN);
+            }
             bytesRead += file.Read(data, 0, 892);
             dm.parseBytes(data);
             frameN++;
@@ -82,7 +96,7 @@ public partial class MainWindow: Gtk.Window {
             Console.WriteLine("\t{0}: {1}", ((NOAAProductID)pID).ToString(), dm.productsReceived[pID]);
         }
         //*/
-        im.Stop();
+        //im.Stop();
         //*/
         //ProcessFile("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Text/NWSTEXTdat043204159214.lrit");
         /*

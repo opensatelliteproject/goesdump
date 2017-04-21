@@ -14,6 +14,7 @@ namespace OpenSatelliteProject {
         public int Packets { get; set; }
         public int LengthFails { get; set; }
         public long FrameLoss { get; set; }
+        public uint FrameJumps { get; set; }
 
         public Dictionary<int, long> productsReceived;
 
@@ -34,6 +35,7 @@ namespace OpenSatelliteProject {
             Packets = 0;
             LengthFails = 0;
             FrameLoss = 0;
+            FrameJumps = 0;
             if (RecordToFile) {
                 fileName = string.Format("demuxdump-{0}.bin", LLTools.Timestamp());
                 UIConsole.GlobalConsole.Log(string.Format("Demux Dump filename: {0}", fileName));
@@ -65,6 +67,7 @@ namespace OpenSatelliteProject {
             Packets = 0;
             LengthFails = 0;
             FrameLoss = 0;
+            FrameJumps = 0;
             productsReceived = new Dictionary<int, long>();
             foreach (var k in demuxers.Keys) {
                 demuxers[k] = new Demuxer(this);
