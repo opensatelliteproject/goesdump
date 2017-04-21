@@ -10,6 +10,10 @@ using OpenSatelliteProject.Tools;
 namespace OpenSatelliteProject {
     public class Demuxer {
         private readonly int FRAMESIZE = 892;
+        /// <summary>
+        /// More than that, we will not count as loss, but as a corrupted frame.
+        /// </summary>
+        private readonly int MAX_ACCOUTABLE_LOSSES = 1000;
 
         private Dictionary<int, MSDU> temporaryStorage;
 
@@ -277,15 +281,25 @@ namespace OpenSatelliteProject {
                 if (frameJump && !ovfVcnt) {
                     manager.FrameLoss++;
                 } else if (!IgnoreCounterJump && ovfVcnt) {
-                    Console.WriteLine("Frame Loss: {0}", (0xFFFFFF - lastFrame) + counter - 1);
-                    FrameLoss += (0xFFFFFF - lastFrame) + counter;
-                    if (manager != null) {
-                        manager.FrameLoss += (0xFFFFFF - lastFrame) + counter - 1;
+                    int losses = (int) Math.Abs((0xFFFFFF - lastFrame) + counter - 1);
+                    Console.WriteLine("Frame Loss: {0}", losses);
+                    if (losses < MAX_ACCOUTABLE_LOSSES) {
+                        FrameLoss += losses;
+                        if (manager != null) {
+                            manager.FrameLoss += losses;
+                        }
+                    } else {
+                        UIConsole.GlobalConsole.Warn($"Frame Lost ({losses}) in this section is higher than max accountable losses. Not accounting for it (probably corrupt frame).");
                     }
                 } else if (!ovfVcnt) {
-                    FrameLoss += counter - lastFrame - 1;
-                    if (manager != null) {
-                        manager.FrameLoss += counter - lastFrame - 1;
+                    int losses = (int) Math.Abs(counter - lastFrame - 1);
+                    if (losses < MAX_ACCOUTABLE_LOSSES) {
+                        FrameLoss += losses;
+                        if (manager != null) {
+                            manager.FrameLoss += losses;
+                        }
+                    } else {
+                        UIConsole.GlobalConsole.Warn($"Frame Lost ({losses}) in this section is higher than max accountable losses. Not accounting for it (probably corrupt frame).");
                     }
                 }
             }
