@@ -9,6 +9,7 @@ namespace OpenSatelliteProject {
         public float PixelAspect { get; set; }
         public int ColumnOffset { get; set; }
         public int MaxSegments;
+        public bool OK { get; set; }
 
         public OrganizerData() {
             Segments = new Dictionary<int, string>();
@@ -17,6 +18,7 @@ namespace OpenSatelliteProject {
             PixelAspect = -1;
             ColumnOffset = 0;
             MaxSegments = 1;
+            OK = false;
         }
 
         public bool IsComplete { get { return Segments.Count == MaxSegments; }}
