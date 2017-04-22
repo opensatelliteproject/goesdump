@@ -114,7 +114,11 @@ namespace OpenSatelliteProject {
                             if (satellite == "G16") {
                                 od = grp.Visible;
                             } else {
-                                Console.WriteLine("Unknown Channel {0}", channel);
+                                string p = $"{timestamp%1000}-{((NOAAProductID)header.Product.ID).ToString()}-{header.SubProduct.Name}";
+                                if (!grp.OtherData.ContainsKey(p)) {
+                                    grp.OtherData.Add(p, new OrganizerData());
+                                }
+                                od = grp.OtherData[p];
                             }
                             break;
                         case 3: // Water Vapour
@@ -143,8 +147,12 @@ namespace OpenSatelliteProject {
                             }
                             break;
                         default:
-                            //Console.WriteLine("Unknown Channel {0}", channel);
-                            continue;
+                            string z = $"{timestamp%1000}-{((NOAAProductID)header.Product.ID).ToString()}-{header.SubProduct.Name}";
+                            if (!grp.OtherData.ContainsKey(z)) {
+                                grp.OtherData.Add(z, new OrganizerData());
+                            }
+                            od = grp.OtherData[z];
+                            break;
                     } 
 
 
@@ -168,13 +176,6 @@ namespace OpenSatelliteProject {
                     alreadyProcessed.Add(file);
                 }
             }
-            /*
-            foreach (var i in groupData) {
-                var data = i.Value;
-                Console.WriteLine("Showing group({0}): ", i.Key);
-                Console.WriteLine(data.ToString());
-            }
-            */
         }
     }
 }
