@@ -8,6 +8,9 @@ namespace OpenSatelliteProject {
     public class DemuxManager {
         private readonly static int FILL_VCID = 63;
         private Dictionary<int, Demuxer> demuxers;
+        private bool recordFile = false;
+        private string fileName;
+        private FileStream fStream;
 
         public int CRCFails { get; set; }
         public int Bugs { get; set; }
@@ -18,13 +21,23 @@ namespace OpenSatelliteProject {
 
         public Dictionary<int, long> productsReceived;
 
-        public static bool RecordToFile { get; set; }
-
-        private string fileName;
-        private FileStream fStream;
-
-        static DemuxManager() {
-            RecordToFile = false;
+        public bool RecordToFile { 
+            get { return recordFile; } 
+            set {
+                recordFile = value;
+                if (value && fStream == null) {
+                    fileName = string.Format("demuxdump-{0}.bin", LLTools.Timestamp());
+                    UIConsole.GlobalConsole.Log($"Starting dump on file {fileName}");
+                    fStream = File.OpenWrite(fileName);
+                } else if (!value && fStream != null) {
+                    UIConsole.GlobalConsole.Log($"Closing dump on file {fileName}");
+                    try {
+                        fStream.Close();
+                    } catch(Exception) {
+                        // Ignore
+                    }
+                }
+            }
         }
 
         public DemuxManager() {
@@ -44,10 +57,7 @@ namespace OpenSatelliteProject {
         }
 
         ~DemuxManager() {
-            if (RecordToFile) {
-                UIConsole.GlobalConsole.Log(string.Format("Closing Demux Dump filename: {0}", fileName));
-                fStream.Close();
-            }
+            RecordToFile = false;
         }
 
         public void incProductCount(int productId) {
@@ -72,18 +82,9 @@ namespace OpenSatelliteProject {
             foreach (var k in demuxers.Keys) {
                 demuxers[k] = new Demuxer(this);
             }
-            if (RecordToFile) {
-                if (fStream != null) {
-                    try {
-                        fStream.Close();
-                    } catch(Exception) {
-                        // Ignore
-                    }
-                }
-                fileName = string.Format("demuxdump-{0}.bin", LLTools.Timestamp());
-                UIConsole.GlobalConsole.Log(string.Format("Demux Dump filename: {0}", fileName));
-                fStream = File.OpenWrite(fileName);
-            }
+            bool lastState = RecordToFile;
+            RecordToFile = false;
+            RecordToFile = lastState;
         }
 
         public void parseBytes(byte[] data) {

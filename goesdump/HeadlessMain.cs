@@ -92,7 +92,6 @@ namespace OpenSatelliteProject {
             Connector.ChannelDataServerPort = config.ChannelDataServerPort;
             Connector.StatisticsServerPort = config.StatisticsServerPort;
             Connector.ConstellationServerPort = config.ConstellationServerPort;
-            DemuxManager.RecordToFile = config.RecordIntermediateFile;
 
             if (LLTools.IsLinux) {
                 SyslogClient.SysLogServerIp = config.SysLogServer;
@@ -134,6 +133,7 @@ namespace OpenSatelliteProject {
             cn = new Connector();
 
             demuxManager = new DemuxManager();
+            demuxManager.RecordToFile = config.RecordIntermediateFile;
             cn.StatisticsAvailable += (Statistics_st data) => {
                 mtx.WaitOne();
                 statistics = data;

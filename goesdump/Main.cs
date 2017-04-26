@@ -91,8 +91,6 @@ namespace OpenSatelliteProject {
             ImageManager.GenerateWaterVapour = config.GenerateWaterVapourImages;
             ImageManager.MaxRetryCount = config.MaxGenerateRetry;
 
-            DemuxManager.RecordToFile = config.RecordIntermediateFile;
-
             Connector.ChannelDataServerName = config.ChannelDataServerName;
             Connector.StatisticsServerName = config.StatisticsServerName;
             Connector.ConstellationServerName = config.ConstellationServerName;
@@ -147,6 +145,7 @@ namespace OpenSatelliteProject {
             mtx = new Mutex();
             cn = new Connector();
             demuxManager = new DemuxManager();
+            demuxManager.RecordToFile = config.RecordIntermediateFile;
             cn.StatisticsAvailable += (Statistics_st data) => {
                 mtx.WaitOne();
                 statistics = data;
