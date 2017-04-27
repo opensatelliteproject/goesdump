@@ -46,14 +46,15 @@ public partial class MainWindow: Gtk.Window {
         //List<DCSHeader> d = DCSParser.parseDCS(dcsFile);
         ///*
         //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
-        string debugFrames = "/media/ELTN/tmp/debug5/demuxdump-1492732814.bin";
+        //string debugFrames = "/media/ELTN/tmp/debug5/demuxdump-1492732814.bin";
         //string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
-        //string debugFrames = "/media/ELTN/tmp/debug3/raw_data.bin";
+        string debugFrames = "/media/ELTN/tmp/debug3/raw_data.bin";
         var im0 = new ImageManager("channels/Images/Full Disk/");
         var im1 = new ImageManager("channels/Images/Northern Hemisphere/");
         var im2 = new ImageManager("channels/Images/Southern Hemisphere/");
         var im3 = new ImageManager("channels/Images/Area of Interest/");
         var im4 = new ImageManager("channels/Images/United States/");
+        var im5 = new ImageManager("channels/Images/FM1/");
 
         ImageManager.GenerateVisible = true;
         ImageManager.GenerateInfrared = true;
@@ -64,12 +65,13 @@ public partial class MainWindow: Gtk.Window {
         im2.Start();
         im3.Start();
         im4.Start();
-        ///*
+        im5.Start();
+        /*
         dm = new DemuxManager();
         FileHandler.SkipDCS = true;
         FileHandler.SkipEMWIN = true;
-        int startFrame = 956000;
-        //int startFrame = 0;
+        //int startFrame = 956000;
+        int startFrame = 0;
         FileStream file = File.OpenRead(debugFrames);
         byte[] data = new byte[892];
         long bytesRead = startFrame * 892;
@@ -78,7 +80,7 @@ public partial class MainWindow: Gtk.Window {
         file.Position = bytesRead;
         while (bytesRead < bytesToRead) {
             if (frameN % 1000 == 0) {
-                Console.WriteLine("Injecting Frame {0}", frameN);
+                //Console.WriteLine("Injecting Frame {0}", frameN);
             }
             bytesRead += file.Read(data, 0, 892);
             dm.parseBytes(data);
