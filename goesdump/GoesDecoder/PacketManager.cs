@@ -216,7 +216,7 @@ namespace OpenSatelliteProject {
             FileHandler.AttachByProductIdHandler((int)NOAAProductID.OTHER_SATELLITES_1, HandleWeatherData);
             FileHandler.AttachByProductIdHandler((int)NOAAProductID.OTHER_SATELLITES_2, HandleWeatherData);
             FileHandler.AttachByProductIdHandler((int)NOAAProductID.NOAA_TEXT, HandleTextData);
-            FileHandler.AttachByProductIdHandler((int)NOAAProductID.HRIT_EMWIN_TEXT, (filename, fileHeader) => DumpFile(filename, fileHeader, "txt"));
+            FileHandler.AttachByProductIdHandler((int)NOAAProductID.HRIT_EMWIN, (filename, fileHeader) => DumpFile(filename, fileHeader, "txt"));
         }
 
         public static void ExtractZipFile(string zipfile) {
@@ -283,7 +283,15 @@ namespace OpenSatelliteProject {
 
         public static void HandleWeatherData(string filename, XRITHeader header) {
             if (header.Filename.Contains("KWIN")) {
-                // HRIT EMWIN
+                // HRIT EMWIN wrongly has product id of weather data
+                if (FileHandler.SkipEMWIN) {
+                    try {
+                        File.Delete(filename);
+                    } catch (Exception) {
+                        // Do nothing, file doesn't exists
+                    }
+                    return;
+                }
                 string fz = null;
                 switch (header.Compression) {
                     case CompressionType.ZIP:
@@ -366,6 +374,15 @@ namespace OpenSatelliteProject {
             string dir = Path.GetDirectoryName(filename);
             string f = FixFileFolder(dir, fileHeader.Filename, fileHeader.Product, fileHeader.SubProduct);
             f = f.Replace(".lrit", "." + newExt);
+
+            if (FileHandler.SkipEMWIN && fileHeader.Product.ID == (int)NOAAProductID.HRIT_EMWIN) {
+                try {
+                    File.Delete(filename);
+                } catch (Exception) {
+                    // Do nothing, file doesn't exists
+                }
+                return null;
+            }
 
             if (File.Exists(f)) {
                 string timestamp = DateTime.Now.ToString("yyyyMMddHHmmssffff");

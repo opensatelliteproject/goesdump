@@ -50,7 +50,15 @@ namespace OpenSatelliteProject {
             string ofilename = fileHeader.Filename == null ? Path.GetFileName(filename) : fileHeader.Filename; 
             string f = PacketManager.FixFileFolder(dir, ofilename, fileHeader.Product, fileHeader.SubProduct);
 
-            if ((fileHeader.Product.ID == (int)NOAAProductID.DCS && SkipDCS) || (fileHeader.Product.ID == (int)NOAAProductID.EMWIN && SkipEMWIN) || (fileHeader.Product.ID == (int)NOAAProductID.HRIT_EMWIN_TEXT && SkipEMWIN)) {
+            if (ofilename.Contains("KWIN")) {
+                Console.WriteLine("EMWIN");
+            }
+
+            if (
+                (fileHeader.Product.ID == (int)NOAAProductID.DCS && SkipDCS) || 
+                (fileHeader.Product.ID == (int)NOAAProductID.EMWIN && SkipEMWIN) || 
+                (fileHeader.Product.ID == (int)NOAAProductID.HRIT_EMWIN && SkipEMWIN)
+            ) {
                 try {
                     File.Delete(filename);
                 } catch (IOException e) {

@@ -29,7 +29,7 @@ namespace OpenSatelliteProject.PacketData {
 
             noaaProducts.Add((int)NOAAProductID.DCS, new NOAAProduct(NOAAProductID.DCS, "DCS"));
 
-            noaaProducts.Add((int)NOAAProductID.HRIT_EMWIN_TEXT, new NOAAProduct(NOAAProductID.HRIT_EMWIN_TEXT, "HRIT EMWIN TEXT"));
+            noaaProducts.Add((int)NOAAProductID.HRIT_EMWIN, new NOAAProduct(NOAAProductID.HRIT_EMWIN, "HRIT EMWIN TEXT"));
 
             noaaProducts.Add((int)NOAAProductID.GOES13_ABI, new NOAAProduct(NOAAProductID.GOES13_ABI, "GOES 13 ABI", new Dictionary<int, NOAASubproduct>() { // So far, only received GOES 13 images. Coecidence?
                 { (int) ScannerSubProduct.NONE,                         new NOAASubproduct(ScannerSubProduct.NONE,                          "None") },

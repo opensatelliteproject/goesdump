@@ -7,7 +7,7 @@ namespace OpenSatelliteProject.PacketData.Enums {
         OTHER_SATELLITES_2 = 4,
         WEATHER_DATA = 6,
         DCS = 8,
-        HRIT_EMWIN_TEXT = 9,
+        HRIT_EMWIN = 9,
         GOES13_ABI = 13,
         GOES15_ABI = 15,
         GOES16_ABI = 16,
