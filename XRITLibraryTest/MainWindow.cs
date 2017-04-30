@@ -10,10 +10,15 @@ using OpenSatelliteProject.DCS;
 using System.Collections.Generic;
 using OpenSatelliteProject.PacketData.Enums;
 using System.Threading;
+using DotSpatial.Data;
+using OpenSatelliteProject.PacketData;
+using System.Text.RegularExpressions;
+using System.Globalization;
+using OpenSatelliteProject.Geo;
 
 public partial class MainWindow: Gtk.Window {
 
-    DemuxManager dm;
+    //DemuxManager dm;
 
     public MainWindow() : base(Gtk.WindowType.Toplevel) {
         Build();
@@ -22,6 +27,32 @@ public partial class MainWindow: Gtk.Window {
             Console.WriteLine(fileChooser.Filename);
             ProcessFile(fileChooser.Filename);
         };
+
+        string filename = "./OR_ABI-L2-CMIPF-M3C07_G16_s20170861545382_e20170861556160_c20170861556217.lrit";
+        XRITHeader header = FileParser.GetHeaderFromFile(filename);
+        Console.WriteLine($"Parsing file {header.Filename}");
+        Regex x = new Regex(@".*\((.*)\)", RegexOptions.IgnoreCase);
+        var regMatch = x.Match(header.ImageNavigationHeader.ProjectionName);
+        float satelliteLongitude = float.Parse(regMatch.Groups[1].Captures[0].Value, CultureInfo.InvariantCulture);
+        var inh = header.ImageNavigationHeader;
+        var gc = new GeoConverter(satelliteLongitude, inh.ColumnOffset, inh.LineOffset, inh.ColumnScalingFactor, inh.LineScalingFactor);
+
+        var od = new OrganizerData();
+        od.Segments.Add(0, filename);
+        od.Columns = header.ImageStructureHeader.Columns;
+        od.Lines = header.ImageStructureHeader.Lines;
+        od.ColumnOffset = inh.ColumnOffset;
+        od.PixelAspect = 1;
+        var bmp = ImageTools.GenerateFullImage(od);
+
+        var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
+        mapDrawer.DrawMap(ref bmp, gc, Color.Aqua);
+
+        ImageTools.DrawLatLonLines(ref bmp, gc, Color.Brown);
+
+        bmp.Save(filename + ".jpg", ImageFormat.Jpeg);
+        bmp.Dispose();
+
         /*
         Bitmap test0 = (Bitmap) Bitmap.FromFile("test0.jpg");
         Bitmap test1 = (Bitmap) Bitmap.FromFile("test1.jpg");
@@ -48,6 +79,7 @@ public partial class MainWindow: Gtk.Window {
         //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
         //string debugFrames = "/media/ELTN/tmp/debug5/demuxdump-1492732814.bin";
         //string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
+        /*
         string debugFrames = "/media/ELTN/tmp/debug3/raw_data.bin";
         var im0 = new ImageManager("channels/Images/Full Disk/");
         var im1 = new ImageManager("channels/Images/Northern Hemisphere/");
@@ -66,6 +98,7 @@ public partial class MainWindow: Gtk.Window {
         im3.Start();
         im4.Start();
         im5.Start();
+        */
         /*
         dm = new DemuxManager();
         FileHandler.SkipDCS = true;
