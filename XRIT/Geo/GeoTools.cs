@@ -24,6 +24,16 @@ namespace OpenSatelliteProject.Geo {
             return (float) (rad * 180 / Math.PI);
         }
 
+        /// <summary>
+        /// Converts Latitude/Longitude to Pixel X/Y on image
+        /// </summary>
+        /// <param name="satLongitude">Satellite Longitude</param>
+        /// <param name="lon">Longitude in Radians</param>
+        /// <param name="lat">Latitude in Radians</param>
+        /// <param name="coff">Column Offset</param>
+        /// <param name="cfac">Column Scaling Factor</param>
+        /// <param name="loff">Line Offset</param>
+        /// <param name="lfac">Line Scaling Factor</param>
         public static Tuple<int, int> lonlat2xy(float satLongitude, float lon, float lat, int coff, float cfac, int loff, float lfac) {
             var sub_lon = deg2rad(satLongitude);
             var rep = (radiusPoles * radiusPoles) / (radiusEquator * radiusEquator);
@@ -50,6 +60,16 @@ namespace OpenSatelliteProject.Geo {
             return new Tuple<int, int>(c, l);
         }
 
+        /// <summary>
+        /// Converts Pixel X/Y to Latitude / Longitude
+        /// </summary>
+        /// <param name="satelliteLon">Satellite Longitude</param>
+        /// <param name="c">Column (X)</param>
+        /// <param name="l">Line (Y)</param>
+        /// <param name="coff">Column Offset</param>
+        /// <param name="cfac">Column Scaling Factor</param>
+        /// <param name="loff">Line Offset</param>
+        /// <param name="lfac">Line Scaling Factor</param>
         public static Tuple<float, float> xy2lonlat(float satelliteLon, int c, int l, int coff, float cfac, int loff, float lfac) {
             var q2 = (radiusEquator * radiusEquator) / (radiusPoles * radiusPoles);
             var d2 = vehicleDistance * vehicleDistance - radiusEquator * radiusEquator;
