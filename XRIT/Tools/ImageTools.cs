@@ -5,6 +5,9 @@ using OpenSatelliteProject.Tools;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Drawing.Drawing2D;
+using OpenSatelliteProject.Geo;
+
+
 #if DEBUG
 using System.Diagnostics;
 #endif
@@ -496,6 +499,45 @@ namespace OpenSatelliteProject {
 
             vbmp.UnlockBits(vdata);
             hsbmp.UnlockBits(hsdata);
+        }
+
+        /// <summary>
+        /// Draws the Lat/Lon Grid spaced by 10 degrees each using the GeoConverter
+        /// </summary>
+        /// <param name="bmp">The Bitmap</param>
+        /// <param name="gc">A geoconverter initialized with Satellite Parameters</param>
+        public static void DrawLatLonLines(ref Bitmap bmp, GeoConverter gc, Color color, int lineWidth = 5) {
+            Pen pen = new Pen(color, lineWidth);
+            float lastX = -1;
+            float lastY = -1;
+            using (var graphics = Graphics.FromImage(bmp)) {
+                for (float lat = gc.MinLatitude; lat < gc.MaxLatitude; lat += 10f) {
+                    lastX = -1;
+                    lastY = -1;
+                    for (float lon = gc.MinLongitude; lon < gc.MaxLongitude; lon += 0.1f) {
+                        var xy = gc.latlon2xy(lat, lon);
+                        if (lastX != -1 && lastY != -1) {
+                            graphics.DrawLine(pen, lastX, lastY, xy.Item1, xy.Item2);
+                        }
+                        lastX = xy.Item1;
+                        lastY = xy.Item2;
+                    }
+
+                }
+                for (float lon = gc.MinLongitude; lon < gc.MaxLongitude; lon += 10f) {
+                    lastX = -1;
+                    lastY = -1;
+                    for (float lat = gc.MinLatitude; lat < gc.MaxLatitude; lat += 0.1f) {
+                        var xy = gc.latlon2xy(lat, lon);
+                        if (lastX != -1 && lastY != -1) {
+                            graphics.DrawLine(pen, lastX, lastY, xy.Item1, xy.Item2);
+                        }
+                        lastX = xy.Item1;
+                        lastY = xy.Item2;
+                    }
+
+                }
+            }
         }
     }
 }
