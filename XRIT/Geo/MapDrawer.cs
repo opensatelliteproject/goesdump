@@ -3,6 +3,11 @@ using DotSpatial.Data;
 using System.Drawing;
 
 namespace OpenSatelliteProject.Geo {
+    /// <summary>
+    /// Map Drawer Class
+    /// You can get ShapeFiles from: http://www.naturalearthdata.com
+    /// Just load the .shp file
+    /// </summary>
     public class MapDrawer {
         private Shapefile shapeFile;
         
@@ -14,6 +19,13 @@ namespace OpenSatelliteProject.Geo {
             shapeFile.Close();
         }
 
+        /// <summary>
+        /// Draws the Map using the loaded Shapefile on bitmap.
+        /// </summary>
+        /// <param name="bmp">Bitmap to be draw</param>
+        /// <param name="gc">Initialized GeoConverter</param>
+        /// <param name="color">Color of the lines</param>
+        /// <param name="lineWidth">Thickness of the Lines</param>
         public void DrawMap(ref Bitmap bmp, GeoConverter gc, Color color, int lineWidth = 5) {
             Pen pen = new Pen(color, lineWidth);
             float lastX = -1;
