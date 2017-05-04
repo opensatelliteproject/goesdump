@@ -42,8 +42,8 @@ namespace OpenSatelliteProject {
         public bool RecordToFile { 
             get { return recordFile; } 
             set {
-                recordFile = value;
                 recordMutex.WaitOne();
+                recordFile = value;
                 if (value && fStream == null) {
                     fileName = string.Format("demuxdump-{0}.bin", LLTools.Timestamp());
                     UIConsole.GlobalConsole.Log($"Starting dump on file {fileName}");
@@ -52,6 +52,7 @@ namespace OpenSatelliteProject {
                     UIConsole.GlobalConsole.Log($"Closing dump on file {fileName}");
                     try {
                         fStream.Close();
+                        fStream = null;
                     } catch(Exception) {
                         // Ignore
                     }
@@ -127,15 +128,15 @@ namespace OpenSatelliteProject {
                     UIConsole.GlobalConsole.Log(String.Format("I don't have a demuxer for VCID {0}. Creating...", vcid));
                     demuxers.Add(vcid, new Demuxer(this));
                 }
+                recordMutex.WaitOne();
                 if (RecordToFile) {
-                    recordMutex.WaitOne();
                     try {
                         fStream.Write(data, 0, data.Length);
                     } catch (Exception e) {
                         UIConsole.GlobalConsole.Error(String.Format("Error writting demuxdump file: {0}", e));
                     }
-                    recordMutex.ReleaseMutex();
                 }
+                recordMutex.ReleaseMutex();
                 demuxers[vcid].ParseBytes(data);
                 resetMutex.ReleaseMutex();
             }
