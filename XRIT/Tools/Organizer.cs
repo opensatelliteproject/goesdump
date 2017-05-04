@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using OpenSatelliteProject.Tools;
 using System.Globalization;
 using OpenSatelliteProject.PacketData.Enums;
+using System.Text.RegularExpressions;
 
 namespace OpenSatelliteProject {
     public class Organizer {
@@ -34,6 +35,7 @@ namespace OpenSatelliteProject {
                     var anciliary = header.AncillaryHeader != null ? header.AncillaryHeader.Values : null;
                     var satellite = "Unknown";
                     var region = "Unknown";
+                    var satLon = 0f;
                     var datetime = header.TimestampHeader.DateTime; // Defaults to capture time
                     var channel = 99;
                     var segmentId = header.SegmentIdentificationHeader != null ? header.SegmentIdentificationHeader.Sequence : 0;
@@ -43,6 +45,10 @@ namespace OpenSatelliteProject {
                         satellite = "HIMAWARI8";
                         region = "Full Disk";
                     }
+
+                    var rgx = new Regex(@".*\((.*)\)", RegexOptions.IgnoreCase);
+                    var regMatch = rgx.Match(header.ImageNavigationHeader.ProjectionName);
+                    satLon = float.Parse(regMatch.Groups[1].Captures[0].Value, CultureInfo.InvariantCulture);
 
                     if (anciliary != null) {
                         if (anciliary.ContainsKey("Satellite")) {
@@ -104,6 +110,11 @@ namespace OpenSatelliteProject {
                     grp.RegionName = region;
                     grp.FrameTime = datetime;
                     grp.CropImage = cropSection;
+                    grp.SatelliteLongitude = satLon;
+                    grp.ColumnScalingFactor = header.ImageNavigationHeader.ColumnScalingFactor;
+                    grp.LineScalingFactor = header.ImageNavigationHeader.LineScalingFactor;
+                    grp.ColumnOffset = grp.ColumnOffset == -1 ? header.ImageNavigationHeader.ColumnOffset : grp.ColumnOffset;
+                    grp.LineOffset = grp.LineOffset == -1 ? header.ImageNavigationHeader.LineOffset : grp.LineOffset;
 
                     var od = new OrganizerData();
                     switch (channel) {
