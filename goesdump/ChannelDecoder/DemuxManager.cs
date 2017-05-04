@@ -14,6 +14,7 @@ namespace OpenSatelliteProject {
         private FileStream fStream;
         private Mutex recordMutex;
         private Mutex resetMutex;
+        private Dictionary<int, long> productsReceived;
 
         public int CRCFails { get; set; }
         public int Bugs { get; set; }
@@ -22,10 +23,21 @@ namespace OpenSatelliteProject {
         public long FrameLoss { get; set; }
         public uint FrameJumps { get; set; }
 
-        public Dictionary<int, long> productsReceived;
         public delegate void FrameEventData(int vcid, int vccnt);
 
         public event FrameEventData FrameEvent;
+
+        public Dictionary<int, long> ProductsReceived {
+            get {
+                Dictionary<int, long> o = new Dictionary<int, long>();
+                lock (productsReceived) {
+                    foreach (var k in productsReceived) {
+                        o[k.Key] = k.Value;
+                    }
+                }
+                return o;
+            }
+        }
 
         public bool RecordToFile { 
             get { return recordFile; } 
@@ -71,10 +83,12 @@ namespace OpenSatelliteProject {
         }
 
         public void incProductCount(int productId) {
-            if (!productsReceived.ContainsKey(productId)) {
-                productsReceived.Add(productId, 1);
-            } else {
-                productsReceived[productId]++;
+            lock (productsReceived) {
+                if (!productsReceived.ContainsKey(productId)) {
+                    productsReceived.Add(productId, 1);
+                } else {
+                    productsReceived[productId]++;
+                }
             }
         }
 
@@ -90,8 +104,10 @@ namespace OpenSatelliteProject {
             FrameLoss = 0;
             FrameJumps = 0;
             productsReceived = new Dictionary<int, long>();
-            foreach (var k in demuxers.Keys) {
-                demuxers[k] = new Demuxer(this);
+            lock (demuxers) {
+                foreach (var k in demuxers.Keys) {
+                    demuxers[k] = new Demuxer(this);
+                }
             }
             bool lastState = RecordToFile;
             RecordToFile = false;
