@@ -24,6 +24,10 @@ namespace OpenSatelliteProject {
             this.alreadyProcessed = new List<string>();
         }
 
+        public void RemoveGroupData(int idx) {
+            groupData.Remove(idx);
+        }
+
         public void Update() {
             List<string> files = Directory.GetFiles(folder).Where(f => f.EndsWith(".lrit")).ToList();
             foreach (string file in files) {

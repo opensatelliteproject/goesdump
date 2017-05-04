@@ -66,10 +66,10 @@ namespace OpenSatelliteProject {
             }
         }
 
-        private void TryEraseGroupDataFiles(GroupData mData) {
+        private void TryEraseGroupDataFiles(int idx, GroupData mData) {
             // Water Vapour and Other files can be erased without FalseColor
             // Erase Water Vapour LRIT
-            if (mData.IsWaterVapourProcessed) {
+            if ((GenerateWaterVapour && mData.IsWaterVapourProcessed || !GenerateWaterVapour)) {
                 mData.WaterVapour.Segments.Select(x => x.Value).ToList().ForEach(f => {
                     try {
                         File.Delete(f);
@@ -79,7 +79,7 @@ namespace OpenSatelliteProject {
                 });
             }
             // Erase Other Images LRIT
-            if (mData.IsOtherDataProcessed) {
+            if ((GenerateOtherImages && mData.IsOtherDataProcessed || !GenerateOtherImages)) {
                 mData.OtherData.Select(x => x.Value).ToList().ForEach(k => {
                     k.Segments.Select(x => x.Value).ToList().ForEach(f => {
                         try {
@@ -97,7 +97,7 @@ namespace OpenSatelliteProject {
             }
 
             // Erase Infrared LRIT
-            if (mData.IsInfraredProcessed) {
+            if ((GenerateInfrared && mData.IsInfraredProcessed || !GenerateInfrared)) {
                 mData.Infrared.Segments.Select(x => x.Value).ToList().ForEach(f => {
                     try {
                         File.Delete(f);
@@ -107,7 +107,7 @@ namespace OpenSatelliteProject {
                 });
             }
             // Erase Visible LRIT
-            if (mData.IsVisibleProcessed) {
+            if ((GenerateVisible && mData.IsVisibleProcessed || !GenerateVisible)) {
                 mData.Visible.Segments.Select(x => x.Value).ToList().ForEach(f => {
                     try {
                         File.Delete(f);
@@ -115,6 +115,17 @@ namespace OpenSatelliteProject {
                         UIConsole.GlobalConsole.Error(string.Format("Error erasing file {0}: {1}", f, e));
                     }
                 });
+            }
+
+            if (
+                (GenerateFalseColor && mData.IsFalseColorProcessed || !GenerateFalseColor) && 
+                (GenerateVisible && mData.IsVisibleProcessed || !GenerateVisible) && 
+                (GenerateInfrared && mData.IsInfraredProcessed || !GenerateInfrared) && 
+                (GenerateWaterVapour && mData.IsWaterVapourProcessed || !GenerateWaterVapour) && 
+                (GenerateOtherImages && mData.IsOtherDataProcessed || !GenerateOtherImages)
+            ) {
+                UIConsole.GlobalConsole.Debug($"Group Data {idx} is done. Removing it from Organizer.");
+                organizer.RemoveGroupData(idx);   
             }
         }
 
@@ -230,7 +241,7 @@ namespace OpenSatelliteProject {
                             }
 
                             if (EraseFiles) {
-                                TryEraseGroupDataFiles(mData);
+                                TryEraseGroupDataFiles(z.Key, mData);
                             }
                         } catch (SystemException e) {
                             UIConsole.GlobalConsole.Error(string.Format("Error processing image (SysExcpt) {0}: {1}", ImageName, e));                            

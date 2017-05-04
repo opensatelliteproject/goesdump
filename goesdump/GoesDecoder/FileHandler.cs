@@ -50,10 +50,6 @@ namespace OpenSatelliteProject {
             string ofilename = fileHeader.Filename == null ? Path.GetFileName(filename) : fileHeader.Filename; 
             string f = PacketManager.FixFileFolder(dir, ofilename, fileHeader.Product, fileHeader.SubProduct);
 
-            if (ofilename.Contains("KWIN")) {
-                Console.WriteLine("EMWIN");
-            }
-
             if (
                 (fileHeader.Product.ID == (int)NOAAProductID.DCS && SkipDCS) || 
                 (fileHeader.Product.ID == (int)NOAAProductID.EMWIN && SkipEMWIN) || 
