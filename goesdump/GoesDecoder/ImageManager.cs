@@ -133,8 +133,8 @@ namespace OpenSatelliteProject {
             while (running) {
                 organizer.Update();
                 var data = organizer.GroupData;
-
-                foreach (var z in data) {
+                var clist = data.ToList();
+                foreach (var z in clist) {
                     var mData = z.Value;
                     if (!running) {
                         break;

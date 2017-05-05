@@ -1,18 +1,18 @@
 ﻿<Properties StartupItem="XRITLibraryTest/XRITLibraryTest.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug Headless|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/Geo/MapDrawer.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/GoesDecoder/ImageManager.cs">
     <Files>
-      <File FileName="XRITLibraryTest/MainWindow.cs" Line="12" Column="24" />
-      <File FileName="goesdump/GoesDecoder/FileHandler.cs" Line="34" Column="56" />
-      <File FileName="XRIT/Tools/ImageTools.cs" Line="509" Column="107" />
-      <File FileName="XRIT/Geo/GeoConverter.cs" Line="42" Column="20" />
-      <File FileName="XRIT/Geo/MapDrawer.cs" Line="2" Column="7" />
+      <File FileName="goesdump/GoesDecoder/FileHandler.cs" Line="51" Column="111" />
+      <File FileName="XRIT/Tools/ImageTools.cs" Line="1" Column="1" />
+      <File FileName="XRIT/Tools/Organizer.cs" Line="28" Column="35" />
+      <File FileName="XRITLibraryTest/MainWindow.cs" Line="40" Column="31" />
+      <File FileName="goesdump/GoesDecoder/ImageManager.cs" Line="82" Column="92" />
+      <File FileName="XRIT/Models/GroupData.cs" Line="61" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
       <Catchpoint exceptionName="System.ArgumentException" includeSubclasses="True" />
-      <Breakpoint file="/home/lucas/Works/OpenSatelliteProject/split/goesdump/XRITLibraryTest/MainWindow.cs" line="167" column="56" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches>

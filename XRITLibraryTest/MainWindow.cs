@@ -15,10 +15,9 @@ using OpenSatelliteProject.PacketData;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using OpenSatelliteProject.Geo;
+using Microsoft.Research.Science.Data.NetCDF4;
 
 public partial class MainWindow: Gtk.Window {
-
-    //DemuxManager dm;
 
     public MainWindow() : base(Gtk.WindowType.Toplevel) {
         Build();
@@ -28,6 +27,44 @@ public partial class MainWindow: Gtk.Window {
             ProcessFile(fileChooser.Filename);
         };
 
+        ///*
+        //Organizer org = new Organizer("./himawari");
+        //org.Update();
+        //var gd = org.GroupData[1490489400];
+        //var od = gd.Infrared;
+        Console.WriteLine("Initializing organizer");
+        Organizer org = new Organizer("/home/lucas/Works/OpenSatelliteProject/split/goesdump/XRITLibraryTest/bin/Debug/channels/Images/Full Disk/");
+        org.Update();
+        int k = 0;
+        int c = 0;
+        foreach (var z in org.GroupData.Keys) {
+            k = z;
+            c++;
+            if (c == 2) { // 20 For US
+                break;
+            }
+        }
+        var gd = org.GroupData[k];
+        var od = gd.Visible;
+
+        Console.WriteLine("Initializing GeoConverter");
+        var gc = new GeoConverter(gd.SatelliteLongitude, gd.ColumnOffset, gd.LineOffset, gd.ColumnScalingFactor, gd.LineScalingFactor, true, od.Columns);
+
+        Console.WriteLine("Generating BMP");
+        //var bmp = ImageTools.GenerateFullImage(od);
+        var bmp = ImageTools.GenerateFalseColor(gd);
+        var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
+        //var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_50m_admin_0_countries.shp");
+        Console.WriteLine("Drawing Map");
+        mapDrawer.DrawMap(ref bmp, gc, Color.Aqua, 2, true);
+
+        Console.WriteLine("Drawing LatLon Lines");
+        ImageTools.DrawLatLonLines(ref bmp, gc, Color.Brown, 1, true);
+
+        bmp.Save("unitedstates.jpg", ImageFormat.Jpeg);
+        bmp.Dispose();
+        // */
+        /*
         string filename = "./OR_ABI-L2-CMIPF-M3C07_G16_s20170861545382_e20170861556160_c20170861556217.lrit";
         XRITHeader header = FileParser.GetHeaderFromFile(filename);
         Console.WriteLine($"Parsing file {header.Filename}");
@@ -52,7 +89,7 @@ public partial class MainWindow: Gtk.Window {
 
         bmp.Save(filename + ".jpg", ImageFormat.Jpeg);
         bmp.Dispose();
-
+        // */
         /*
         Bitmap test0 = (Bitmap) Bitmap.FromFile("test0.jpg");
         Bitmap test1 = (Bitmap) Bitmap.FromFile("test1.jpg");
@@ -75,12 +112,12 @@ public partial class MainWindow: Gtk.Window {
 
         //string dcsFile = "/home/lucas/Works/OpenSatelliteProject/split/goesdump/XRITLibraryTest/bin/Debug/channels/DCS/pM-17085003239-A.dcs";
         //List<DCSHeader> d = DCSParser.parseDCS(dcsFile);
-        ///*
+        /*
         //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
         //string debugFrames = "/media/ELTN/tmp/debug5/demuxdump-1492732814.bin";
         //string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
-        /*
-        string debugFrames = "/media/ELTN/tmp/debug3/raw_data.bin";
+        //string debugFrames = "/media/ELTN/tmp/debug3/raw_data.bin";
+        string debugFrames = "/media/ELTN/tmp/goes13/demuxdump-1493619155.bin";
         var im0 = new ImageManager("channels/Images/Full Disk/");
         var im1 = new ImageManager("channels/Images/Northern Hemisphere/");
         var im2 = new ImageManager("channels/Images/Southern Hemisphere/");
@@ -88,19 +125,19 @@ public partial class MainWindow: Gtk.Window {
         var im4 = new ImageManager("channels/Images/United States/");
         var im5 = new ImageManager("channels/Images/FM1/");
 
-        ImageManager.GenerateVisible = true;
-        ImageManager.GenerateInfrared = true;
-        ImageManager.GenerateFalseColor = true;
-        ImageManager.EraseFiles = true;
+        ImageManager.GenerateVisible = false;
+        ImageManager.GenerateInfrared = false;
+        ImageManager.GenerateFalseColor = false;
+        ImageManager.EraseFiles = false;
         im0.Start();
         im1.Start();
         im2.Start();
         im3.Start();
         im4.Start();
         im5.Start();
-        */
+        //*/
         /*
-        dm = new DemuxManager();
+        DemuxManager dm = new DemuxManager();
         FileHandler.SkipDCS = true;
         FileHandler.SkipEMWIN = true;
         //int startFrame = 956000;
@@ -127,7 +164,7 @@ public partial class MainWindow: Gtk.Window {
         Console.WriteLine("Packets: {0}", dm.Packets);
 
         Console.WriteLine("Received Products: ");
-        foreach (int pID in dm.productsReceived.Keys) {
+        foreach (int pID in dm.ProductsReceived.Keys) {
             Console.WriteLine("\t{0}: {1}", ((NOAAProductID)pID).ToString(), dm.productsReceived[pID]);
         }
         //*/
