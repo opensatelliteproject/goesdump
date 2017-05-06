@@ -1,13 +1,14 @@
 ﻿<Properties StartupItem="XRITLibraryTest/XRITLibraryTest.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug Headless|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/GoesDecoder/ImageManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/ChannelDecoder/DemuxManager.cs">
     <Files>
-      <File FileName="goesdump/GoesDecoder/FileHandler.cs" Line="51" Column="111" />
+      <File FileName="goesdump/GoesDecoder/FileHandler.cs" Line="1" Column="1" />
       <File FileName="XRIT/Tools/ImageTools.cs" Line="1" Column="1" />
-      <File FileName="XRIT/Tools/Organizer.cs" Line="28" Column="35" />
-      <File FileName="XRITLibraryTest/MainWindow.cs" Line="40" Column="31" />
-      <File FileName="goesdump/GoesDecoder/ImageManager.cs" Line="82" Column="92" />
-      <File FileName="XRIT/Models/GroupData.cs" Line="61" Column="1" />
+      <File FileName="XRIT/Tools/Organizer.cs" Line="1" Column="1" />
+      <File FileName="XRITLibraryTest/MainWindow.cs" Line="1" Column="1" />
+      <File FileName="goesdump/GoesDecoder/ImageManager.cs" Line="137" Column="40" />
+      <File FileName="XRIT/Models/GroupData.cs" Line="1" Column="1" />
+      <File FileName="goesdump/ChannelDecoder/DemuxManager.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
