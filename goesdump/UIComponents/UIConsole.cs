@@ -156,8 +156,8 @@ namespace OpenSatelliteProject {
                     // Syslog not configured, ignore.
                 }
             }
-            MessageAvailable?.Invoke(cm);
             messageMutex.ReleaseMutex();
+            MessageAvailable?.Invoke(cm);
         }
 
         public void Warn(string message) {
@@ -180,8 +180,8 @@ namespace OpenSatelliteProject {
                     // Syslog not configured, ignore.
                 }
             }
-            MessageAvailable?.Invoke(cm);
             messageMutex.ReleaseMutex();
+            MessageAvailable?.Invoke(cm);
         }
 
         public void Error(string message) {
@@ -204,8 +204,8 @@ namespace OpenSatelliteProject {
                     // Syslog not configured, ignore.
                 }
             }
-            MessageAvailable?.Invoke(cm);
             messageMutex.ReleaseMutex();
+            MessageAvailable?.Invoke(cm);
         }
 
         public void Debug(string message) {
@@ -228,8 +228,8 @@ namespace OpenSatelliteProject {
                     // Syslog not configured, ignore.
                 }
             }
-            MessageAvailable?.Invoke(cm);
             messageMutex.ReleaseMutex();
+            MessageAvailable?.Invoke(cm);
         }
     }
 }

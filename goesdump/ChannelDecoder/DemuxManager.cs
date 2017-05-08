@@ -14,6 +14,7 @@ namespace OpenSatelliteProject {
         private FileStream fStream;
         private Mutex recordMutex;
         private Mutex resetMutex;
+        private Dictionary<int, long> productsReceived;
 
         public int CRCFails { get; set; }
         public int Bugs { get; set; }
@@ -22,16 +23,27 @@ namespace OpenSatelliteProject {
         public long FrameLoss { get; set; }
         public uint FrameJumps { get; set; }
 
-        public Dictionary<int, long> productsReceived;
         public delegate void FrameEventData(int vcid, int vccnt);
 
         public event FrameEventData FrameEvent;
 
+        public Dictionary<int, long> ProductsReceived {
+            get {
+                Dictionary<int, long> o = new Dictionary<int, long>();
+                lock (productsReceived) {
+                    foreach (var k in productsReceived) {
+                        o[k.Key] = k.Value;
+                    }
+                }
+                return o;
+            }
+        }
+
         public bool RecordToFile { 
             get { return recordFile; } 
             set {
-                recordFile = value;
                 recordMutex.WaitOne();
+                recordFile = value;
                 if (value && fStream == null) {
                     fileName = string.Format("demuxdump-{0}.bin", LLTools.Timestamp());
                     UIConsole.GlobalConsole.Log($"Starting dump on file {fileName}");
@@ -40,6 +52,7 @@ namespace OpenSatelliteProject {
                     UIConsole.GlobalConsole.Log($"Closing dump on file {fileName}");
                     try {
                         fStream.Close();
+                        fStream = null;
                     } catch(Exception) {
                         // Ignore
                     }
@@ -71,10 +84,12 @@ namespace OpenSatelliteProject {
         }
 
         public void incProductCount(int productId) {
-            if (!productsReceived.ContainsKey(productId)) {
-                productsReceived.Add(productId, 1);
-            } else {
-                productsReceived[productId]++;
+            lock (productsReceived) {
+                if (!productsReceived.ContainsKey(productId)) {
+                    productsReceived.Add(productId, 1);
+                } else {
+                    productsReceived[productId]++;
+                }
             }
         }
 
@@ -90,8 +105,10 @@ namespace OpenSatelliteProject {
             FrameLoss = 0;
             FrameJumps = 0;
             productsReceived = new Dictionary<int, long>();
-            foreach (var k in demuxers.Keys) {
-                demuxers[k] = new Demuxer(this);
+            lock (demuxers) {
+                foreach (var k in demuxers.Keys) {
+                    demuxers[k] = new Demuxer(this);
+                }
             }
             bool lastState = RecordToFile;
             RecordToFile = false;
@@ -111,15 +128,15 @@ namespace OpenSatelliteProject {
                     UIConsole.GlobalConsole.Log(String.Format("I don't have a demuxer for VCID {0}. Creating...", vcid));
                     demuxers.Add(vcid, new Demuxer(this));
                 }
+                recordMutex.WaitOne();
                 if (RecordToFile) {
-                    recordMutex.WaitOne();
                     try {
                         fStream.Write(data, 0, data.Length);
                     } catch (Exception e) {
                         UIConsole.GlobalConsole.Error(String.Format("Error writting demuxdump file: {0}", e));
                     }
-                    recordMutex.ReleaseMutex();
                 }
+                recordMutex.ReleaseMutex();
                 demuxers[vcid].ParseBytes(data);
                 resetMutex.ReleaseMutex();
             }

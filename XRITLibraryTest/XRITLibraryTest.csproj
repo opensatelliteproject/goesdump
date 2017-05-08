@@ -98,6 +98,15 @@
     <Reference Include="DotSpatial.Topology">
       <HintPath>..\packages\DotSpatial.Topology.1.9\lib\net40-Client\DotSpatial.Topology.dll</HintPath>
     </Reference>
+    <Reference Include="DynamicInterop">
+      <HintPath>..\packages\DynamicInterop.0.7.4\lib\net40\DynamicInterop.dll</HintPath>
+    </Reference>
+    <Reference Include="NetCDFInterop">
+      <HintPath>..\packages\SDSLite.1.4\lib\net45\NetCDFInterop.dll</HintPath>
+    </Reference>
+    <Reference Include="ScientificDataSet">
+      <HintPath>..\packages\SDSLite.1.4\lib\net45\ScientificDataSet.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
