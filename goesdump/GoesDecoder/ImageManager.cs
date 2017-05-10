@@ -53,16 +53,21 @@ namespace OpenSatelliteProject {
         }
 
         public void Start() {
-            running = true;
-            imageThread = new Thread(new ThreadStart(ThreadLoop));
-            imageThread.IsBackground = true;
-            imageThread.Start();
+            if (!running) {
+                running = true;
+                imageThread = new Thread(new ThreadStart(ThreadLoop));
+                imageThread.IsBackground = true;
+                imageThread.Start();
+            }
         }
 
         public void Stop() {
-            running = false;
-            if (imageThread != null) {
-                imageThread.Join();
+            if (running) {
+                running = false;
+                if (imageThread != null) {
+                    imageThread.Join();
+                }
+                imageThread = null;
             }
         }
 
