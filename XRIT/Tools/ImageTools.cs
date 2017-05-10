@@ -7,11 +7,6 @@ using System.IO;
 using System.Drawing.Drawing2D;
 using OpenSatelliteProject.Geo;
 
-
-#if DEBUG
-using System.Diagnostics;
-#endif
-
 namespace OpenSatelliteProject {
     public static class ImageTools {
 
@@ -35,38 +30,11 @@ namespace OpenSatelliteProject {
         /// <param name="data">Group Data</param>
         public static Bitmap GenerateFalseColor(GroupData data) {
             if (data.Visible.IsComplete && data.Visible.MaxSegments != 0 && data.Infrared.IsComplete && data.Infrared.MaxSegments != 0) {
-                #if DEBUG
-                Stopwatch watch = Stopwatch.StartNew();
-                #endif
                 var visible = GenerateFullImage(data.Visible, data.CropImage);
-                #if DEBUG
-                watch.Stop();
-                Console.WriteLine("Took {0} milisseconds to generate Visible Image", watch.ElapsedMilliseconds);
-                watch = Stopwatch.StartNew();
-                #endif
                 var infrared = GenerateFullImage(data.Infrared, data.CropImage);
-                #if DEBUG
-                watch.Stop();
-                Console.WriteLine("Took {0} milisseconds to generate Infrared Image", watch.ElapsedMilliseconds);
-                watch = Stopwatch.StartNew();
-                #endif
                 ImageTools.ApplyCurve(Presets.VIS_FALSE_CURVE, ref visible);
-                #if DEBUG
-                watch.Stop();
-                Console.WriteLine("Took {0} milisseconds to apply visible curve", watch.ElapsedMilliseconds);
-                watch = Stopwatch.StartNew();
-                #endif
                 ImageTools.ApplyLUT(Presets.THERMAL_FALSE_LUT, ref infrared, 3);
-                #if DEBUG
-                watch.Stop();
-                Console.WriteLine("Took {0} milisseconds to apply infrared LUT", watch.ElapsedMilliseconds);
-                watch = Stopwatch.StartNew();
-                #endif
                 ImageTools.CombineHStoV(ref infrared, visible);
-                #if DEBUG
-                watch.Stop();
-                Console.WriteLine("Took {0} milisseconds to combine HS to V", watch.ElapsedMilliseconds);
-                #endif
                 visible.Dispose();
                 return infrared;
             } else {
