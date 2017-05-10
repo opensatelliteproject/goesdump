@@ -516,6 +516,7 @@ namespace OpenSatelliteProject {
                     lastY = -1;
                     for (float lon = gc.MinLongitude; lon < gc.MaxLongitude; lon += 0.1f) {
                         var xy = gc.latlon2xy(lat, lon);
+
                         if (fixCrop) {
                             xy = new Tuple<int, int>(xy.Item1 - gc.CropLeft, xy.Item2);
                         }
@@ -532,6 +533,7 @@ namespace OpenSatelliteProject {
                     lastY = -1;
                     for (float lat = gc.MinLatitude; lat < gc.MaxLatitude; lat += 0.1f) {
                         var xy = gc.latlon2xy(lat, lon);
+
                         if (fixCrop) {
                             xy = new Tuple<int, int>(xy.Item1 - gc.CropLeft, xy.Item2);
                         }

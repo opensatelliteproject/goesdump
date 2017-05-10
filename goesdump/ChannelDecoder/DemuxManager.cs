@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using OpenSatelliteProject.Tools;
@@ -106,7 +107,8 @@ namespace OpenSatelliteProject {
             FrameJumps = 0;
             productsReceived = new Dictionary<int, long>();
             lock (demuxers) {
-                foreach (var k in demuxers.Keys) {
+                var ks = demuxers.Keys.ToList();
+                foreach (var k in ks) {
                     demuxers[k] = new Demuxer(this);
                 }
             }
@@ -124,9 +126,11 @@ namespace OpenSatelliteProject {
 
             if (vcid != FILL_VCID) {
                 resetMutex.WaitOne();
-                if (!demuxers.ContainsKey(vcid)) {
-                    UIConsole.GlobalConsole.Log(String.Format("I don't have a demuxer for VCID {0}. Creating...", vcid));
-                    demuxers.Add(vcid, new Demuxer(this));
+                lock (demuxers) {
+                    if (!demuxers.ContainsKey(vcid)) {
+                        UIConsole.GlobalConsole.Log(String.Format("I don't have a demuxer for VCID {0}. Creating...", vcid));
+                        demuxers.Add(vcid, new Demuxer(this));
+                    }
                 }
                 recordMutex.WaitOne();
                 if (RecordToFile) {

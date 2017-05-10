@@ -50,6 +50,7 @@ namespace OpenSatelliteProject.Geo {
                                 var xy = gc.latlon2xy(lat, lon);
                                 float cx = (float)xy.Item1;
                                 float cy = (float)xy.Item2;
+
                                 if (fixCrop) {
                                     cx -= gc.CropLeft;
                                 }
