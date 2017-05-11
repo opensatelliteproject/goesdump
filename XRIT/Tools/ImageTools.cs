@@ -421,6 +421,8 @@ namespace OpenSatelliteProject {
                 vbmp = vbmp.ToFormat(hsbmp.PixelFormat);
             }
 
+            int readWidth = Math.Min(vbmp.Width, hsbmp.Width);
+            int readHeight = Math.Min(vbmp.Height, hsbmp.Height);
 
             var vdata = vbmp.LockBits(new Rectangle(0, 0, vbmp.Width, vbmp.Height), ImageLockMode.ReadOnly, vbmp.PixelFormat);
             var hsdata = hsbmp.LockBits(new Rectangle(0, 0, hsbmp.Width, hsbmp.Height), ImageLockMode.ReadWrite, hsbmp.PixelFormat);
@@ -430,8 +432,8 @@ namespace OpenSatelliteProject {
                     byte* hsPtr = (byte*)hsdata.Scan0.ToPointer();
                     byte* vPtr = (byte*)vdata.Scan0.ToPointer();
 
-                    for (int y = 0; y < hsbmp.Height; y++) {
-                        for (int x = 0; x < hsbmp.Width; x++) {
+                    for (int y = 0; y < readHeight; y++) {
+                        for (int x = 0; x < readWidth; x++) {
                             // TODO: Improve this
                             int c = ((hsdata.Stride / 3) * y + x) * 3;
                             byte[] rgb = new byte[] { hsPtr[c], hsPtr[c + 1], hsPtr[c + 2] };
@@ -449,8 +451,8 @@ namespace OpenSatelliteProject {
                     byte* hsPtr = (byte*)hsdata.Scan0.ToPointer();
                     byte* vPtr = (byte*)vdata.Scan0.ToPointer();
 
-                    for (int y = 0; y < hsbmp.Height; y++) {
-                        for (int x = 0; x < hsbmp.Width; x++) {
+                    for (int y = 0; y < readHeight; y++) {
+                        for (int x = 0; x < readWidth; x++) {
                             // TODO: Improve this
                             int c = ((hsdata.Stride / 4) * y + x) * 4;
                             byte[] rgb = new byte[] { hsPtr[c+0], hsPtr[c + 1], hsPtr[c + 2] };

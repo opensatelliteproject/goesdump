@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.IO;
 
 namespace OpenSatelliteProject.Tools {
     public static class LLTools {
@@ -12,6 +14,27 @@ namespace OpenSatelliteProject.Tools {
                 int p = (int)Environment.OSVersion.Platform;
                 return (p == 4) || (p == 6) || (p == 128);
             }
+        }
+
+        public static string FixPathString(string path) {
+            foreach (var c in Path.InvalidPathChars) {
+                path = path.Replace(c, '_');
+            }
+            return path;
+        }
+
+        public static string StripNonPrintable(string nonPrintable) {
+            return Encoding.ASCII.GetString(
+                Encoding.Convert(
+                    Encoding.UTF8,
+                    Encoding.GetEncoding(
+                        Encoding.ASCII.EncodingName,
+                        new EncoderReplacementFallback(string.Empty),
+                        new DecoderExceptionFallback()
+                    ),
+                    Encoding.UTF8.GetBytes(nonPrintable)
+                )
+            );
         }
 
         public static String BytesToString(long byteCount) {
