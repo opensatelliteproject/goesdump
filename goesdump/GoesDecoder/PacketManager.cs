@@ -97,7 +97,7 @@ namespace OpenSatelliteProject {
         }
 
         public static string FixFileFolder(string dir, string filename, NOAAProduct product, NOAASubproduct subProduct) {
-            string filef = filename;
+            string filef = LLTools.FixPathString(filename);
             string basedir = new DirectoryInfo(dir).Parent.FullName;
 
             if (product != null && product.ID != -1) {
