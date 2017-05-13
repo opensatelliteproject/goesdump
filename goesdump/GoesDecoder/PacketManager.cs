@@ -93,12 +93,12 @@ namespace OpenSatelliteProject {
                         break;
                 }
             }
-            return folderName;
+            return Path.Combine(FileHandler.FinalFileFolder, folderName);
         }
 
         public static string FixFileFolder(string dir, string filename, NOAAProduct product, NOAASubproduct subProduct) {
             string filef = LLTools.FixPathString(filename);
-            string basedir = new DirectoryInfo(dir).Parent.FullName;
+            string basedir = FileHandler.FinalFileFolder;
 
             if (product != null && product.ID != -1) {
                 // New way
@@ -318,7 +318,7 @@ namespace OpenSatelliteProject {
                     }
                 }
             } else if (header.PrimaryHeader.FileType == FileTypeCode.IMAGE) {
-                string basedir = new DirectoryInfo(Path.GetDirectoryName(filename)).Parent.FullName;
+                string basedir = FileHandler.FinalFileFolder;
                 if (header.Product.ID == (int)NOAAProductID.OTHER_SATELLITES_1 || header.Product.ID == (int)NOAAProductID.OTHER_SATELLITES_2) {
                     basedir = Path.Combine(basedir, OtherSatellitesFolder);
                 } else {
@@ -352,7 +352,7 @@ namespace OpenSatelliteProject {
 
         public static void HandleTextData(string filename, XRITHeader header) {
             if (header.PrimaryHeader.FileType == FileTypeCode.TEXT) {
-                string basedir = new DirectoryInfo(Path.GetDirectoryName(filename)).Parent.FullName;
+                string basedir = FileHandler.FinalFileFolder;
                 basedir = Path.Combine(basedir, TextFolder);
 
                 try {
