@@ -3,6 +3,7 @@ using System.Threading;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using OpenSatelliteProject.Tools;
 
 namespace OpenSatelliteProject {
     public class ImageManager {
@@ -24,6 +25,7 @@ namespace OpenSatelliteProject {
         public static bool GenerateInfrared { get; set; }
         public static bool GenerateWaterVapour { get; set; }
         public static bool GenerateOtherImages { get; set; }
+        public static bool UseNOAAFileFormat { get; set; }
 
         private Thread imageThread;
         private bool running;
@@ -38,6 +40,31 @@ namespace OpenSatelliteProject {
             GenerateInfrared = true;
             GenerateWaterVapour = true;
             GenerateOtherImages = true;
+            UseNOAAFileFormat = false;
+        }
+
+        private static string GenFilename(string satelliteName, string regionName, string imageName, int timestamp, string origName = null) {
+            if (UseNOAAFileFormat) {
+                //gos15chnIR04rgnFDseg001res04dat130 18 06 19 190.lrit
+                if (origName != null) {
+                    origName = Path.GetFileName(origName);
+                } else {
+                    origName = "";
+                }
+
+                if (origName.Length == 48) {
+                    var dt = LLTools.UnixTimeStampToDateTime(timestamp);
+                    var doy = dt.DayOfYear.ToString("000");
+                    var hour = dt.Hour.ToString("00");
+                    var minute = dt.Minute.ToString("00");
+                    var second = dt.Second.ToString("00");
+                    return $"{origName.Substring(0, 31)}{doy}{hour}{minute}{second}000.png";
+                } else {
+                    return $"{satelliteName}chn{regionName}rgn{regionName}seg000res00dat";
+                }
+            } else {
+                return string.Format("{0}-{1}-{2}-{3}.png", satelliteName, regionName, imageName, timestamp);
+            }
         }
 
         public ImageManager(string folder) {
@@ -148,7 +175,7 @@ namespace OpenSatelliteProject {
                     if (!mData.IsProcessed) {
                         try {
                             if (ImageManager.GenerateVisible && mData.Visible.IsComplete && mData.Visible.MaxSegments != 0 && !mData.IsVisibleProcessed) {
-                                string ofilename = Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.png", mData.SatelliteName, mData.RegionName, "VIS", z.Key));
+                                string ofilename = Path.Combine(folder, GenFilename(mData.SatelliteName, mData.RegionName, "VIS", z.Key, mData.Visible.Segments[0]));
                                 if (File.Exists(ofilename)) {
                                     UIConsole.GlobalConsole.Debug(string.Format("Skipping generating Visible for {0}. Image already exists.", Path.GetFileName(ofilename)));
                                     mData.IsVisibleProcessed = true;
@@ -164,7 +191,7 @@ namespace OpenSatelliteProject {
                             }
 
                             if (ImageManager.GenerateInfrared && mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
-                                string ofilename = Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.png", mData.SatelliteName, mData.RegionName, "IR", z.Key));
+                                string ofilename = Path.Combine(folder, GenFilename(mData.SatelliteName, mData.RegionName, "IR", z.Key, mData.Infrared.Segments[0]));
                                 if (File.Exists(ofilename)) {
                                     UIConsole.GlobalConsole.Debug(string.Format("Skipping generating Infrared for {0}. Image already exists.", Path.GetFileName(ofilename)));
                                 } else {
@@ -179,7 +206,7 @@ namespace OpenSatelliteProject {
                             }
 
                             if (ImageManager.GenerateWaterVapour && mData.WaterVapour.IsComplete && mData.WaterVapour.MaxSegments != 0 && !mData.IsWaterVapourProcessed) {
-                                string ofilename = Path.Combine(folder, string.Format("{0}-{1}-{2}-{3}.png", mData.SatelliteName, mData.RegionName, "WV", z.Key));
+                                string ofilename = Path.Combine(folder, GenFilename(mData.SatelliteName, mData.RegionName, "WV", z.Key, mData.WaterVapour.Segments[0]));
                                 if (File.Exists(ofilename)) {
                                     UIConsole.GlobalConsole.Debug(string.Format("Skipping generating Water Vapour for {0}. Image already exists.", Path.GetFileName(ofilename)));
                                 } else {
@@ -193,7 +220,7 @@ namespace OpenSatelliteProject {
                                 mData.WaterVapour.OK = true;
                             }
                             if (GenerateFalseColor && !mData.IsFalseColorProcessed  && ImageTools.CanGenerateFalseColor(mData)) {
-                                string filename = string.Format("{0}-{1}-{2}-{3}.png", z.Key, mData.SatelliteName, mData.RegionName, "FLSCLR");
+                                string filename = GenFilename(mData.SatelliteName, mData.RegionName, "FSCLR", z.Key, mData.Visible.Segments[0].Replace("VS", "FC"));
                                 filename = Path.Combine(folder, filename);
 
                                 if (File.Exists(filename)) {
@@ -213,7 +240,7 @@ namespace OpenSatelliteProject {
                                 mData.OtherData.Keys.ToList().ForEach(k => {
                                     var gd = mData.OtherData[k];
                                     if (gd.IsComplete && gd.MaxSegments != 0 && !gd.OK) {
-                                        string ofilename = string.Format("{0}-{1}-{2}.png", z.Key, mData.SatelliteName, k);
+                                        string ofilename = GenFilename(mData.SatelliteName, mData.RegionName, "", gd.Timestamp, gd.Segments[0]);
                                         ofilename = Path.Combine(folder, ofilename);
 
                                         if (File.Exists(ofilename)) {

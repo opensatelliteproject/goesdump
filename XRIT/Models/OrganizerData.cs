@@ -10,6 +10,7 @@ namespace OpenSatelliteProject {
         public int ColumnOffset { get; set; }
         public int MaxSegments;
         public bool OK { get; set; }
+        public int Timestamp { get; set; }
 
         public OrganizerData() {
             Segments = new Dictionary<int, string>();
@@ -19,6 +20,7 @@ namespace OpenSatelliteProject {
             ColumnOffset = 0;
             MaxSegments = 1;
             OK = false;
+            Timestamp = 0;
         }
 
         public bool IsComplete { get { return Segments.Count == MaxSegments; }}

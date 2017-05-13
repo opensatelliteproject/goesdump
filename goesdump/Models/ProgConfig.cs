@@ -131,6 +131,14 @@ namespace OpenSatelliteProject {
             get { return (bool)this["EraseFilesAfterGeneratingFalseColor"]; }
             set { this["EraseFilesAfterGeneratingFalseColor"] = value; }
         }
+
+        [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("false")]
+        public bool UseNOAAFormat {
+            get { return (bool)this["UseNOAAFormat"]; }
+            set { this["UseNOAAFormat"] = value; }
+        }
+
         #endregion
 
         #region Packet Processing
@@ -146,6 +154,13 @@ namespace OpenSatelliteProject {
         public bool EnableEMWIN {
             get { return (bool)this["EnableEMWIN"]; }
             set { this["EnableEMWIN"] = value; }
+        }
+
+        [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("true")]
+        public bool EnableWeatherData {
+            get { return (bool)this["EnableWeatherData"]; }
+            set { this["EnableWeatherData"] = value; }
         }
         #endregion
 

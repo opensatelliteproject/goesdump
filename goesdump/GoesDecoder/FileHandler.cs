@@ -14,6 +14,7 @@ namespace OpenSatelliteProject {
 
         public static bool SkipDCS { get; set; }
         public static bool SkipEMWIN { get; set; }
+        public static bool SkipWeatherData { get; set; }
 
 
         static FileHandler() {
@@ -21,6 +22,7 @@ namespace OpenSatelliteProject {
             byCompressionTypeHandler = new Dictionary<int, FileHandlerFunction>();
             SkipDCS = false;
             SkipEMWIN = false;
+            SkipWeatherData = false;
         }
 
         public static void AttachByCompressionHandler(int compressionType, FileHandlerFunction handler) {
@@ -53,7 +55,8 @@ namespace OpenSatelliteProject {
             if (
                 (fileHeader.Product.ID == (int)NOAAProductID.DCS && SkipDCS) || 
                 (fileHeader.Product.ID == (int)NOAAProductID.EMWIN && SkipEMWIN) || 
-                (fileHeader.Product.ID == (int)NOAAProductID.HRIT_EMWIN && SkipEMWIN)
+                (fileHeader.Product.ID == (int)NOAAProductID.HRIT_EMWIN && SkipEMWIN) ||
+                (fileHeader.Product.ID == (int)NOAAProductID.WEATHER_DATA && SkipWeatherData)
             ) {
                 try {
                     File.Delete(filename);

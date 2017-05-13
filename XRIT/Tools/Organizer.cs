@@ -171,7 +171,7 @@ namespace OpenSatelliteProject {
                                 break;
                         } 
 
-
+                        od.Timestamp = timestamp;
                         od.Segments[segmentId] = file;
                         if (od.Columns == -1) {
                             od.Columns = header.ImageStructureHeader.Columns;
