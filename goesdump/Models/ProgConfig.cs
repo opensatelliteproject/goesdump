@@ -13,6 +13,20 @@ namespace OpenSatelliteProject {
         }
         #endregion
 
+        #region Folders
+        [UserScopedSettingAttribute()]
+        public string TemporaryFileFolder {
+            get { return (string)this["TemporaryFileFolder"]; }
+            set { this["TemporaryFileFolder"] = value; }
+        }
+
+        [UserScopedSettingAttribute()]
+        public string FinalFileFolder {
+            get { return (string)this["FinalFileFolder"]; }
+            set { this["FinalFileFolder"] = value; }
+        }
+        #endregion
+
         #region Decoder Data
 
         [UserScopedSettingAttribute()]

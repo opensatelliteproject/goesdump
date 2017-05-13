@@ -25,6 +25,7 @@ namespace OpenSatelliteProject {
         private ImageManager NHImageManager;
         private ImageManager SHImageManager;
         private ImageManager USImageManager;
+        private ImageManager FMImageManager;
 
         private DirectoryHandler directoryHandler;
 
@@ -82,6 +83,23 @@ namespace OpenSatelliteProject {
             FileHandler.SkipEMWIN = !config.EnableEMWIN;
             FileHandler.SkipDCS = !config.EnableDCS;
             FileHandler.SkipWeatherData = !config.EnableWeatherData;
+
+            if (config.TemporaryFileFolder != null) {
+                if (!LLTools.TestFolderAccess(config.TemporaryFileFolder)) {
+                    UIConsole.GlobalConsole.Error($"Cannot write file to Temporary Folder {config.TemporaryFileFolder}");
+                    throw new ApplicationException($"Cannot write file to Temporary Folder {config.TemporaryFileFolder}");
+                }
+                FileHandler.TemporaryFileFolder = config.TemporaryFileFolder;
+            }
+
+            if (config.FinalFileFolder != null) {
+                if (!LLTools.TestFolderAccess(config.FinalFileFolder)) {
+                    UIConsole.GlobalConsole.Error($"Cannot write file to Final Folder {config.FinalFileFolder}");
+                    throw new ApplicationException($"Cannot write file to Final Folder {config.FinalFileFolder}");
+                }
+                FileHandler.FinalFileFolder = config.FinalFileFolder;
+            }
+
             ImageManager.EraseFiles = config.EraseFilesAfterGeneratingFalseColor;
             ImageManager.GenerateInfrared = config.GenerateInfraredImages;
             ImageManager.GenerateVisible = config.GenerateVisibleImages;
@@ -106,32 +124,21 @@ namespace OpenSatelliteProject {
                 }
             }
 
-            if (config.GenerateFDFalseColor) {
-                string fdFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_FULLDISK);
-                FDImageManager = new ImageManager(Path.Combine("channels", fdFolder));
-            }
+            string fdFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_FULLDISK);
+            string xxFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST);
+            string nhFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_NORTHERN);
+            string shFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_SOUTHERN);
+            string usFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_UNITEDSTATES);
+            string fmFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES16_ABI, (int)ScannerSubProduct.NONE);
 
-            if (config.GenerateXXFalseColor) {
-                string xxFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST);
-                XXImageManager = new ImageManager(Path.Combine("channels", xxFolder));
-            }
+            FDImageManager = new ImageManager(fdFolder);
+            XXImageManager = new ImageManager(xxFolder);
+            NHImageManager = new ImageManager(nhFolder);
+            SHImageManager = new ImageManager(shFolder);
+            USImageManager = new ImageManager(usFolder);
+            FMImageManager = new ImageManager(fmFolder);
 
-            if (config.GenerateNHFalseColor) {
-                string nhFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_NORTHERN);
-                NHImageManager = new ImageManager(Path.Combine("channels", nhFolder));
-            }
-
-            if (config.GenerateSHFalseColor) {
-                string shFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_SOUTHERN);
-                SHImageManager = new ImageManager(Path.Combine("channels", shFolder));
-            }
-
-            if (config.GenerateUSFalseColor) {
-                string usFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_UNITEDSTATES);
-                USImageManager = new ImageManager(Path.Combine("channels", usFolder));
-            }
-
-            directoryHandler = new DirectoryHandler("channels", "/data");
+            directoryHandler = new DirectoryHandler(FileHandler.FinalFileFolder, "/data");
 
             mtx = new Mutex();
             cn = new Connector();
@@ -226,21 +233,12 @@ namespace OpenSatelliteProject {
 
             UIConsole.GlobalConsole.Log("Headless Main Starting");
 
-            if (config.GenerateFDFalseColor) {
-                FDImageManager.Start();
-            }
-            if (config.GenerateXXFalseColor) {
-                XXImageManager.Start();
-            }
-            if (config.GenerateNHFalseColor) {
-                NHImageManager.Start();
-            }
-            if (config.GenerateSHFalseColor) {
-                SHImageManager.Start();
-            }
-            if (config.GenerateUSFalseColor) {
-                USImageManager.Start();
-            }
+            FDImageManager.Start();
+            XXImageManager.Start();
+            NHImageManager.Start();
+            SHImageManager.Start();
+            USImageManager.Start();
+            FMImageManager.Start();
 
             cn.Start();
             httpsv.Start();
@@ -254,21 +252,12 @@ namespace OpenSatelliteProject {
             cn.Stop();
             httpsv.Stop();
 
-            if (config.GenerateFDFalseColor) {
-                FDImageManager.Stop();
-            }
-            if (config.GenerateXXFalseColor) {
-                XXImageManager.Stop();
-            }
-            if (config.GenerateNHFalseColor) {
-                NHImageManager.Stop();
-            }
-            if (config.GenerateSHFalseColor) {
-                SHImageManager.Stop();
-            }
-            if (config.GenerateUSFalseColor) {
-                USImageManager.Stop();
-            }
+            FDImageManager.Stop();
+            XXImageManager.Stop();
+            NHImageManager.Stop();
+            SHImageManager.Stop();
+            USImageManager.Stop();
+            FMImageManager.Stop();
         }
     }
 }

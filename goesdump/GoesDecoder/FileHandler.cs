@@ -15,6 +15,8 @@ namespace OpenSatelliteProject {
         public static bool SkipDCS { get; set; }
         public static bool SkipEMWIN { get; set; }
         public static bool SkipWeatherData { get; set; }
+        public static string TemporaryFileFolder { get; set; }
+        public static string FinalFileFolder { get; set; }
 
 
         static FileHandler() {
@@ -23,6 +25,11 @@ namespace OpenSatelliteProject {
             SkipDCS = false;
             SkipEMWIN = false;
             SkipWeatherData = false;
+
+            string baseFolder = Directory.GetCurrentDirectory();
+
+            TemporaryFileFolder = Path.Combine(baseFolder, "tmp");
+            FinalFileFolder = Path.Combine(baseFolder, "output");
         }
 
         public static void AttachByCompressionHandler(int compressionType, FileHandlerFunction handler) {

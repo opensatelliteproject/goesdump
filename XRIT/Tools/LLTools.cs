@@ -16,6 +16,19 @@ namespace OpenSatelliteProject.Tools {
             }
         }
 
+        public static bool TestFolderAccess(string folder) {
+            try {
+                if (!Directory.Exists(folder)) {
+                    Directory.CreateDirectory(folder);
+                }
+                File.WriteAllText(Path.Combine(folder, "deleteme.txt"), "Test, you can remove me");
+                File.Delete(Path.Combine(folder, "deleteme.txt"));
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
         public static string FixPathString(string path) {
             foreach (var c in Path.InvalidPathChars) {
                 path = path.Replace(c, '_');
