@@ -69,6 +69,7 @@ namespace OpenSatelliteProject {
             config.MaxGenerateRetry = config.MaxGenerateRetry;
             config.SysLogServer = config.SysLogServer;
             config.SysLogFacility = config.SysLogFacility;
+            config.UseNOAAFormat = config.UseNOAAFormat;
             config.Save();
             #endregion
 
@@ -90,6 +91,7 @@ namespace OpenSatelliteProject {
             ImageManager.GenerateVisible = config.GenerateVisibleImages;
             ImageManager.GenerateWaterVapour = config.GenerateWaterVapourImages;
             ImageManager.MaxRetryCount = config.MaxGenerateRetry;
+            ImageManager.UseNOAAFileFormat = config.UseNOAAFormat;
 
             Connector.ChannelDataServerName = config.ChannelDataServerName;
             Connector.StatisticsServerName = config.StatisticsServerName;

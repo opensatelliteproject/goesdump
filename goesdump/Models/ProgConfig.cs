@@ -131,6 +131,13 @@ namespace OpenSatelliteProject {
             get { return (bool)this["EraseFilesAfterGeneratingFalseColor"]; }
             set { this["EraseFilesAfterGeneratingFalseColor"] = value; }
         }
+
+        [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("false")]
+        public bool UseNOAAFormat {
+            get { return (bool)this["UseNOAAFormat"]; }
+            set { this["UseNOAAFormat"] = value; }
+        }
         #endregion
 
         #region Packet Processing
