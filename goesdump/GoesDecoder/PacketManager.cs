@@ -210,13 +210,13 @@ namespace OpenSatelliteProject {
         }
 
         static PacketManager() {
-            FileHandler.AttachByCompressionHandler((int)CompressionType.JPEG, (filename, fileHeader) => DumpFile(filename, fileHeader, "jpg"));
-            FileHandler.AttachByCompressionHandler((int)CompressionType.GIF, (filename, fileHeader) => DumpFile(filename, fileHeader, "gif"));
+            FileHandler.AttachByCompressionHandler((int)CompressionType.JPEG, (filename, fileHeader) => DumpFile(filename, fileHeader, "jpg", true));
+            FileHandler.AttachByCompressionHandler((int)CompressionType.GIF, (filename, fileHeader) => DumpFile(filename, fileHeader, "gif", true));
             FileHandler.AttachByProductIdHandler((int)NOAAProductID.WEATHER_DATA, HandleWeatherData);
             FileHandler.AttachByProductIdHandler((int)NOAAProductID.OTHER_SATELLITES_1, HandleWeatherData);
             FileHandler.AttachByProductIdHandler((int)NOAAProductID.OTHER_SATELLITES_2, HandleWeatherData);
             FileHandler.AttachByProductIdHandler((int)NOAAProductID.NOAA_TEXT, HandleTextData);
-            FileHandler.AttachByProductIdHandler((int)NOAAProductID.HRIT_EMWIN, (filename, fileHeader) => DumpFile(filename, fileHeader, "txt"));
+            FileHandler.AttachByProductIdHandler((int)NOAAProductID.HRIT_EMWIN, (filename, fileHeader) => DumpFile(filename, fileHeader, "txt", true));
         }
 
         public static void ExtractZipFile(string zipfile) {
@@ -370,7 +370,7 @@ namespace OpenSatelliteProject {
             }
         }
 
-        public static string DumpFile(string filename, XRITHeader fileHeader, string newExt) {
+        public static string DumpFile(string filename, XRITHeader fileHeader, string newExt, bool forceErase = false) {
             string dir = Path.GetDirectoryName(filename);
             string f = FixFileFolder(dir, fileHeader.Filename, fileHeader.Product, fileHeader.SubProduct);
             f = f.Replace(".lrit", "." + newExt);
@@ -425,10 +425,18 @@ namespace OpenSatelliteProject {
                 UIConsole.GlobalConsole.Log(String.Format("Extracting Zip File {0}", f));
                 ExtractZipFile(f);
             }
-
-            // Keep the original lrit file
-            File.Move(filename, f.Replace("." + newExt, ".lrit"));
-            return f.Replace("." + newExt, ".lrit");
+            if (!forceErase) {
+                // Keep the original lrit file
+                File.Move(filename, f.Replace("." + newExt, ".lrit"));
+                return f.Replace("." + newExt, ".lrit");
+            } else {
+                try {
+                    File.Delete(filename);
+                } catch (Exception) {
+                    // Do nothing, file doesn't exists
+                }
+                return null;
+            }
         }
 
         public static byte[] GenerateFillData(int pixels) {
