@@ -375,7 +375,10 @@ namespace OpenSatelliteProject {
             string f = FixFileFolder(dir, fileHeader.Filename, fileHeader.Product, fileHeader.SubProduct);
             f = f.Replace(".lrit", "." + newExt);
 
-            if (FileHandler.SkipEMWIN && fileHeader.Product.ID == (int)NOAAProductID.HRIT_EMWIN) {
+            if (
+                FileHandler.SkipEMWIN && fileHeader.Product.ID == (int)NOAAProductID.HRIT_EMWIN ||
+                FileHandler.SkipWeatherData && f.Contains(WeatherDataFolder)
+            )  {
                 try {
                     File.Delete(filename);
                 } catch (Exception) {

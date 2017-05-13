@@ -75,11 +75,13 @@ namespace OpenSatelliteProject {
             config.SysLogServer = config.SysLogServer;
             config.SysLogFacility = config.SysLogFacility;
             config.UseNOAAFormat = config.UseNOAAFormat;
+            config.EnableWeatherData = config.EnableWeatherData;
             config.Save();
             #endregion
 
             FileHandler.SkipEMWIN = !config.EnableEMWIN;
             FileHandler.SkipDCS = !config.EnableDCS;
+            FileHandler.SkipWeatherData = !config.EnableWeatherData;
             ImageManager.EraseFiles = config.EraseFilesAfterGeneratingFalseColor;
             ImageManager.GenerateInfrared = config.GenerateInfraredImages;
             ImageManager.GenerateVisible = config.GenerateVisibleImages;
