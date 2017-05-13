@@ -15,12 +15,14 @@ namespace OpenSatelliteProject {
 
         #region Folders
         [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("tmp")]
         public string TemporaryFileFolder {
             get { return (string)this["TemporaryFileFolder"]; }
             set { this["TemporaryFileFolder"] = value; }
         }
 
         [UserScopedSettingAttribute()]
+        [DefaultSettingValueAttribute("output")]
         public string FinalFileFolder {
             get { return (string)this["FinalFileFolder"]; }
             set { this["FinalFileFolder"] = value; }

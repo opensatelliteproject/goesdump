@@ -62,7 +62,8 @@ namespace OpenSatelliteProject {
             config.GenerateFDFalseColor = config.GenerateFDFalseColor;
             config.GenerateNHFalseColor = config.GenerateNHFalseColor;
             config.GenerateSHFalseColor = config.GenerateSHFalseColor;
-            config.GenerateUSFalseColor = config.GenerateXXFalseColor;
+            config.GenerateUSFalseColor = config.GenerateUSFalseColor;
+            config.GenerateXXFalseColor = config.GenerateXXFalseColor;
             config.HTTPPort = config.HTTPPort;
             config.GenerateInfraredImages = config.GenerateInfraredImages;
             config.GenerateVisibleImages = config.GenerateVisibleImages;
@@ -72,6 +73,8 @@ namespace OpenSatelliteProject {
             config.SysLogFacility = config.SysLogFacility;
             config.UseNOAAFormat = config.UseNOAAFormat;
             config.EnableWeatherData = config.EnableWeatherData;
+            config.TemporaryFileFolder = config.TemporaryFileFolder;
+            config.FinalFileFolder = config.FinalFileFolder;
             config.Save();
             #endregion
 
