@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using OpenSatelliteProject.PacketData.Enums;
+using System.Threading;
 
 namespace LibraryTest {
     class MainClass {
@@ -100,18 +101,21 @@ namespace LibraryTest {
             //string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
             //string debugFrames = "/media/ELTN/tmp/debug3/raw_data.bin";
             //string debugFrames = "/media/ELTN/tmp/goes13/demuxdump-1493619155.bin";
-            string debugFrames = "/media/ELTN/tmp/goes13/demuxdump-1493619155.bin";
-            var im0 = new ImageManager ("channels/Images/Full Disk/");
-            var im1 = new ImageManager ("channels/Images/Northern Hemisphere/");
-            var im2 = new ImageManager ("channels/Images/Southern Hemisphere/");
-            var im3 = new ImageManager ("channels/Images/Area of Interest/");
-            var im4 = new ImageManager ("channels/Images/United States/");
-            var im5 = new ImageManager ("channels/Images/FM1/");
+            string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";
+            var im0 = new ImageManager ("output/Images/Full Disk/");
+            var im1 = new ImageManager ("output/Images/Northern Hemisphere/");
+            var im2 = new ImageManager ("output/Images/Southern Hemisphere/");
+            var im3 = new ImageManager ("output/Images/Area of Interest/");
+            var im4 = new ImageManager ("output/Images/United States/");
+            var im5 = new ImageManager ("output/Images/FM1/");
 
-            ImageManager.GenerateVisible = false;
-            ImageManager.GenerateInfrared = false;
-            ImageManager.GenerateFalseColor = false;
-            ImageManager.EraseFiles = false;
+            ImageManager.GenerateVisible = true;
+            ImageManager.GenerateInfrared = true;
+            ImageManager.GenerateFalseColor = true;
+            ImageManager.GenerateWaterVapour = true;
+            ImageManager.GenerateOtherImages = true;
+            ImageManager.EraseFiles = true;
+            ImageManager.UseNOAAFileFormat = true;
             im0.Start ();
             im1.Start ();
             im2.Start ();
@@ -210,6 +214,11 @@ namespace LibraryTest {
 
 			ir.Save("final.jpg", ImageFormat.Jpeg);
 			//*/
+            do {
+                while (! Console.KeyAvailable) {
+                    Thread.Sleep(1000);
+                }
+            } while (Console.ReadKey(true).Key != ConsoleKey.Escape);
         }
     }
 }

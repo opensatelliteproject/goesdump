@@ -52,15 +52,24 @@ namespace OpenSatelliteProject {
                     origName = "";
                 }
 
+                var dt = LLTools.UnixTimeStampToDateTime(timestamp);
+                var year = dt.Year.ToString ("0000");
+                var month = dt.Month.ToString ("00");
+                var day = dt.Day.ToString ("00");
+                var doy = dt.DayOfYear.ToString("000");
+                var hour = dt.Hour.ToString("00");
+                var minute = dt.Minute.ToString("00");
+                var second = dt.Second.ToString("00");
+
                 if (origName.Length == 48) {
-                    var dt = LLTools.UnixTimeStampToDateTime(timestamp);
-                    var doy = dt.DayOfYear.ToString("000");
-                    var hour = dt.Hour.ToString("00");
-                    var minute = dt.Minute.ToString("00");
-                    var second = dt.Second.ToString("00");
                     return $"{origName.Substring(0, 31)}{doy}{hour}{minute}{second}000.png";
+                } else if (origName.StartsWith("IMG_DK")) {
+                    // Himawari
+                    // IMG_DK01IR3_201705190350_002
+                    return $"{origName.Substring(0, 12)}{year}{month}{day}{hour}{minute}_000.png";
                 } else {
-                    return $"{satelliteName}chn{regionName}rgn{regionName}seg000res00dat";
+                    // Return default
+                    return string.Format("{0}-{1}-{2}-{3}.png", satelliteName, regionName, imageName, timestamp);
                 }
             } else {
                 return string.Format("{0}-{1}-{2}-{3}.png", satelliteName, regionName, imageName, timestamp);
