@@ -144,14 +144,28 @@ namespace OpenSatelliteProject {
                     isConnected = true;
 
                     UIConsole.GlobalConsole.Log(String.Format("Socket connected to {0}", sender.RemoteEndPoint.ToString()));
-
+                    int nullReceive = 0;
                     while (isConnected) {
                         try {
-                            if (sender.Receive(buffer) < buffer.Length) {
+                            var receivedBytes = sender.Receive(buffer);
+                            if (receivedBytes < buffer.Length && receivedBytes != 0) {
+                                nullReceive = 0;
                                 UIConsole.GlobalConsole.Error("Received less than Statistics Packet size!");
+                                Thread.Sleep(200);
+                            } else  if (receivedBytes == 0) {
+                                nullReceive++;
+                                if (nullReceive == 5) {
+                                    UIConsole.GlobalConsole.Error("Cannot reach server. Dropping connection!");
+                                    isConnected = false;
+                                    sender.Shutdown(SocketShutdown.Both);
+                                    sender.Disconnect(false);
+                                    sender.Close();
+                                }
+                            } else {
+                                nullReceive = 0;
+                                Statistics_st sst = Statistics_st.fromByteArray(buffer);
+                                this.postStatistics(sst);
                             }
-                            Statistics_st sst = Statistics_st.fromByteArray(buffer);
-                            this.postStatistics(sst);
                         } catch (ArgumentNullException ane) {
                             UIConsole.GlobalConsole.Error(String.Format("ArgumentNullException : {0}", ane.ToString()));
                             isConnected = false;
@@ -224,17 +238,31 @@ namespace OpenSatelliteProject {
                 UIConsole.GlobalConsole.Log("Channel Data Thread connect");
                 try {
                     sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    sender.ReceiveTimeout = 5000;
+                    sender.ReceiveTimeout = 3000;
                     sender.Connect(remoteEP);
                     isConnected = true;
                     UIConsole.GlobalConsole.Log(String.Format("Socket connected to {0}", sender.RemoteEndPoint.ToString()));
-
+                    int nullReceive = 0;
                     while (isConnected) {
                         try {
-                            if (sender.Receive(buffer) < buffer.Length) {
+                            var receivedBytes = sender.Receive(buffer);
+                            if (receivedBytes < buffer.Length && receivedBytes != 0) {
                                 UIConsole.GlobalConsole.Error("Received less bytes than channel data!");
+                                Thread.Sleep(200);
+                                nullReceive = 0;
+                            } else  if (receivedBytes == 0) {
+                                nullReceive++;
+                                if (nullReceive == 5) {
+                                    UIConsole.GlobalConsole.Error("Cannot reach server. Dropping connection!");
+                                    isConnected = false;
+                                    sender.Shutdown(SocketShutdown.Both);
+                                    sender.Disconnect(false);
+                                    sender.Close();
+                                }
+                            } else {
+                                nullReceive = 0;
+                                this.postChannelData(buffer);
                             }
-                            this.postChannelData(buffer);
                         } catch (ArgumentNullException ane) {
                             UIConsole.GlobalConsole.Error(String.Format("ArgumentNullException : {0}", ane.ToString()));
                             isConnected = false;

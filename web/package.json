@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "classlist-polyfill": "^1.2.0",
     "fbemitter": "^2.1.1",
     "material-ui": "^0.18.1",
     "moment": "^2.18.1",
@@ -10,7 +11,10 @@
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-flexbox-grid": "^1.1.3",
+    "react-list": "^0.8.6",
     "react-router-dom": "^4.1.1",
+    "react-scroll-box": "^0.3.3-beta",
+    "react-scrollbar": "^0.5.1",
     "react-tap-event-plugin": "^2.0.1"
   },
   "devDependencies": {

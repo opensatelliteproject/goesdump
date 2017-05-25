@@ -4,7 +4,7 @@
  */
 import React, { Component } from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import {Card, CardHeader, CardText} from 'material-ui/Card';
 import moment from 'moment';
 import { Line } from 'rc-progress';
 import { Grid, Row, Col } from 'react-flexbox-grid';
@@ -47,6 +47,7 @@ class Dashboard extends Component {
       websocket: false,
       satelliteBusy: false,
     };
+
     this.constellation = null;
     this.refresh = false;
     this.props.ospConn.on('wsConnected', () => {
@@ -78,6 +79,7 @@ class Dashboard extends Component {
   componentDidMount() {
     this.constellation = this.refs.constellation;
     this.refresh = true;
+    this.props.setTitle('Dashboard');
   }
 
   componentWillUnmount () {
@@ -126,7 +128,7 @@ class Dashboard extends Component {
         <div className="Dashboard">
           <Grid fluid>
             <Row>
-              <Col xs>
+              <Col xs style={{display: 'flex', justifyContent: 'center', marginBottom: 15}}>
                 <Card style={{width: 340, height: 340}}>
                   <CardHeader
                     title="Statistics"
@@ -174,7 +176,7 @@ class Dashboard extends Component {
                   </CardText>
                 </Card>
               </Col>
-              <Col xs>
+              <Col xs style={{display: 'flex', justifyContent: 'center', marginBottom: 15}}>
                 <Card style={{width: 340, height: 340}}>
                   <CardHeader
                     title="Constellation"
@@ -188,7 +190,7 @@ class Dashboard extends Component {
                   </div>
                 </Card>
               </Col>
-              <Col xs>
+              <Col xs style={{display: 'flex', justifyContent: 'center', marginBottom: 15}}>
                 <Card style={{width: 340, height: 340}}>
                   <CardHeader
                     title="Status"

@@ -7,7 +7,7 @@
       <File FileName="goesdump/GoesDecoder/ImageManager.cs" Line="71" Column="38" />
       <File FileName="XRIT/Models/GroupData.cs" Line="1" Column="1" />
       <File FileName="goesdump/ChannelDecoder/DemuxManager.cs" Line="1" Column="1" />
-      <File FileName="LibraryTest/Program.cs" Line="220" Column="18" />
+      <File FileName="LibraryTest/Program.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

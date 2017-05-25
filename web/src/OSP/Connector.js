@@ -11,8 +11,11 @@ export default class OSPConnector extends EventEmitter {
     super();
     //this.serverUrl = "ws://" + window.location.host + "/mainws";
     this.serverUrl = "ws://localhost:8090/mainws";
-    this.ws = new WebSocket(this.serverUrl);
+    this._initWS();
+  }
 
+  _initWS() {
+    this.ws = new WebSocket(this.serverUrl);
     this.ws.onopen    = this.onOpen.bind(this);
     this.ws.onmessage = this.onMessage.bind(this);
     this.ws.onerror   = this.onError.bind(this);
@@ -45,13 +48,16 @@ export default class OSPConnector extends EventEmitter {
   }
 
   onError(event) {
-    this.emit('consoleMessage', ["ERROR", `There was an WebSocket error: ${event}`]);
+    this.emit('consoleMessage', ["ERROR", `There was an WebSocket error: ${JSON.stringify(event)}`]);
     console.log(`OSPConnector -- Error: ${event}`);
   }
 
   onClose(event) {
-    this.emit('consoleMessage', ["INFO", "Connection to the server has been closed."]);
+    this.emit('consoleMessage', ["INFO", "Connection to the server has been closed. Trying again in 2 seconds."]);
     this.emit('wsDisconnected');
+    setTimeout(() => {
+      this._initWS();
+    }, 2000);
   }
 
   handleStatistics(data) {

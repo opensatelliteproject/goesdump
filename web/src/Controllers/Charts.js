@@ -4,12 +4,17 @@
  */
 import React, { Component } from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import logo from '../logo.svg';
 
 class Charts extends Component {
 
   constructor(props) {
     super(props);
+  }
+
+  componentDidMount() {
+    this.constellation = this.refs.constellation;
+    this.refresh = true;
+    this.props.setTitle('Charts');
   }
 
   render() {

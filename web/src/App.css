@@ -55,6 +55,20 @@
   float: right;
 }
 
+.console-card {
+    position: relative;
+    width: 100%;
+    height: 500px;
+}
+
+.console-area {
+    height: 400px;
+}
+
+.console-text {
+    font-family: "Lucida Console", monospace;
+}
+
 .clickable {
   cursor: pointer;
 }
