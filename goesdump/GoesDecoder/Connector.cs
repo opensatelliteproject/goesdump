@@ -139,7 +139,7 @@ namespace OpenSatelliteProject {
                 try {
                     UIConsole.GlobalConsole.Log("Statistics Thread connect");
                     sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    sender.ReceiveTimeout = 200;
+                    sender.ReceiveTimeout = 5000;
                     sender.Connect(remoteEP);
                     isConnected = true;
 
@@ -224,7 +224,7 @@ namespace OpenSatelliteProject {
                 UIConsole.GlobalConsole.Log("Channel Data Thread connect");
                 try {
                     sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    sender.ReceiveTimeout = 200;
+                    sender.ReceiveTimeout = 5000;
                     sender.Connect(remoteEP);
                     isConnected = true;
                     UIConsole.GlobalConsole.Log(String.Format("Socket connected to {0}", sender.RemoteEndPoint.ToString()));
