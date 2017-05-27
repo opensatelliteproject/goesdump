@@ -29,7 +29,7 @@ namespace OpenSatelliteProject {
 
             if (path.Length > 0) {
                 var tmp = !path.EndsWith("/") ? path + "/" : path;
-                upperPath = Path.Combine(BasePath, Path.GetDirectoryName(Path.GetDirectoryName(tmp)));
+                upperPath = Path.GetDirectoryName(Path.GetDirectoryName(tmp));
             }
 
             var folder = Path.Combine(dataFolder, path);
@@ -43,7 +43,7 @@ namespace OpenSatelliteProject {
                 List<string> files = Directory.GetFiles(folder).Where(x => !x.EndsWith(".lrit")).OrderBy(a => a).ToList();
                 List<string> dirs = Directory.GetDirectories(folder).OrderBy(a => a).ToList();
 
-                if (upperPath.Length > 0) {
+                if (path.Length > 0) {
                     dhList.Add (new DHInfo {
                         IsFile = false,
                         Name = "..",

@@ -59,7 +59,6 @@ class Console extends Component {
   }
 
   componentDidMount() {
-    this.constellation = this.refs.constellation;
     this.refresh = true;
     this.props.setTitle('Console');
     this.setState({

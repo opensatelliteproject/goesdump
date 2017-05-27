@@ -148,7 +148,7 @@ namespace OpenSatelliteProject {
 
             demuxManager = new DemuxManager();
             demuxManager.RecordToFile = config.RecordIntermediateFile;
-            cn.StatisticsAvailable += (Statistics_st data) => {
+            cn.StatisticsAvailable += (data) => {
                 mtx.WaitOne();
                 statistics = data;
                 mtx.ReleaseMutex();
@@ -157,7 +157,7 @@ namespace OpenSatelliteProject {
                 httpsv.WebSocketServices.Broadcast(stModel.toJSON());
             };
 
-            cn.ChannelDataAvailable += (byte[] data) => demuxManager.parseBytes(data);
+            cn.ChannelDataAvailable += demuxManager.parseBytes;
             cn.ConstellationDataAvailable += (float[] data) => {
                 ConstellationModel cm = new ConstellationModel(data);
                 if (httpsv.IsListening) {
@@ -180,7 +180,7 @@ namespace OpenSatelliteProject {
             UIConsole.GlobalConsole.MessageAvailable += (data) => {
                 ConsoleModel cm = new ConsoleModel(data.Priority.ToString(), data.Message);
                 if (httpsv.IsListening) {
-                    //httpsv.WebSocketServices["/mainws"].Sessions.Broadcast(cm.toJSON());
+                    httpsv.WebSocketServices["/mainws"].Sessions.Broadcast(cm.toJSON());
                 }
 
                 messageListMutex.WaitOne();

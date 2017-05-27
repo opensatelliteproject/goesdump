@@ -14,11 +14,13 @@ import './App.css';
 import Charts from './Controllers/Charts';
 import Dashboard from './Controllers/Dashboard';
 import Console from './Controllers/Console';
+import Explorer from './Controllers/Explorer';
 import OSPConnector from './OSP/Connector';
 
 injectTapEventPlugin();
-
-const conn = new OSPConnector();
+//const serverUrl = "http://" + window.location.host;
+const serverUrl = 'http://localhost:8090';
+const conn = new OSPConnector(serverUrl);
 const MAXLINES = 15;
 
 class App extends Component {
@@ -169,6 +171,9 @@ class App extends Component {
                   <Link to="/console">
                     <MenuItem onTouchTap={() => { this.closeDrawer(); this.clearConsoleNotification(); }}>Console</MenuItem>
                   </Link>
+                  <Link to="/explorer">
+                    <MenuItem onTouchTap={() => { this.closeDrawer(); }}>Explorer</MenuItem>
+                  </Link>
                 </Drawer>
               </div>
               <br/>
@@ -177,6 +182,8 @@ class App extends Component {
                   <Route exact path="/" render={(props) => { return <Dashboard setTitle={this.setTitle} notify={this.notifyDashboard} ospConn={conn} {...props} /> }}/>
                   <Route path="/charts" render={(props) => { return <Charts setTitle={this.setTitle} notify={this.notifyCharts} ospConn={conn} {...props} />}}/>
                   <Route path="/console" render={(props) => { return <Console setTitle={this.setTitle} notify={this.notifyConsole} messageCache={this.getMessageCache} ospConn={conn} {...props} /> }}/>
+                  <Route exact path="/explorer" render={(props) => { return <Explorer setTitle={this.setTitle} ospConn={conn} {...props} /> }}/>
+                  <Route path="/explorer/:folder" render={(props) => { return <Explorer serverUrl={serverUrl} setTitle={this.setTitle} ospConn={conn} {...props} /> }}/>
                 </switch>
               </div>
             </div>

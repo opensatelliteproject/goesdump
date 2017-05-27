@@ -7,11 +7,11 @@ import { EventEmitter } from 'fbemitter';
 
 export default class OSPConnector extends EventEmitter {
 
-  constructor() {
+  constructor(serverUrl) {
     super();
-    //this.serverUrl = "ws://" + window.location.host + "/mainws";
-    this.serverUrl = "ws://localhost:8090/mainws";
+    this.serverUrl = serverUrl.replace('http', 'ws').replace('https', 'wss') + '/mainws';
     this._initWS();
+    this.isConnected = false;
   }
 
   _initWS() {
@@ -26,6 +26,7 @@ export default class OSPConnector extends EventEmitter {
     this.emit('consoleMessage', ["INFO", "Connected to Server"]);
     this.emit('wsConnected');
     this.ws.send(JSON.stringify({ "method": "getCacheMessages"}));
+    this.isConnected = true;
   }
 
   onMessage(event) {
@@ -41,6 +42,9 @@ export default class OSPConnector extends EventEmitter {
         case "constellationData":
           this.handleConstellation(data);
           break;
+        case "dirlist":
+          this.handleDirList(data);
+          break;
       }
     } catch (e) {
       console.log(`OSPConnector -- Error parsing message: ${e}`);
@@ -55,6 +59,7 @@ export default class OSPConnector extends EventEmitter {
   onClose(event) {
     this.emit('consoleMessage', ["INFO", "Connection to the server has been closed. Trying again in 2 seconds."]);
     this.emit('wsDisconnected');
+    this.isConnected = false;
     setTimeout(() => {
       this._initWS();
     }, 2000);
@@ -70,6 +75,18 @@ export default class OSPConnector extends EventEmitter {
 
   handleConsole(data) {
     this.emit('consoleMessage', [ data.level, data.message ]);
+  }
+
+  handleDirList(data) {
+    this.emit('dirList', data.Listing);
+  }
+
+  listDir(path) {
+    console.log(`List dir path: ${path}`);
+    this.ws.send(JSON.stringify({
+      type: 'dirlist',
+      path,
+    }));
   }
 
   on(...args) {
