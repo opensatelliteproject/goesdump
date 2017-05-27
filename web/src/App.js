@@ -7,7 +7,13 @@ import {
   AppBar,
   Drawer,
   MenuItem,
+  Paper,
 }from 'material-ui';
+
+import DashBoardIcon from 'react-material-icons/icons/action/dashboard';
+import ChartsIcon from 'react-material-icons/icons/device/data-usage';
+import ConsoleIcon from 'react-material-icons/icons/hardware/computer';
+import ExplorerIcon from 'react-material-icons/icons/file/folder';
 
 import atom from './atom.svg';
 import './App.css';
@@ -15,6 +21,7 @@ import Charts from './Controllers/Charts';
 import Dashboard from './Controllers/Dashboard';
 import Console from './Controllers/Console';
 import Explorer from './Controllers/Explorer';
+import BarElementRight from './Components/BarElementRight';
 import OSPConnector from './OSP/Connector';
 
 injectTapEventPlugin();
@@ -151,29 +158,39 @@ class App extends Component {
                       badgeContent={totalNotifications}
                       secondary={true}
                       badgeStyle={{top: 0, right: 0,  display: totalNotifications > 0 ? 'flex' : 'none'}}
-                      style={{height: 60, padding: '0 0 0 0', top: 0 }}
+                      style={{height: 60, padding: '0 0 0 0', marginRight: 20, top: 0 }}
                     >
                       <img src={atom} className="drawer-icon" width={64} height={64} />
                     </Badge>
                   }
+                  iconElementRight={<BarElementRight ospConn={conn}/>}
                 />
                 <Drawer
                   open={this.state.sideMenuOpen}
                   docked={false}
                   onRequestChange={this.closeDrawer}
                 >
-                  <Link to="/" style={{ textDecoration: 'none' }}>
-                    <MenuItem onTouchTap={() => { this.closeDrawer(); this.clearDashboardNotification(); }}>Dashboard</MenuItem>
-                  </Link>
-                  <Link to="/charts">
-                    <MenuItem onTouchTap={() => { this.closeDrawer(); this.clearChartsNotification(); }}>Charts</MenuItem>
-                  </Link>
-                  <Link to="/console">
-                    <MenuItem onTouchTap={() => { this.closeDrawer(); this.clearConsoleNotification(); }}>Console</MenuItem>
-                  </Link>
-                  <Link to="/explorer">
-                    <MenuItem onTouchTap={() => { this.closeDrawer(); }}>Explorer</MenuItem>
-                  </Link>
+                  <div style={{display: 'flex', flexDirection: 'column'}}>
+                    <Paper style={{display: 'flex', justifyContent: 'center', paddingTop: 25, paddingBottom: 25}} zDepth={1}>
+                      <img src="/android-icon-72x72.png"/>
+                    </Paper>
+                    <Link to="/" style={{ textDecoration: 'none' }}>
+                      <MenuItem onTouchTap={() => { this.closeDrawer(); this.clearDashboardNotification(); }}><DashBoardIcon className="menu-icon"/>Dashboard</MenuItem>
+                    </Link>
+                    <Link to="/charts">
+                      <MenuItem onTouchTap={() => { this.closeDrawer(); this.clearChartsNotification(); }}><ChartsIcon className="menu-icon"/>Charts</MenuItem>
+                    </Link>
+                    <Link to="/console">
+                      <MenuItem onTouchTap={() => { this.closeDrawer(); this.clearConsoleNotification(); }}><ConsoleIcon className="menu-icon"/>Console</MenuItem>
+                    </Link>
+                    <Link to="/explorer">
+                      <MenuItem onTouchTap={() => { this.closeDrawer(); }}><ExplorerIcon className="menu-icon"/>Explorer</MenuItem>
+                    </Link>
+                    <div className="footer">
+                      Made by <a target="_blank" href="https://github.com/racerxdl">Lucas Teske</a><br/>
+                      Available at: <a target="_blank" href="https://github.com/opensatelliteproject/">Github</a>
+                    </div>
+                  </div>
                 </Drawer>
               </div>
               <br/>

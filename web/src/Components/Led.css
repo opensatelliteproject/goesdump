@@ -12,33 +12,6 @@
     padding: 20px;
 }
 
-.led-box {
-    height: 80px;
-    width: 90px;
-    margin: 10px 0;
-    float: left;
-}
-
-.led-box p {
-    font-size: 12px;
-    text-align: center;
-    margin: 1em;
-}
-
-.led-red {
-    margin: 0 auto;
-    width: 24px;
-    height: 24px;
-    background-color: #F00;
-    border-radius: 50%;
-    box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(255, 0, 0, 0.5) 0 2px 12px;
-    -webkit-animation: blinkRed 0.5s infinite;
-    -moz-animation: blinkRed 0.5s infinite;
-    -ms-animation: blinkRed 0.5s infinite;
-    -o-animation: blinkRed 0.5s infinite;
-    animation: blinkRed 0.5s infinite;
-}
-
 @-webkit-keyframes blinkRed {
     from { background-color: #F00; }
     50% { background-color: #A00; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(255, 0, 0, 0.5) 0 2px 0;}
@@ -63,20 +36,6 @@
     from { background-color: #F00; }
     50% { background-color: #A00; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(255, 0, 0, 0.5) 0 2px 0;}
     to { background-color: #F00; }
-}
-
-.led-yellow {
-    margin: 0 auto;
-    width: 24px;
-    height: 24px;
-    background-color: #FF0;
-    border-radius: 50%;
-    box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 12px;
-    -webkit-animation: blinkYellow 1s infinite;
-    -moz-animation: blinkYellow 1s infinite;
-    -ms-animation: blinkYellow 1s infinite;
-    -o-animation: blinkYellow 1s infinite;
-    animation: blinkYellow 1s infinite;
 }
 
 @-webkit-keyframes blinkYellow {
@@ -105,6 +64,19 @@
     to { background-color: #FF0; }
 }
 
+.led-box {
+    height: 80px;
+    width: 90px;
+    margin: 10px 0;
+    float: left;
+}
+
+.led-box p {
+    font-size: 12px;
+    text-align: center;
+    margin: 1em;
+}
+
 .led-green {
     margin: 0 auto;
     width: 24px;
@@ -121,4 +93,92 @@
     background-color: #24E0FF;
     border-radius: 50%;
     box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #006 0 -1px 9px, #3F8CFF 0 2px 14px;
+}
+
+.led-yellow {
+    margin: 0 auto;
+    width: 24px;
+    height: 24px;
+    background-color: #FF0;
+    border-radius: 50%;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 12px;
+    -webkit-animation: blinkYellow 1s infinite;
+    -moz-animation: blinkYellow 1s infinite;
+    -ms-animation: blinkYellow 1s infinite;
+    -o-animation: blinkYellow 1s infinite;
+    animation: blinkYellow 1s infinite;
+}
+
+.led-red {
+    margin: 0 auto;
+    width: 24px;
+    height: 24px;
+    background-color: #F00;
+    border-radius: 50%;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(255, 0, 0, 0.5) 0 2px 12px;
+    -webkit-animation: blinkRed 0.5s infinite;
+    -moz-animation: blinkRed 0.5s infinite;
+    -ms-animation: blinkRed 0.5s infinite;
+    -o-animation: blinkRed 0.5s infinite;
+    animation: blinkRed 0.5s infinite;
+}
+
+
+.mini-led-green {
+    margin: 0 auto;
+    width: 16px;
+    height: 16px;
+    background-color: #ABFF00;
+    border-radius: 50%;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #304701 0 -1px 9px, #89FF00 0 2px 12px;
+}
+
+.mini-led-blue {
+    margin: 0 auto;
+    width: 16px;
+    height: 16px;
+    background-color: #24E0FF;
+    border-radius: 50%;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #006 0 -1px 9px, #3F8CFF 0 2px 14px;
+}
+
+.mini-led-yellow {
+    margin: 0 auto;
+    width: 16px;
+    height: 16px;
+    background-color: #FF0;
+    border-radius: 50%;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 12px;
+    -webkit-animation: blinkYellow 1s infinite;
+    -moz-animation: blinkYellow 1s infinite;
+    -ms-animation: blinkYellow 1s infinite;
+    -o-animation: blinkYellow 1s infinite;
+    animation: blinkYellow 1s infinite;
+}
+
+.mini-led-red {
+    margin: 0 auto;
+    width: 16px;
+    height: 16px;
+    background-color: #F00;
+    border-radius: 50%;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(255, 0, 0, 0.5) 0 2px 12px;
+    -webkit-animation: blinkRed 0.5s infinite;
+    -moz-animation: blinkRed 0.5s infinite;
+    -ms-animation: blinkRed 0.5s infinite;
+    -o-animation: blinkRed 0.5s infinite;
+    animation: blinkRed 0.5s infinite;
+}
+
+.mini-led-box {
+    height: 40px;
+    width: 90px;
+    margin: 10px 0;
+    float: left;
+}
+
+.mini-led-box p {
+    font-size: 12px;
+    text-align: center;
+    margin: 1em;
 }

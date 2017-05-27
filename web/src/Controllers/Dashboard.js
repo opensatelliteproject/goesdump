@@ -32,16 +32,16 @@ class Dashboard extends Component {
         satelliteID: 0,
         virtualChannelID: 0,
         packetNumber: 0,
-        totalBits: 8192,
-        viterbiErrors: 53,
-        signalQuality: 87,
-        syncCorrelation: 54,
+        totalBits: 0,
+        viterbiErrors: 0,
+        signalQuality: 0,
+        syncCorrelation: 0,
         phaseCorrection: 0,
         reedSolomon: [0,0,0,0],
-        syncWord: "1ACFFC1D",
+        syncWord: "00000000",
         frameLock: true,
         startTime: "2017-05-06T19:49:49-03:00",
-        runningTime: "21:25:05.3001870",
+        runningTime: "0:0:00.0000000",
       },
       frameLock: false,
       websocket: false,
@@ -57,7 +57,11 @@ class Dashboard extends Component {
     });
     this.props.ospConn.on('wsDisconnected', () => {
       if (this.refresh) {
-        this.setState({websocket: false})
+        this.setState({
+          websocket: false,
+          frameLock: false,
+          satelliteBusy: false,
+        });
       }
     });
     this.props.ospConn.on('statistics', (data) => {

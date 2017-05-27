@@ -78,11 +78,13 @@ export default class OSPConnector extends EventEmitter {
   }
 
   handleDirList(data) {
+    this.emit('loadStatus', false);
     this.emit('dirList', data.Listing);
   }
 
   listDir(path) {
     console.log(`List dir path: ${path}`);
+    this.emit('loadStatus', true);
     this.ws.send(JSON.stringify({
       type: 'dirlist',
       path,
