@@ -249,7 +249,7 @@ namespace OpenSatelliteProject {
                                 }
                                 count++;
                             }
-                            UIConsole.GlobalConsole.Debug(String.Format("Saving file {0}", fileName));
+                            UIConsole.Debug($"Saving file {fileName}");
 
                             using (FileStream streamWriter = File.Create(fileName)) {
 
@@ -271,7 +271,7 @@ namespace OpenSatelliteProject {
                     }
                 }
             } catch (Exception e) {
-                UIConsole.GlobalConsole.Error(String.Format("Error extracting file {0}: {1}", zipfile, e));
+                UIConsole.Error(String.Format("Error extracting file {0}: {1}", zipfile, e));
             }
 
             try {
@@ -326,14 +326,14 @@ namespace OpenSatelliteProject {
                 }
 
                 try {
-                    UIConsole.GlobalConsole.Log(string.Format("New Weather Data - {0} - {1}", header.SubProduct.Name, header.Filename));
+                    UIConsole.Log(string.Format("New Weather Data - {0} - {1}", header.SubProduct.Name, header.Filename));
                     if (!Directory.Exists(basedir)) {
                         Directory.CreateDirectory(basedir);
                     }
                     ImageHandler.Handler.HandleFile(filename, basedir);
                     File.Delete(filename);
                 } catch (Exception e) {
-                    UIConsole.GlobalConsole.Warn(string.Format("Failed to parse Weather Data Image at {0}: {1}", filename, e));
+                    UIConsole.Warn(string.Format("Failed to parse Weather Data Image at {0}: {1}", filename, e));
                 }
             } else if (header.PrimaryHeader.FileType == FileTypeCode.TEXT) {
                 string fz = DumpFile(filename, header, "txt");
@@ -356,14 +356,14 @@ namespace OpenSatelliteProject {
                 basedir = Path.Combine(basedir, TextFolder);
 
                 try {
-                    UIConsole.GlobalConsole.Log(string.Format("New NOAA Text ({0})", header.Filename));
+                    UIConsole.Log(string.Format("New NOAA Text ({0})", header.Filename));
                     if (!Directory.Exists(basedir)) {
                         Directory.CreateDirectory(basedir);
                     }
                     TextHandler.Handler.HandleFile(filename, basedir);
                     File.Delete(filename);
                 } catch (Exception e) {
-                    UIConsole.GlobalConsole.Warn(string.Format("Failed to parse Weather Data Image at {0}: {1}", filename, e));
+                    UIConsole.Warn(string.Format("Failed to parse Weather Data Image at {0}: {1}", filename, e));
                 }
             } else {
                 FileHandler.DefaultHandler(filename, header);
@@ -396,20 +396,20 @@ namespace OpenSatelliteProject {
 
             if (!String.Equals(Path.GetFileName(f), fileHeader.Filename)) {
                 if (fileHeader.SubProduct.Name != "Unknown") {
-                    UIConsole.GlobalConsole.Log(String.Format("New {0} - {1} ({2}) saved as {3}", fileHeader.Product.Name, fileHeader.SubProduct.Name, fileHeader.Filename, Path.GetFileName(f)));
+                    UIConsole.Log(String.Format("New {0} - {1} ({2}) saved as {3}", fileHeader.Product.Name, fileHeader.SubProduct.Name, fileHeader.Filename, Path.GetFileName(f)));
                 } else {
-                    UIConsole.GlobalConsole.Log(String.Format("New {0} ({1}) saved as {2}", fileHeader.Product.Name, fileHeader.Filename, Path.GetFileName(f)));
+                    UIConsole.Log(String.Format("New {0} ({1}) saved as {2}", fileHeader.Product.Name, fileHeader.Filename, Path.GetFileName(f)));
                 }
             } else {
                 if (fileHeader.SubProduct.Name != "Unknown") {
-                    UIConsole.GlobalConsole.Log(String.Format("New {0} - {1} ({2})", fileHeader.Product.Name, fileHeader.SubProduct.Name, fileHeader.Filename));
+                    UIConsole.Log(String.Format("New {0} - {1} ({2})", fileHeader.Product.Name, fileHeader.SubProduct.Name, fileHeader.Filename));
                 } else {
-                    UIConsole.GlobalConsole.Log(String.Format("New {0} ({1})", fileHeader.Product.Name, fileHeader.Filename));
+                    UIConsole.Log(String.Format("New {0} ({1})", fileHeader.Product.Name, fileHeader.Filename));
                 }
             }
 
             //UIConsole.GlobalConsole.Log(String.Format("New JPEG file {0}", fileHeader.Filename));
-            Console.WriteLine("Renaming {0} to {1}", filename, f);
+            //Console.WriteLine("Renaming {0} to {1}", filename, f);
             FileStream fs = File.OpenRead(filename);
             fs.Seek(fileHeader.PrimaryHeader.HeaderLength, SeekOrigin.Begin);
             FileStream os = File.OpenWrite(f);
@@ -425,7 +425,7 @@ namespace OpenSatelliteProject {
             os.Close();
 
             if (f.Contains(".zip")) {
-                UIConsole.GlobalConsole.Log(String.Format("Extracting Zip File {0}", f));
+                UIConsole.Log(String.Format("Extracting Zip File {0}", f));
                 ExtractZipFile(f);
             }
             if (!forceErase) {
@@ -460,9 +460,9 @@ namespace OpenSatelliteProject {
             } catch (Exception e) {
                 if (e is AECException) {
                     AECException aece = (AECException)e;
-                    UIConsole.GlobalConsole.Error(string.Format("AEC Decompress Error: {0}", aece.status.ToString()));
+                    UIConsole.Error(string.Format("AEC Decompress Error: {0}", aece.status.ToString()));
                 } else {
-                    UIConsole.GlobalConsole.Error(string.Format("Decompress error: {0}", e.ToString()));
+                    UIConsole.Error(string.Format("Decompress error: {0}", e.ToString()));
                 }
             }
 
@@ -487,9 +487,9 @@ namespace OpenSatelliteProject {
             } catch (Exception e) {
                 if (e is AECException) {
                     AECException aece = (AECException)e;
-                    UIConsole.GlobalConsole.Error(string.Format("AEC Decompress Error: {0}", aece.status.ToString()));
+                    UIConsole.Error(string.Format("AEC Decompress Error: {0}", aece.status.ToString()));
                 } else {
-                    UIConsole.GlobalConsole.Error(string.Format("Decompress error: {0}", e.ToString()));
+                    UIConsole.Error(string.Format("Decompress error: {0}", e.ToString()));
                 }
             }
 
@@ -514,7 +514,7 @@ namespace OpenSatelliteProject {
                 try {
                     File.Delete(ifile);
                 } catch (IOException e) {
-                    UIConsole.GlobalConsole.Warn(String.Format("Cannot delete file {0}: {1}", ifile, e));
+                    UIConsole.Warn(String.Format("Cannot delete file {0}: {1}", ifile, e));
                 }
 
                 f = File.OpenWrite(outputFile);
@@ -541,12 +541,12 @@ namespace OpenSatelliteProject {
                         File.Delete(ifile);
                         AEC.LritRiceDecompress(ref outputData, input, 8, pixelsPerBlock, pixels, mask);
                     } catch (FileNotFoundException) {
-                        UIConsole.GlobalConsole.Error(String.Format("Decompressor cannot find file {0}", ifile));
+                        UIConsole.Error(String.Format("Decompressor cannot find file {0}", ifile));
                     } catch (AECException e) {
-                        Console.WriteLine("AEC Decompress problem decompressing file {0}: {1}", ifile, e.status.ToString());
-                        Console.WriteLine("AEC Params: {0} - {1} - {2} - {3}", 8, pixelsPerBlock, pixels, mask);
+                        UIConsole.Error($"AEC Decompress problem decompressing file {ifile}: {e.status.ToString()}");
+                        UIConsole.Debug($"AEC Params: 8 - {pixelsPerBlock} - {pixels} - {mask}");
                     } catch (IOException e) {
-                        Console.WriteLine(e);
+                        UIConsole.Error($"AEC Decompress problem decompressing file {ifile}: {e}");
                     }
 
                     f.Write(outputData, 0, outputData.Length);
@@ -563,9 +563,10 @@ namespace OpenSatelliteProject {
                             File.Delete(ifile);
                             AEC.LritRiceDecompress(ref outputData, input, 8, pixelsPerBlock, pixels, mask);
                         } catch (FileNotFoundException) {
-                            UIConsole.GlobalConsole.Error(String.Format("Decompressor cannot find file {0}", ifile));
-                        } catch (AECException) {
-                            Console.WriteLine("AEC Decompress problem decompressing file {0}", ifile);
+                            UIConsole.Error(String.Format("Decompressor cannot find file {0}", ifile));
+                        } catch (AECException e) {
+                            UIConsole.Error($"AEC Decompress problem decompressing file {ifile}: {e.status.ToString()}");
+                            UIConsole.Debug($"AEC Params: 8 - {pixelsPerBlock} - {pixels} - {mask}");
                         } catch (IOException e) {
                             Console.WriteLine("Error deleting file {0}: {1}", ifile, e);
                         }
@@ -575,7 +576,7 @@ namespace OpenSatelliteProject {
                 }
 
             } catch (Exception e) {
-                UIConsole.GlobalConsole.Error(string.Format("There was an error decompressing data: {0}", e));
+                UIConsole.Error(string.Format("There was an error decompressing data: {0}", e));
             }
 
             try {
@@ -583,7 +584,7 @@ namespace OpenSatelliteProject {
                     f.Close();
                 }
             } catch (Exception) {
-
+                // Do nothing
             }
 
             return outputFile;

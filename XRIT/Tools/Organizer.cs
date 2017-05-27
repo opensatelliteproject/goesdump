@@ -180,12 +180,12 @@ namespace OpenSatelliteProject {
                         }
                         alreadyProcessed.Add(file);
                     } catch (Exception e) {
-                        UIConsole.GlobalConsole.Error($"Error reading file {file}: {e}");
+                        UIConsole.Error($"Error reading file {file}: {e}");
                         alreadyProcessed.Add(file);
                     }
                 }
             } catch (Exception e) {
-                UIConsole.GlobalConsole.Error ($"Error checking folders: {e}");
+                UIConsole.Error ($"Error checking folders: {e}");
             }
         }
     }

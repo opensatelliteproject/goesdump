@@ -119,15 +119,15 @@ namespace OpenSatelliteProject {
 
                 if (!msdu.Valid || !msdu.Full) {
                     if (msdu.FrameLost) {
-                        UIConsole.GlobalConsole.Error(String.Format("Lost some frames on MSDU, the file will be corrupted. CRC Match: {0} - Size Match: {1}", msdu.Valid, msdu.Full));
+                        UIConsole.Error($"Lost some frames on MSDU, the file will be corrupted. CRC Match: {msdu.Valid} - Size Match: {msdu.Full}");
                     } else {
-                        UIConsole.GlobalConsole.Error(String.Format("Corrupted MSDU. CRC Match: {0} - Size Match: {1}", msdu.Valid, msdu.Full));
+                        UIConsole.Error($"Corrupted MSDU. CRC Match: {msdu.Valid} - Size Match: {msdu.Full}");
                     }
                 }
 
                 if (msdu.Sequence == SequenceType.FIRST_SEGMENT || msdu.Sequence == SequenceType.SINGLE_DATA) {
                     if (startnum != -1) {
-                        UIConsole.GlobalConsole.Warn("Received First Segment but last data wasn't finished! Forcing dump.");
+                        UIConsole.Warn("Received First Segment but last data wasn't finished! Forcing dump.");
                         // This can only happen for multi-segment file.
                         filename = Path.Combine(FileHandler.TemporaryFileFolder, channelId.ToString());
                         filename = Path.Combine(filename, $"{lastMSDU.APID}_{lastMSDU.Version}.lrit");
@@ -182,7 +182,7 @@ namespace OpenSatelliteProject {
                     }
 
                     if (missedPackets > 0)  {
-                        UIConsole.GlobalConsole.Warn(String.Format("Missed {0} packets on image. Filling with null bytes. Last Packet Number: {1} Current: {2}", missedPackets, lastMSDU.PacketNumber, msdu.PacketNumber));
+                        UIConsole.Warn(String.Format("Missed {0} packets on image. Filling with null bytes. Last Packet Number: {1} Current: {2}", missedPackets, lastMSDU.PacketNumber, msdu.PacketNumber));
                         byte[] fill = PacketManager.GenerateFillData(fileHeader.ImageStructureHeader.Columns);
                         using (FileStream fs = new FileStream(filename, FileMode.Append, FileAccess.Write)) {
                             using (BinaryWriter sw = new BinaryWriter(fs)) {
@@ -212,7 +212,7 @@ namespace OpenSatelliteProject {
                     endnum = -1;
                 }
             } catch (Exception e) {
-                UIConsole.GlobalConsole.Error(String.Format("Exception on FinishMSDU: {0}", e));
+                UIConsole.Error(String.Format("Exception on FinishMSDU: {0}", e));
             }
         }
 
@@ -244,12 +244,12 @@ namespace OpenSatelliteProject {
             replayFlag = (data[5] & 0x80) > 0;
 
             if (replayFlag) {
-                UIConsole.GlobalConsole.Log("Replay Flag set. Skipping packet.");
+                UIConsole.Log("Replay Flag set. Skipping packet.");
                 return;
             }
 
             if (counter - lastFrame - 1 == -1) {
-                UIConsole.GlobalConsole.Warn("Last packet same ID as the current one but no replay bit set! Skipping packet.");
+                UIConsole.Warn("Last packet same ID as the current one but no replay bit set! Skipping packet.");
                 return;
             }
 
@@ -258,24 +258,24 @@ namespace OpenSatelliteProject {
             ovfVcntProblem = ovfVcnt && (0xFFFFFF - lastFrame) + counter - 1 > 0;
 
             if (frameJump && !ovfVcnt) {
-                UIConsole.GlobalConsole.Warn($"Frame Jump occured. Current Frame: {counter} Last Frame: {lastFrame}");
+                UIConsole.Warn($"Frame Jump occured. Current Frame: {counter} Last Frame: {lastFrame}");
                 if (lastAPID != -1) {
                     temporaryStorage[lastAPID].FrameLost = true;
                 }
             } else if (lastFrame != -1 && lastFrame + 1 != counter && !ovfVcnt) {
-                UIConsole.GlobalConsole.Error(String.Format("Lost {0} frames. Last Frame #{1} - Current Frame #{2} on VCID {3}", counter - lastFrame - 1, lastFrame, counter, channelId));
+                UIConsole.Error(String.Format("Lost {0} frames. Last Frame #{1} - Current Frame #{2} on VCID {3}", counter - lastFrame - 1, lastFrame, counter, channelId));
                 if (lastAPID != -1) {
                     temporaryStorage[lastAPID].FrameLost = true;
                 }
             } else if (!IgnoreCounterJump && lastFrame != -1 && ovfVcntProblem) {
-                UIConsole.GlobalConsole.Error(String.Format("Lost {0} frames. Last Frame #{1} - Current Frame #{2} on VCID {3}", (0xFFFFFF - lastFrame) + counter  - 1, lastFrame, counter, channelId));
+                UIConsole.Error(String.Format("Lost {0} frames. Last Frame #{1} - Current Frame #{2} on VCID {3}", (0xFFFFFF - lastFrame) + counter  - 1, lastFrame, counter, channelId));
                 if (lastAPID != -1) {
                     temporaryStorage[lastAPID].FrameLost = true;
                 }
             }
 
             if (ovfVcntProblem && IgnoreCounterJump || frameJump && IgnoreCounterJump) {
-                UIConsole.GlobalConsole.Warn($"Frame Jump detected from {lastFrame} to {counter} on VCID {channelId} but IgnoreCounterJump is set to true. Ignoring...");
+                UIConsole.Warn($"Frame Jump detected from {lastFrame} to {counter} on VCID {channelId} but IgnoreCounterJump is set to true. Ignoring...");
             }
 
             if (lastFrame != -1) {
@@ -283,14 +283,13 @@ namespace OpenSatelliteProject {
                     manager.FrameLoss++;
                 } else if (!IgnoreCounterJump && ovfVcnt) {
                     int losses = (int) Math.Abs((0xFFFFFF - lastFrame) + counter - 1);
-                    Console.WriteLine("Frame Loss: {0}", losses);
                     if (losses < MAX_ACCOUTABLE_LOSSES) {
                         FrameLoss += losses;
                         if (manager != null) {
                             manager.FrameLoss += losses;
                         }
                     } else {
-                        UIConsole.GlobalConsole.Warn($"Frame Lost ({losses}) in this section is higher than max accountable losses. Not accounting for it (probably corrupt frame).");
+                        UIConsole.Warn($"Frame Lost ({losses}) in this section is higher than max accountable losses. Not accounting for it (probably corrupt frame).");
                     }
                 } else if (!ovfVcnt) {
                     int losses = (int) Math.Abs(counter - lastFrame - 1);
@@ -300,7 +299,7 @@ namespace OpenSatelliteProject {
                             manager.FrameLoss += losses;
                         }
                     } else {
-                        UIConsole.GlobalConsole.Warn($"Frame Lost ({losses}) in this section is higher than max accountable losses. Not accounting for it (probably corrupt frame).");
+                        UIConsole.Warn($"Frame Lost ({losses}) in this section is higher than max accountable losses. Not accounting for it (probably corrupt frame).");
                     }
                 }
             }
@@ -315,7 +314,7 @@ namespace OpenSatelliteProject {
             if (lastFrame < counter || ovfVcnt || frameJump) {
                 lastFrame = (int)counter;
             } else {
-                UIConsole.GlobalConsole.Warn($"LastFrame is bigger than currentFrame ({lastFrame} > {counter}). Not changing current number...");
+                UIConsole.Warn($"LastFrame is bigger than currentFrame ({lastFrame} > {counter}). Not changing current number...");
             }
 
             cb = data.Skip(6).Take(2).ToArray();
@@ -356,7 +355,7 @@ namespace OpenSatelliteProject {
                             manager.Bugs++;
                         }
                         StackFrame callStack = new StackFrame(0, true);
-                        UIConsole.GlobalConsole.Debug(String.Format("Problem at line {0} in file {1}! Not full! Check code for bugs!", callStack.GetFileLineNumber(), callStack.GetFileName()));
+                        UIConsole.Debug(String.Format("Problem at line {0} in file {1}! Not full! Check code for bugs!", callStack.GetFileLineNumber(), callStack.GetFileName()));
                     }
                     FinishMSDU(temporaryStorage[lastAPID]);
                     temporaryStorage.Remove(lastAPID);

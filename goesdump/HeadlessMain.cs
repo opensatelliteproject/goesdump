@@ -51,7 +51,7 @@ namespace OpenSatelliteProject {
             // Check if we need to migrate from XML
             if (ConfigurationManager.Get ("migratedXML") == null) {
                 // We need.
-                UIConsole.GlobalConsole.Log("First run on SQLite mode. Migrating XML");
+                UIConsole.Log("First run on SQLite mode. Migrating XML");
                 XMLProgConfig config = new XMLProgConfig ();
                 ProgConfig.SetConfigDefaults ();
                 ProgConfig.RecordIntermediateFile = config.RecordIntermediateFile;
@@ -107,7 +107,7 @@ namespace OpenSatelliteProject {
 
             if (ProgConfig.TemporaryFileFolder != null) {
                 if (!LLTools.TestFolderAccess(ProgConfig.TemporaryFileFolder)) {
-                    UIConsole.GlobalConsole.Error($"Cannot write file to Temporary Folder {ProgConfig.TemporaryFileFolder}");
+                    UIConsole.Error($"Cannot write file to Temporary Folder {ProgConfig.TemporaryFileFolder}");
                     throw new ApplicationException($"Cannot write file to Temporary Folder {ProgConfig.TemporaryFileFolder}");
                 }
                 FileHandler.TemporaryFileFolder = ProgConfig.TemporaryFileFolder;
@@ -115,7 +115,7 @@ namespace OpenSatelliteProject {
 
             if (ProgConfig.FinalFileFolder != null) {
                 if (!LLTools.TestFolderAccess(ProgConfig.FinalFileFolder)) {
-                    UIConsole.GlobalConsole.Error($"Cannot write file to Final Folder {ProgConfig.FinalFileFolder}");
+                    UIConsole.Error($"Cannot write file to Final Folder {ProgConfig.FinalFileFolder}");
                     throw new ApplicationException($"Cannot write file to Final Folder {ProgConfig.FinalFileFolder}");
                 }
                 FileHandler.FinalFileFolder = ProgConfig.FinalFileFolder;
@@ -141,7 +141,7 @@ namespace OpenSatelliteProject {
                 try {
                     SyslogClient.Send(ProgConfig.SysLogFacility, Level.Information, "Your syslog connection is working! OpenSatelliteProject is enabled to send logs.");
                 } catch (SocketException) {
-                    UIConsole.GlobalConsole.Warn("Your syslog is not enabled to receive UDP request. Please refer to https://opensatelliteproject.github.io/OpenSatelliteProject/");
+                    UIConsole.Warn("Your syslog is not enabled to receive UDP request. Please refer to https://opensatelliteproject.github.io/OpenSatelliteProject/");
                 }
             }
 
@@ -185,7 +185,7 @@ namespace OpenSatelliteProject {
 
             statistics = new Statistics_st();
             stModel = new StatisticsModel(statistics);
-            UIConsole.GlobalConsole.Log("Headless Main Created");
+            UIConsole.Log("Headless Main Created");
             httpsv = new HttpServer(ProgConfig.HTTPPort);
 
             httpsv.RootPath = Path.Combine(".", "web");
@@ -194,7 +194,7 @@ namespace OpenSatelliteProject {
                 dh = directoryHandler
             });
 
-            UIConsole.GlobalConsole.MessageAvailable += (data) => {
+            UIConsole.MessageAvailable += (data) => {
                 ConsoleModel cm = new ConsoleModel(data.Priority.ToString(), data.Message);
                 if (httpsv.IsListening) {
                     httpsv.WebSocketServices["/mainws"].Sessions.Broadcast(cm.toJSON());
@@ -249,11 +249,11 @@ namespace OpenSatelliteProject {
 
         public void Start() {
             Console.CancelKeyPress += delegate {
-                UIConsole.GlobalConsole.Log("Hit Ctrl + C! Closing...");
+                UIConsole.Log("Hit Ctrl + C! Closing...");
                 running = false;
             };
 
-            UIConsole.GlobalConsole.Log("Headless Main Starting");
+            UIConsole.Log("Headless Main Starting");
 
             FDImageManager.Start();
             XXImageManager.Start();
@@ -270,7 +270,7 @@ namespace OpenSatelliteProject {
                 Thread.Sleep(10);
             }
 
-            UIConsole.GlobalConsole.Log("Closing program...");
+            UIConsole.Log("Closing program...");
             cn.Stop();
             httpsv.Stop();
 

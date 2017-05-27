@@ -47,10 +47,10 @@ namespace OpenSatelliteProject {
                 recordFile = value;
                 if (value && fStream == null) {
                     fileName = string.Format("demuxdump-{0}.bin", LLTools.Timestamp());
-                    UIConsole.GlobalConsole.Log($"Starting dump on file {fileName}");
+                    UIConsole.Log($"Starting dump on file {fileName}");
                     fStream = File.OpenWrite(fileName);
                 } else if (!value && fStream != null) {
-                    UIConsole.GlobalConsole.Log($"Closing dump on file {fileName}");
+                    UIConsole.Log($"Closing dump on file {fileName}");
                     try {
                         fStream.Close();
                         fStream = null;
@@ -75,7 +75,7 @@ namespace OpenSatelliteProject {
             resetMutex = new Mutex();
             if (RecordToFile) {
                 fileName = string.Format("demuxdump-{0}.bin", LLTools.Timestamp());
-                UIConsole.GlobalConsole.Log(string.Format("Demux Dump filename: {0}", fileName));
+                UIConsole.Log(string.Format("Demux Dump filename: {0}", fileName));
                 fStream = File.OpenWrite(fileName);
             }
         }
@@ -128,7 +128,7 @@ namespace OpenSatelliteProject {
                 resetMutex.WaitOne();
                 lock (demuxers) {
                     if (!demuxers.ContainsKey(vcid)) {
-                        UIConsole.GlobalConsole.Log(String.Format("I don't have a demuxer for VCID {0}. Creating...", vcid));
+                        UIConsole.Log($"I don't have a demuxer for VCID {vcid}. Creating...");
                         demuxers.Add(vcid, new Demuxer(this));
                     }
                 }
@@ -137,7 +137,7 @@ namespace OpenSatelliteProject {
                     try {
                         fStream.Write(data, 0, data.Length);
                     } catch (Exception e) {
-                        UIConsole.GlobalConsole.Error(String.Format("Error writting demuxdump file: {0}", e));
+                        UIConsole.Error($"Error writting demuxdump file: {e}");
                     }
                 }
                 recordMutex.ReleaseMutex();

@@ -12,13 +12,13 @@ namespace OpenSatelliteProject {
         public const string SYSLOGSERVERDBKEY = "syslogServerAddress";
         public const string SYSLOGFACILITYDBKEY = "syslogServerFacility";
 
-        public static UIConsole GlobalConsole;
+        static UIConsole GlobalConsole;
         static readonly SyslogClient syslog = new SyslogClient();
 
         readonly Mutex messageMutex;
         public bool LogConsole { get; set; }
         public delegate void ConsoleEvent(ConsoleMessage data);
-        public event ConsoleEvent MessageAvailable;
+        public static event ConsoleEvent MessageAvailable;
 
         static string RemoveDiacritics(string text) {
           var normalizedString = text.Normalize(NormalizationForm.FormD);
@@ -38,27 +38,40 @@ namespace OpenSatelliteProject {
             Init();
         }
 
-        public static void Init() {
+        static void Init() {
             if (GlobalConsole == null) {
                 GlobalConsole = new UIConsole();
             }
         }
 
-        public UIConsole() {
+        UIConsole() {
             LogConsole = true;
             messageMutex = new Mutex();
             if (LLTools.IsLinux) {
                 SyslogClient.SysLogServerIp = ConfigurationManager.Get(SYSLOGSERVERDBKEY, "127.0.0.1");
             }
         }
+
+        public static void Log(string message) {
+            GlobalConsole._Log (message);
+        }
+        public static void Warn(string message) {
+            GlobalConsole._Warn (message);
+        }
+        public static void Error(string message) {
+            GlobalConsole._Error (message);
+        }
+        public static void Debug(string message) {
+            GlobalConsole._Debug (message);
+        }
             
-        public void Log(string message) {
+        public void _Log(string message) {
             messageMutex.WaitOne();
             ConsoleMessage cm = new ConsoleMessage(ConsoleMessagePriority.INFO, message);
             if (LogConsole) {
                 ConsoleColor oldColor = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine(cm.ToString());
+                Console.WriteLine(cm);
                 Console.ForegroundColor = oldColor;
             }
 
@@ -73,13 +86,13 @@ namespace OpenSatelliteProject {
             MessageAvailable?.Invoke(cm);
         }
 
-        public void Warn(string message) {
+        public void _Warn(string message) {
             messageMutex.WaitOne();
             ConsoleMessage cm = new ConsoleMessage(ConsoleMessagePriority.WARN, message);
             if (LogConsole) {
                 ConsoleColor oldColor = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine(cm.ToString());
+                Console.WriteLine(cm);
                 Console.ForegroundColor = oldColor;
             }
 
@@ -94,13 +107,13 @@ namespace OpenSatelliteProject {
             MessageAvailable?.Invoke(cm);
         }
 
-        public void Error(string message) {
+        public void _Error(string message) {
             messageMutex.WaitOne();
             ConsoleMessage cm = new ConsoleMessage(ConsoleMessagePriority.ERROR, message);
             if (LogConsole) {
                 ConsoleColor oldColor = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(cm.ToString());
+                Console.WriteLine(cm);
                 Console.ForegroundColor = oldColor;
             }
 
@@ -115,13 +128,13 @@ namespace OpenSatelliteProject {
             MessageAvailable?.Invoke(cm);
         }
 
-        public void Debug(string message) {
+        public void _Debug(string message) {
             messageMutex.WaitOne();
             ConsoleMessage cm = new ConsoleMessage(ConsoleMessagePriority.DEBUG, message);
             if (LogConsole) {
                 ConsoleColor oldColor = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine(cm.ToString());
+                Console.WriteLine(cm);
                 Console.ForegroundColor = oldColor;
             }
 

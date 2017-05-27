@@ -30,7 +30,7 @@ namespace OpenSatelliteProject {
             var pos = FindSyncMarker(buffer);
             if (pos == -1) {
                 if (buffer.Length > MAX_FRAME_SIZE * 3) {
-                    UIConsole.GlobalConsole.Warn(string.Format("EMWIN Buffer grown beyond {0}! This should happen. Clearing buffer.", MAX_FRAME_SIZE * 3));
+                    UIConsole.Warn($"EMWIN Buffer grown beyond {MAX_FRAME_SIZE * 3}! This should happen. Clearing buffer.");
                     buffer = new byte[0];
                 }
                 return;
@@ -56,7 +56,7 @@ namespace OpenSatelliteProject {
                     //UIConsole.GlobalConsole.Log(string.Format("Received {0}/{1} of {2}", header.PartNumber, header.PartTotal, header.Filename));
                     if (header.PartNumber == 1) {
                         if (files.ContainsKey(header.Filename)) {
-                            UIConsole.GlobalConsole.Warn(string.Format("Files already has a key for file {0}", header.Filename));
+                            UIConsole.Warn($"Files already has a key for file {header.Filename}");
                         } else {
                             string newfilename = DateTime.Now.ToString("yyyyMMddHHmmssffff") + header.Filename;
                             files.Add(header.Filename, new EmwinFile());
@@ -100,14 +100,14 @@ namespace OpenSatelliteProject {
                             fname = Path.Combine(newdir, fname);
                         }
                         File.Move(files[header.Filename].Output, fname);
-                        UIConsole.GlobalConsole.Log(string.Format("New EMWIN ({0})", header.Filename));
+                        UIConsole.Log(string.Format("New EMWIN ({0})", header.Filename));
                         files.Remove(header.Filename);
                         if (fname.Contains(".ZIS")) {
                             PacketManager.ExtractZipFile(fname);
                         }
                     }
                 } catch (Exception e) {
-                    UIConsole.GlobalConsole.Error(string.Format("(EMWIN) Error: {0}", e.Message));
+                    UIConsole.Error($"(EMWIN) Error: {e.Message}");
                 }
             }
         }

@@ -85,7 +85,7 @@ namespace OpenSatelliteProject {
                 Directory.CreateDirectory(folder);
             }
 
-            UIConsole.GlobalConsole.Debug(string.Format("Creating ImageManager on folder {0}", folder));
+            UIConsole.Debug($"Creating ImageManager on folder {folder}");
         }
 
         public void Start() {
@@ -115,7 +115,7 @@ namespace OpenSatelliteProject {
                     try {
                         File.Delete(f);
                     } catch (IOException e) {
-                        UIConsole.GlobalConsole.Error(string.Format("Error erasing file {0}: {1}", f, e));
+                        UIConsole.Error($"Error erasing file {f}: {e}");
                     }
                 });
             }
@@ -126,7 +126,7 @@ namespace OpenSatelliteProject {
                         try {
                             File.Delete(f);
                         } catch (IOException e) {
-                            UIConsole.GlobalConsole.Error(string.Format("Error erasing file {0}: {1}", f, e));
+                            UIConsole.Error($"Error erasing file {f}: {e}");
                         }
                     });
                 });
@@ -143,7 +143,7 @@ namespace OpenSatelliteProject {
                     try {
                         File.Delete(f);
                     } catch (IOException e) {
-                        UIConsole.GlobalConsole.Error(string.Format("Error erasing file {0}: {1}", f, e));
+                        UIConsole.Error($"Error erasing file {f}: {e}");
                     }
                 });
             }
@@ -153,7 +153,7 @@ namespace OpenSatelliteProject {
                     try {
                         File.Delete(f);
                     } catch (IOException e) {
-                        UIConsole.GlobalConsole.Error(string.Format("Error erasing file {0}: {1}", f, e));
+                        UIConsole.Error($"Error erasing file {f}: {e}");
                     }
                 });
             }
@@ -165,7 +165,7 @@ namespace OpenSatelliteProject {
                 (GenerateWaterVapour && mData.IsWaterVapourProcessed || !GenerateWaterVapour) && 
                 (GenerateOtherImages && mData.IsOtherDataProcessed || !GenerateOtherImages)
             ) {
-                UIConsole.GlobalConsole.Debug($"Group Data {idx} is done. Removing it from Organizer.");
+                UIConsole.Debug($"Group Data {idx} is done. Removing it from Organizer.");
                 organizer.RemoveGroupData(idx);   
             }
         }
@@ -186,14 +186,14 @@ namespace OpenSatelliteProject {
                             if (ImageManager.GenerateVisible && mData.Visible.IsComplete && mData.Visible.MaxSegments != 0 && !mData.IsVisibleProcessed) {
                                 string ofilename = Path.Combine(folder, GenFilename(mData.SatelliteName, mData.RegionName, "VIS", z.Key, mData.Visible.Segments[0]));
                                 if (File.Exists(ofilename)) {
-                                    UIConsole.GlobalConsole.Debug(string.Format("Skipping generating Visible for {0}. Image already exists.", Path.GetFileName(ofilename)));
+                                    UIConsole.Debug($"Skipping generating Visible for {Path.GetFileName(ofilename)}. Image already exists.");
                                     mData.IsVisibleProcessed = true;
                                 } else {
-                                    UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of Visible for {0}.", Path.GetFileName(ofilename)));
+                                    UIConsole.Debug(string.Format("Starting Generation of Visible for {0}.", Path.GetFileName(ofilename)));
                                     var bmp = ImageTools.GenerateFullImage(mData.Visible, mData.CropImage);
                                     bmp.Save(ofilename, ImageFormat.Png);
                                     bmp.Dispose();
-                                    UIConsole.GlobalConsole.Log(string.Format("New Visible Image: {0}", Path.GetFileName(ofilename)));
+                                    UIConsole.Log($"New Visible Image: {Path.GetFileName(ofilename)}");
                                 }
                                 mData.IsVisibleProcessed = true;
                                 mData.Visible.OK = true;
@@ -202,13 +202,13 @@ namespace OpenSatelliteProject {
                             if (ImageManager.GenerateInfrared && mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
                                 string ofilename = Path.Combine(folder, GenFilename(mData.SatelliteName, mData.RegionName, "IR", z.Key, mData.Infrared.Segments[0]));
                                 if (File.Exists(ofilename)) {
-                                    UIConsole.GlobalConsole.Debug(string.Format("Skipping generating Infrared for {0}. Image already exists.", Path.GetFileName(ofilename)));
+                                    UIConsole.Debug($"Skipping generating Infrared for {Path.GetFileName(ofilename)}. Image already exists.");
                                 } else {
-                                    UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of Infrared for {0}.", Path.GetFileName(ofilename)));
+                                    UIConsole.Debug($"Starting Generation of Infrared for {Path.GetFileName(ofilename)}.");
                                     var bmp = ImageTools.GenerateFullImage(mData.Infrared, mData.CropImage);
                                     bmp.Save(ofilename, ImageFormat.Png);
                                     bmp.Dispose();
-                                    UIConsole.GlobalConsole.Log(string.Format("New Infrared Image: {0}", Path.GetFileName(ofilename)));
+                                    UIConsole.Log($"New Infrared Image: {Path.GetFileName(ofilename)}");
                                 }
                                 mData.IsInfraredProcessed = true;
                                 mData.Infrared.OK = true;
@@ -217,13 +217,13 @@ namespace OpenSatelliteProject {
                             if (ImageManager.GenerateWaterVapour && mData.WaterVapour.IsComplete && mData.WaterVapour.MaxSegments != 0 && !mData.IsWaterVapourProcessed) {
                                 string ofilename = Path.Combine(folder, GenFilename(mData.SatelliteName, mData.RegionName, "WV", z.Key, mData.WaterVapour.Segments[0]));
                                 if (File.Exists(ofilename)) {
-                                    UIConsole.GlobalConsole.Debug(string.Format("Skipping generating Water Vapour for {0}. Image already exists.", Path.GetFileName(ofilename)));
+                                    UIConsole.Debug($"Skipping generating Water Vapour for {Path.GetFileName(ofilename)}. Image already exists.");
                                 } else {
-                                    UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of Water Vapour for {0}.", Path.GetFileName(ofilename)));
+                                    UIConsole.Debug($"Starting Generation of Water Vapour for {Path.GetFileName(ofilename)}.");
                                     var bmp = ImageTools.GenerateFullImage(mData.WaterVapour, mData.CropImage);
                                     bmp.Save(ofilename, ImageFormat.Png);
                                     bmp.Dispose();
-                                    UIConsole.GlobalConsole.Log(string.Format("New Water Vapour Image: {0}", Path.GetFileName(ofilename)));
+                                    UIConsole.Log($"New Water Vapour Image: {Path.GetFileName(ofilename)}");
                                 }
                                 mData.IsWaterVapourProcessed = true;
                                 mData.WaterVapour.OK = true;
@@ -233,14 +233,14 @@ namespace OpenSatelliteProject {
                                 filename = Path.Combine(folder, filename);
 
                                 if (File.Exists(filename)) {
-                                    UIConsole.GlobalConsole.Debug(string.Format("Skipping generating FLSCLR for {0}. Image already exists.", Path.GetFileName(filename)));
+                                    UIConsole.Debug($"Skipping generating FLSCLR for {Path.GetFileName(filename)}. Image already exists.");
                                 } else {
-                                    UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of FSLCR for {0}.", Path.GetFileName(filename)));
+                                    UIConsole.Debug($"Starting Generation of FSLCR for {Path.GetFileName(filename)}.");
                                     var bmp = ImageTools.GenerateFalseColor(mData);
 
                                     bmp.Save(filename, ImageFormat.Png);
                                     bmp.Dispose();
-                                    UIConsole.GlobalConsole.Log(string.Format("New False Colour Image: {0}", Path.GetFileName(filename)));
+                                    UIConsole.Log($"New False Colour Image: {Path.GetFileName(filename)}");
                                 }
                                 mData.IsFalseColorProcessed = true;
                             }
@@ -253,13 +253,13 @@ namespace OpenSatelliteProject {
                                         ofilename = Path.Combine(folder, ofilename);
 
                                         if (File.Exists(ofilename)) {
-                                            UIConsole.GlobalConsole.Debug(string.Format("Skipping generating {0}. Image already exists.", Path.GetFileName(ofilename)));
+                                            UIConsole.Debug($"Skipping generating {Path.GetFileName(ofilename)}. Image already exists.");
                                         } else {
-                                            UIConsole.GlobalConsole.Debug(string.Format("Starting Generation of {0}.", Path.GetFileName(ofilename)));
+                                            UIConsole.Debug($"Starting Generation of {Path.GetFileName(ofilename)}.");
                                             var bmp = ImageTools.GenerateFullImage(gd, false);
                                             bmp.Save(ofilename, ImageFormat.Png);
                                             bmp.Dispose();
-                                            UIConsole.GlobalConsole.Log(string.Format("New Image: {0}", Path.GetFileName(ofilename)));
+                                            UIConsole.Log($"New Image: {Path.GetFileName(ofilename)}");
                                         }
                                         gd.OK = true;
                                     } else {
@@ -285,13 +285,13 @@ namespace OpenSatelliteProject {
                                 TryEraseGroupDataFiles(z.Key, mData);
                             }
                         } catch (SystemException e) {
-                            UIConsole.GlobalConsole.Error(string.Format("Error processing image (SysExcpt) {0}: {1}", ImageName, e));                            
+                            UIConsole.Error($"Error processing image (SysExcpt) {ImageName}: {e}");                            
                             mData.RetryCount++;
                             if (mData.RetryCount == ImageManager.MaxRetryCount) {
                                 mData.IsProcessed = true;
                             }
                         } catch (Exception e) {
-                            UIConsole.GlobalConsole.Error(string.Format("Error processing image {0}: {1}", ImageName, e));
+                            UIConsole.Error($"Error processing image {ImageName}: {e}");
                             mData.RetryCount++;
                             if (mData.RetryCount == ImageManager.MaxRetryCount) {
                                 mData.IsProcessed = true;

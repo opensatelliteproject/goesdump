@@ -24,13 +24,13 @@ namespace OpenSatelliteProject.Tools {
                 File.WriteAllText(Path.Combine(folder, "deleteme.txt"), "Test, you can remove me");
                 File.Delete(Path.Combine(folder, "deleteme.txt"));
                 return true;
-            } catch (Exception e) {
+            } catch (Exception) {
                 return false;
             }
         }
 
         public static string FixPathString(string path) {
-            foreach (var c in Path.InvalidPathChars) {
+            foreach (var c in Path.GetInvalidFileNameChars()) {
                 path = path.Replace(c, '_');
             }
             return path;

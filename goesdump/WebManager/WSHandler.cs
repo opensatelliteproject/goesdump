@@ -20,12 +20,12 @@ namespace OpenSatelliteProject {
                         case "config":
                             var variable = (string)json["variable"];
                             var value = (string)json["value"];
-                            UIConsole.GlobalConsole.Debug($"Received config change request of {variable} to {value}");
+                            UIConsole.Debug($"Received config change request of {variable} to {value}");
                             EventMaster.Post("configChange", new ConfigChangeEventData() { Name = variable, Value = value });
                         break;
                         case "dirlist":
                             var path = (string)json["path"];
-                            UIConsole.GlobalConsole.Debug($"Received request for listing folder {path}");
+                            UIConsole.Debug($"Received request for listing folder {path}");
                             if (dh != null) {
                                 var list = dh.ListDir(path);
                                 var dl = new DirList(list);
@@ -35,7 +35,7 @@ namespace OpenSatelliteProject {
                     }
                 }
             } catch (Exception) {
-                UIConsole.GlobalConsole.Debug ($"Received invalid message from ws client: {d}");
+                UIConsole.Debug ($"Received invalid message from ws client: {d}");
             }
         }
 

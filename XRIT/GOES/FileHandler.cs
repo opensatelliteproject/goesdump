@@ -56,7 +56,7 @@ namespace OpenSatelliteProject {
 
         public static void DefaultHandler(string filename, XRITHeader fileHeader) {
             string dir = Path.GetDirectoryName(filename);
-            string ofilename = fileHeader.Filename == null ? Path.GetFileName(filename) : fileHeader.Filename; 
+            string ofilename = fileHeader.Filename ?? Path.GetFileName (filename); 
             string f = PacketManager.FixFileFolder(dir, ofilename, fileHeader.Product, fileHeader.SubProduct);
 
             if (
@@ -68,7 +68,7 @@ namespace OpenSatelliteProject {
                 try {
                     File.Delete(filename);
                 } catch (IOException e) {
-                    UIConsole.GlobalConsole.Error(String.Format("Error deleting file {0}: {1}", filename, e));
+                    UIConsole.Error(String.Format("Error deleting file {0}: {1}", filename, e));
                 }
                 return;
             }
@@ -82,22 +82,22 @@ namespace OpenSatelliteProject {
 
             if (!String.Equals(Path.GetFileName(f), ofilename)) {
                 if (fileHeader.SubProduct.Name != "Unknown") {
-                    UIConsole.GlobalConsole.Log(String.Format("New {0} - {1} ({2}) saved as {3}", fileHeader.Product.Name, fileHeader.SubProduct.Name, ofilename, Path.GetFileName(f)));
+                    UIConsole.Log(String.Format("New {0} - {1} ({2}) saved as {3}", fileHeader.Product.Name, fileHeader.SubProduct.Name, ofilename, Path.GetFileName(f)));
                 } else {
-                    UIConsole.GlobalConsole.Log(String.Format("New {0} ({1}) saved as {2}", fileHeader.Product.Name, ofilename, Path.GetFileName(f)));
+                    UIConsole.Log(String.Format("New {0} ({1}) saved as {2}", fileHeader.Product.Name, ofilename, Path.GetFileName(f)));
                 }
             } else {
                 if (fileHeader.SubProduct.Name != "Unknown") {
-                    UIConsole.GlobalConsole.Log(String.Format("New {0} - {1} ({2})", fileHeader.Product.Name, fileHeader.SubProduct.Name, ofilename));
+                    UIConsole.Log(String.Format("New {0} - {1} ({2})", fileHeader.Product.Name, fileHeader.SubProduct.Name, ofilename));
                 } else {
-                    UIConsole.GlobalConsole.Log(String.Format("New {0} ({1})", fileHeader.Product.Name, ofilename));
+                    UIConsole.Log(String.Format("New {0} ({1})", fileHeader.Product.Name, ofilename));
                 }
             }
 
             try {
                 File.Move(filename, f);
             } catch (IOException e) {
-                UIConsole.GlobalConsole.Error(String.Format("Error moving file {0} to {1}: {2}", filename, f, e));
+                UIConsole.Error(String.Format("Error moving file {0} to {1}: {2}", filename, f, e));
             }
         }
         

@@ -16,7 +16,7 @@ namespace OpenSatelliteProject {
 
         private static HeadlessMain main;
         internal static void RunProg() {
-            UIConsole.Init();
+            UIConsole.Log ("Starting GOES Dump");
             main = new HeadlessMain();
             main.Start();
         }
