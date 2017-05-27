@@ -30,22 +30,6 @@
     <ConsolePause>false</ConsolePause>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug Headless|x86' ">
-    <Optimize>false</Optimize>
-    <OutputPath>bin\x86\Debug Headless</OutputPath>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release Headless|x86' ">
-    <Optimize>false</Optimize>
-    <OutputPath>bin\x86\Release Headless</OutputPath>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -130,6 +114,9 @@
     <Compile Include="EventMaster\EventMaster.cs" />
     <Compile Include="EventMaster\Events\ConfigChangeEventData.cs" />
     <Compile Include="EventMaster\EventMasterData.cs" />
+    <Compile Include="Console\ConsoleMessage.cs" />
+    <Compile Include="Console\UIConsole.cs" />
+    <Compile Include="Storage\ConfigurationManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -142,6 +129,7 @@
     <Folder Include="Storage\" />
     <Folder Include="EventMaster\" />
     <Folder Include="EventMaster\Events\" />
+    <Folder Include="Console\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -4,10 +4,8 @@ using WebSocketSharp.Server;
 using System.Net;
 using System.Text;
 using System.IO;
-using System.Collections.Concurrent;
 using WebSocketSharp;
 using System.Collections.Generic;
-using System.Linq;
 using OpenSatelliteProject.Tools;
 using OpenSatelliteProject.PacketData.Enums;
 using OpenSatelliteProject.Log;
@@ -16,30 +14,28 @@ using System.Net.Sockets;
 namespace OpenSatelliteProject {
     public class HeadlessMain {
 
-        private static readonly int MAX_CACHED_MESSAGES = 10;
+        static readonly int MAX_CACHED_MESSAGES = 10;
 
-        private static ProgConfig config = new ProgConfig();
+        readonly ImageManager FDImageManager;
+        readonly ImageManager XXImageManager;
+        readonly ImageManager NHImageManager;
+        readonly ImageManager SHImageManager;
+        readonly ImageManager USImageManager;
+        readonly ImageManager FMImageManager;
 
-        private ImageManager FDImageManager;
-        private ImageManager XXImageManager;
-        private ImageManager NHImageManager;
-        private ImageManager SHImageManager;
-        private ImageManager USImageManager;
-        private ImageManager FMImageManager;
+        DirectoryHandler directoryHandler;
 
-        private DirectoryHandler directoryHandler;
+        Mutex mtx;
+        readonly Connector cn;
+        DemuxManager demuxManager;
+        Statistics_st statistics;
+        StatisticsModel stModel;
+        readonly HttpServer httpsv;
 
-        private Mutex mtx;
-        private Connector cn;
-        private DemuxManager demuxManager;
-        private Statistics_st statistics;
-        private StatisticsModel stModel;
-        private HttpServer httpsv;
+        static List<ConsoleMessage> messageList = new List<ConsoleMessage>();
+        static Mutex messageListMutex = new Mutex();
 
-        private static List<ConsoleMessage> messageList = new List<ConsoleMessage>();
-        private static Mutex messageListMutex = new Mutex();
-
-        private bool running = false;
+        bool running = false;
 
         public static List<ConsoleMessage> GetCachedMessages {
             get {
@@ -51,77 +47,99 @@ namespace OpenSatelliteProject {
             }
         }
 
+        static void ManageConfig() {
+            // Check if we need to migrate from XML
+            if (ConfigurationManager.Get ("migratedXML") == null) {
+                // We need.
+                UIConsole.GlobalConsole.Log("First run on SQLite mode. Migrating XML");
+                XMLProgConfig config = new XMLProgConfig ();
+                ProgConfig.SetConfigDefaults ();
+                ProgConfig.RecordIntermediateFile = config.RecordIntermediateFile;
+
+                ProgConfig.ChannelDataServerName = config.ChannelDataServerName;
+                ProgConfig.ChannelDataServerPort = config.ChannelDataServerPort;
+
+                ProgConfig.ConstellationServerName = config.ConstellationServerName;
+                ProgConfig.ConstellationServerPort = config.ConstellationServerPort;
+
+                ProgConfig.StatisticsServerName = config.StatisticsServerName;
+                ProgConfig.StatisticsServerPort = config.StatisticsServerPort;
+
+                ProgConfig.EnableDCS = config.EnableDCS;
+                ProgConfig.EnableEMWIN = config.EnableEMWIN;
+                ProgConfig.EnableWeatherData = config.EnableWeatherData;
+
+                ProgConfig.EraseFilesAfterGeneratingFalseColor = config.EraseFilesAfterGeneratingFalseColor;
+
+                ProgConfig.GenerateFDFalseColor = config.GenerateFDFalseColor;
+                ProgConfig.GenerateNHFalseColor = config.GenerateNHFalseColor;
+                ProgConfig.GenerateSHFalseColor = config.GenerateSHFalseColor;
+                ProgConfig.GenerateUSFalseColor = config.GenerateUSFalseColor;
+                ProgConfig.GenerateXXFalseColor = config.GenerateXXFalseColor;
+
+                ProgConfig.GenerateInfraredImages = config.GenerateInfraredImages;
+                ProgConfig.GenerateVisibleImages = config.GenerateVisibleImages;
+                ProgConfig.GenerateWaterVapourImages = config.GenerateWaterVapourImages;
+
+                ProgConfig.MaxGenerateRetry = config.MaxGenerateRetry;
+                ProgConfig.UseNOAAFormat = config.UseNOAAFormat;
+
+                ProgConfig.TemporaryFileFolder = config.TemporaryFileFolder;
+                ProgConfig.FinalFileFolder = config.FinalFileFolder;
+
+                ProgConfig.SysLogServer = config.SysLogServer;
+                ProgConfig.SysLogFacility = config.SysLogFacility;
+                ProgConfig.HTTPPort = config.HTTPPort;
+
+                ConfigurationManager.Set ("migratedXML", true);
+            } else {
+                ProgConfig.FillConfigDefaults ();
+            }
+        }
+
         public HeadlessMain() {
 
-            #region Create Config File
-            config.RecordIntermediateFile = config.RecordIntermediateFile;
-            config.ChannelDataServerName = config.ChannelDataServerName;
-            config.ChannelDataServerPort = config.ChannelDataServerPort;
-            config.ConstellationServerName = config.ConstellationServerName;
-            config.ConstellationServerPort = config.ConstellationServerPort;
-            config.StatisticsServerName = config.StatisticsServerName;
-            config.StatisticsServerPort = config.StatisticsServerPort;
-            config.EnableDCS = config.EnableDCS;
-            config.EnableEMWIN = config.EnableEMWIN;
-            config.EraseFilesAfterGeneratingFalseColor = config.EraseFilesAfterGeneratingFalseColor;
-            config.GenerateFDFalseColor = config.GenerateFDFalseColor;
-            config.GenerateNHFalseColor = config.GenerateNHFalseColor;
-            config.GenerateSHFalseColor = config.GenerateSHFalseColor;
-            config.GenerateUSFalseColor = config.GenerateUSFalseColor;
-            config.GenerateXXFalseColor = config.GenerateXXFalseColor;
-            config.HTTPPort = config.HTTPPort;
-            config.GenerateInfraredImages = config.GenerateInfraredImages;
-            config.GenerateVisibleImages = config.GenerateVisibleImages;
-            config.GenerateWaterVapourImages = config.GenerateWaterVapourImages;
-            config.MaxGenerateRetry = config.MaxGenerateRetry;
-            config.SysLogServer = config.SysLogServer;
-            config.SysLogFacility = config.SysLogFacility;
-            config.UseNOAAFormat = config.UseNOAAFormat;
-            config.EnableWeatherData = config.EnableWeatherData;
-            config.TemporaryFileFolder = config.TemporaryFileFolder;
-            config.FinalFileFolder = config.FinalFileFolder;
-            config.Save();
-            #endregion
+            ManageConfig ();
 
-            FileHandler.SkipEMWIN = !config.EnableEMWIN;
-            FileHandler.SkipDCS = !config.EnableDCS;
-            FileHandler.SkipWeatherData = !config.EnableWeatherData;
+            FileHandler.SkipEMWIN = !ProgConfig.EnableEMWIN;
+            FileHandler.SkipDCS = !ProgConfig.EnableDCS;
+            FileHandler.SkipWeatherData = !ProgConfig.EnableWeatherData;
 
-            if (config.TemporaryFileFolder != null) {
-                if (!LLTools.TestFolderAccess(config.TemporaryFileFolder)) {
-                    UIConsole.GlobalConsole.Error($"Cannot write file to Temporary Folder {config.TemporaryFileFolder}");
-                    throw new ApplicationException($"Cannot write file to Temporary Folder {config.TemporaryFileFolder}");
+            if (ProgConfig.TemporaryFileFolder != null) {
+                if (!LLTools.TestFolderAccess(ProgConfig.TemporaryFileFolder)) {
+                    UIConsole.GlobalConsole.Error($"Cannot write file to Temporary Folder {ProgConfig.TemporaryFileFolder}");
+                    throw new ApplicationException($"Cannot write file to Temporary Folder {ProgConfig.TemporaryFileFolder}");
                 }
-                FileHandler.TemporaryFileFolder = config.TemporaryFileFolder;
+                FileHandler.TemporaryFileFolder = ProgConfig.TemporaryFileFolder;
             }
 
-            if (config.FinalFileFolder != null) {
-                if (!LLTools.TestFolderAccess(config.FinalFileFolder)) {
-                    UIConsole.GlobalConsole.Error($"Cannot write file to Final Folder {config.FinalFileFolder}");
-                    throw new ApplicationException($"Cannot write file to Final Folder {config.FinalFileFolder}");
+            if (ProgConfig.FinalFileFolder != null) {
+                if (!LLTools.TestFolderAccess(ProgConfig.FinalFileFolder)) {
+                    UIConsole.GlobalConsole.Error($"Cannot write file to Final Folder {ProgConfig.FinalFileFolder}");
+                    throw new ApplicationException($"Cannot write file to Final Folder {ProgConfig.FinalFileFolder}");
                 }
-                FileHandler.FinalFileFolder = config.FinalFileFolder;
+                FileHandler.FinalFileFolder = ProgConfig.FinalFileFolder;
             }
 
-            ImageManager.EraseFiles = config.EraseFilesAfterGeneratingFalseColor;
-            ImageManager.GenerateInfrared = config.GenerateInfraredImages;
-            ImageManager.GenerateVisible = config.GenerateVisibleImages;
-            ImageManager.GenerateWaterVapour = config.GenerateWaterVapourImages;
-            ImageManager.MaxRetryCount = config.MaxGenerateRetry;
-            ImageManager.UseNOAAFileFormat = config.UseNOAAFormat;
+            ImageManager.EraseFiles = ProgConfig.EraseFilesAfterGeneratingFalseColor;
+            ImageManager.GenerateInfrared = ProgConfig.GenerateInfraredImages;
+            ImageManager.GenerateVisible = ProgConfig.GenerateVisibleImages;
+            ImageManager.GenerateWaterVapour = ProgConfig.GenerateWaterVapourImages;
+            ImageManager.MaxRetryCount = ProgConfig.MaxGenerateRetry;
+            ImageManager.UseNOAAFileFormat = ProgConfig.UseNOAAFormat;
 
-            Connector.ChannelDataServerName = config.ChannelDataServerName;
-            Connector.StatisticsServerName = config.StatisticsServerName;
-            Connector.ConstellationServerName = config.ConstellationServerName;
+            Connector.ChannelDataServerName = ProgConfig.ChannelDataServerName;
+            Connector.StatisticsServerName = ProgConfig.StatisticsServerName;
+            Connector.ConstellationServerName = ProgConfig.ConstellationServerName;
 
-            Connector.ChannelDataServerPort = config.ChannelDataServerPort;
-            Connector.StatisticsServerPort = config.StatisticsServerPort;
-            Connector.ConstellationServerPort = config.ConstellationServerPort;
+            Connector.ChannelDataServerPort = ProgConfig.ChannelDataServerPort;
+            Connector.StatisticsServerPort = ProgConfig.StatisticsServerPort;
+            Connector.ConstellationServerPort = ProgConfig.ConstellationServerPort;
 
             if (LLTools.IsLinux) {
-                SyslogClient.SysLogServerIp = config.SysLogServer;
+                SyslogClient.SysLogServerIp = ProgConfig.SysLogServer;
                 try {
-                    SyslogClient.Send(new Message(config.SysLogFacility, Level.Information, "Your syslog connection is working! OpenSatelliteProject is enabled to send logs."));
+                    SyslogClient.Send(ProgConfig.SysLogFacility, Level.Information, "Your syslog connection is working! OpenSatelliteProject is enabled to send logs.");
                 } catch (SocketException) {
                     UIConsole.GlobalConsole.Warn("Your syslog is not enabled to receive UDP request. Please refer to https://opensatelliteproject.github.io/OpenSatelliteProject/");
                 }
@@ -147,8 +165,8 @@ namespace OpenSatelliteProject {
             cn = new Connector();
 
             demuxManager = new DemuxManager();
-            demuxManager.RecordToFile = config.RecordIntermediateFile;
-            cn.StatisticsAvailable += (data) => {
+            demuxManager.RecordToFile = ProgConfig.RecordIntermediateFile;
+            cn.StatisticsAvailable += data => {
                 mtx.WaitOne();
                 statistics = data;
                 mtx.ReleaseMutex();
@@ -158,24 +176,23 @@ namespace OpenSatelliteProject {
             };
 
             cn.ChannelDataAvailable += demuxManager.parseBytes;
-            cn.ConstellationDataAvailable += (float[] data) => {
-                ConstellationModel cm = new ConstellationModel(data);
+            cn.ConstellationDataAvailable += data => {
+                var cm = new ConstellationModel (data);
                 if (httpsv.IsListening) {
-                    httpsv.WebSocketServices.Broadcast(cm.toJSON());
+                    httpsv.WebSocketServices.Broadcast (cm.toJSON ());
                 }
             };
 
             statistics = new Statistics_st();
             stModel = new StatisticsModel(statistics);
             UIConsole.GlobalConsole.Log("Headless Main Created");
-            httpsv = new HttpServer(config.HTTPPort);
+            httpsv = new HttpServer(ProgConfig.HTTPPort);
 
             httpsv.RootPath = Path.Combine(".", "web");
             httpsv.OnGet += HandleHTTPGet;
             httpsv.AddWebSocketService("/mainws", () => new WSHandler {
                 dh = directoryHandler
             });
-            var x = httpsv.WebSocketServices ["/mainws"];
 
             UIConsole.GlobalConsole.MessageAvailable += (data) => {
                 ConsoleModel cm = new ConsoleModel(data.Priority.ToString(), data.Message);
@@ -214,7 +231,7 @@ namespace OpenSatelliteProject {
             var content = httpsv.GetFile(path);
             if (content == null) {
                 res.StatusCode = (int)HttpStatusCode.NotFound;
-                string res404 = "File not found";
+                const string res404 = "File not found";
                 res.WriteContent(Encoding.UTF8.GetBytes(res404));
                 return;
             }
