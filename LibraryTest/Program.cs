@@ -6,10 +6,28 @@ using System.Drawing.Imaging;
 using System.IO;
 using OpenSatelliteProject.PacketData.Enums;
 using System.Threading;
+using System.Data.SQLite;
 
 namespace LibraryTest {
     class MainClass {
         public static void Main (string[] args) {
+            var db = new Database ("test.sqlite");
+            db ["hue"] = "a";
+            Console.WriteLine ($"HUE VALUE: {db["hue"]}");
+            db ["hue"] = "b";
+            Console.WriteLine ($"HUE VALUE: {db["hue"]}");
+            db ["hue"] = "c";
+            Console.WriteLine ($"HUE VALUE: {db["hue"]}");
+            db.Close ();
+
+            EventMaster.Master.On("a", (data) => {
+                var d = (string) data.Data;
+                Console.WriteLine("Received event a " + d);
+            });
+
+            EventMaster.Master.Post(new EventMasterData("a", "b")); 
+
+            /*
             //Organizer org = new Organizer("./himawari");
             //org.Update();
             //var gd = org.GroupData[1490489400];
@@ -92,7 +110,7 @@ namespace LibraryTest {
 			test1.Dispose();
 			overlay.Dispose();
 			*/
-
+            /*
             //string dcsFile = "/home/lucas/Works/OpenSatelliteProject/split/goesdump/XRITLibraryTest/bin/Debug/channels/DCS/pM-17085003239-A.dcs";
             //List<DCSHeader> d = DCSParser.parseDCS(dcsFile);
             //*
@@ -123,7 +141,7 @@ namespace LibraryTest {
             im4.Start ();
             im5.Start ();
             //*/
-            //*
+            /*
             DemuxManager dm = new DemuxManager ();
             FileHandler.SkipDCS = true;
             FileHandler.SkipEMWIN = true;

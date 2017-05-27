@@ -67,6 +67,10 @@ namespace OpenSatelliteProject.Tools {
             return dtDateTime;
         }
 
+        public static int DateTimeToTimestamp(DateTime datetime) {
+            return (Int32)(datetime.Subtract (new DateTime (1970, 1, 1))).TotalSeconds;
+        }
+
         public static int Timestamp() {
             return (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
         }

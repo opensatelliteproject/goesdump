@@ -21,6 +21,70 @@ namespace OpenSatelliteProject {
             this.BasePath = basePath;
         }
 
+        public List<DHInfo> ListDir(string path) {
+            var upperPath = "";
+            if (path.StartsWith("/")) {
+                path = path.Substring(1);
+            }
+
+            if (path.Length > 0) {
+                var tmp = !path.EndsWith("/") ? path + "/" : path;
+                upperPath = Path.Combine(BasePath, Path.GetDirectoryName(Path.GetDirectoryName(tmp)));
+            }
+
+            var folder = Path.Combine(dataFolder, path);
+
+            if (folder.Contains("../")) {
+                folder.Replace("../", "");
+            }
+
+            if (Directory.Exists (folder)) {
+                List<DHInfo> dhList = new List<DHInfo> ();
+                List<string> files = Directory.GetFiles(folder).Where(x => !x.EndsWith(".lrit")).OrderBy(a => a).ToList();
+                List<string> dirs = Directory.GetDirectories(folder).OrderBy(a => a).ToList();
+
+                if (upperPath.Length > 0) {
+                    dhList.Add (new DHInfo {
+                        IsFile = false,
+                        Name = "..",
+                        Path = upperPath,
+                        LastModified = -1,
+                        Size = -1
+                    });
+                }
+
+                foreach (var file in dirs) {
+                    var name = Path.GetFileName(file);
+                    var time = Directory.GetLastWriteTime(file);
+                    dhList.Add (new DHInfo {
+                        IsFile = false,
+                        Name = name,
+                        Path = Path.Combine(path, name),
+                        LastModified = LLTools.DateTimeToTimestamp(time),
+                        Size = -1
+                    });
+                }
+
+                foreach (var file in files) {
+                    var name = Path.GetFileName(file);
+                    var time = File.GetLastWriteTime(file);
+                    var size = new System.IO.FileInfo(file).Length;
+
+                    dhList.Add (new DHInfo {
+                        IsFile = true,
+                        Name = name,
+                        Path = Path.Combine(path, name),
+                        LastModified = LLTools.DateTimeToTimestamp(time),
+                        Size = size
+                    });
+                }
+
+                return dhList;
+            } else {
+                return null;
+            }
+        }
+
         public void HandleAccess(HttpServer server, HttpRequestEventArgs e) {
             var req = e.Request;
             var res = e.Response;

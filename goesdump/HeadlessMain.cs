@@ -172,13 +172,15 @@ namespace OpenSatelliteProject {
 
             httpsv.RootPath = Path.Combine(".", "web");
             httpsv.OnGet += HandleHTTPGet;
-
-            httpsv.AddWebSocketService<WSHandler>("/mainws");
+            httpsv.AddWebSocketService("/mainws", () => new WSHandler {
+                dh = directoryHandler
+            });
+            var x = httpsv.WebSocketServices ["/mainws"];
 
             UIConsole.GlobalConsole.MessageAvailable += (data) => {
                 ConsoleModel cm = new ConsoleModel(data.Priority.ToString(), data.Message);
                 if (httpsv.IsListening) {
-                    httpsv.WebSocketServices["/mainws"].Sessions.Broadcast(cm.toJSON());
+                    //httpsv.WebSocketServices["/mainws"].Sessions.Broadcast(cm.toJSON());
                 }
 
                 messageListMutex.WaitOne();

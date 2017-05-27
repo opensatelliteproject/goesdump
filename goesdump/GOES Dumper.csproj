@@ -110,6 +110,8 @@
     <Compile Include="WebManager\DirectoryHandler.cs" />
     <Compile Include="Models\ProgConfig.cs" />
     <Compile Include="GoesDecoder\EMWIN.cs" />
+    <Compile Include="WebManager\DHInfo.cs" />
+    <Compile Include="Models\DirList.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
