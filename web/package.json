@@ -23,12 +23,15 @@
     "react-tooltip": "^3.3.0"
   },
   "devDependencies": {
+    "electron": "^1.6.10",
     "react-scripts": "1.0.6"
   },
+  "main": "electron-starter.js",
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && cp src/electron-starter.js build/",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "elec": "./node_modules/.bin/electron ."
   }
 }
