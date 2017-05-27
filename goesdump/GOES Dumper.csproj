@@ -49,28 +49,19 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GoesDecoder\Statistics.cs" />
     <Compile Include="GoesDecoder\Connector.cs" />
-    <Compile Include="ChannelDecoder\Demuxer.cs" />
-    <Compile Include="ChannelDecoder\DemuxManager.cs" />
-    <Compile Include="GoesDecoder\PacketManager.cs" />
-    <Compile Include="GoesDecoder\FileHandler.cs" />
     <Compile Include="HeadlessMain.cs" />
     <Compile Include="WebManager\WSHandler.cs" />
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\StatisticsModel.cs" />
     <Compile Include="Models\ConsoleModel.cs" />
     <Compile Include="Models\ConstellationModel.cs" />
-    <Compile Include="GoesDecoder\ImageManager.cs" />
     <Compile Include="WebManager\DirectoryHandler.cs" />
-    <Compile Include="GoesDecoder\EMWIN.cs" />
     <Compile Include="WebManager\DHInfo.cs" />
     <Compile Include="Models\DirList.cs" />
     <Compile Include="Models\XMLProgConfig.cs" />
@@ -91,7 +82,6 @@
   <ItemGroup />
   <ItemGroup>
     <Folder Include="GoesDecoder\" />
-    <Folder Include="ChannelDecoder\" />
     <Folder Include="WebManager\" />
     <Folder Include="Models\" />
   </ItemGroup>

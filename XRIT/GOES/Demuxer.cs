@@ -27,7 +27,7 @@ namespace OpenSatelliteProject {
         private byte[] buffer;
         private DemuxManager manager;
         private MSDU lastMSDU;
-       
+
 
         public int CRCFails { get; set; }
         public int Bugs { get; set; }
