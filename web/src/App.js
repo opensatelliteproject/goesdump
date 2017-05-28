@@ -2,9 +2,7 @@ import React, { Component } from 'react';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import { Route, BrowserRouter, Link } from 'react-router-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Badge from 'material-ui/Badge';
 import {
-  AppBar,
   Drawer,
   MenuItem,
   Paper,
@@ -14,15 +12,16 @@ import DashBoardIcon from 'react-material-icons/icons/action/dashboard';
 import ChartsIcon from 'react-material-icons/icons/device/data-usage';
 import ConsoleIcon from 'react-material-icons/icons/hardware/computer';
 import ExplorerIcon from 'react-material-icons/icons/file/folder';
+import ConfigurationsIcon from 'react-material-icons/icons/action/settings';
 
-import atom from './atom.svg';
 import './App.css';
 import Charts from './Controllers/Charts';
 import Dashboard from './Controllers/Dashboard';
 import Console from './Controllers/Console';
 import Explorer from './Controllers/Explorer';
-import BarElementRight from './Components/BarElementRight';
+import Configuration from './Controllers/Configuration';
 import OSPConnector from './OSP/Connector';
+import TopBar from './Components/TopBar';
 
 injectTapEventPlugin();
 //const serverUrl = "http://" + window.location.host;
@@ -36,15 +35,9 @@ class App extends Component {
     super(props);
     this.state = {
       sideMenuOpen: false,
-      consoleNotifications: 0,
-      chartsNotifications: 0,
-      dashboardNotifications: 0,
       title: 'Dashboard',
     };
 
-    this.notifyCharts = this.notifyCharts.bind(this);
-    this.notifyConsole = this.notifyConsole.bind(this);
-    this.notifyDashboard = this.notifyDashboard.bind(this);
     this.setTitle = this.setTitle.bind(this);
     this.getMessageCache = this.getMessageCache.bind(this);
 
@@ -52,10 +45,6 @@ class App extends Component {
 
     conn.on('consoleMessage', ([ level, message ]) => {
       const currentPath = this.refs.router.history.location.pathname;
-      if ((level === 'ERROR' || level === 'WARN') && currentPath !== '/console') {
-        this.notifyConsole();
-      }
-
       if (currentPath !== '/console') {
         this._messageCacheUpdate(level, message);
       }
@@ -64,7 +53,6 @@ class App extends Component {
 
   _messageCacheUpdate(level, message) {
     const now = new Date();
-    let logFunc;
     let textColor;
 
     if (this.messageCache.length > MAXLINES) {
@@ -74,29 +62,18 @@ class App extends Component {
     switch(level) {
       case "INFO":
         textColor = "blue";
-        logFunc = console.log;
         break;
       case "WARN":
         textColor = "yellow";
-        if (console.hasOwnProperty("warn")) {
-          logFunc = console.warn;
-        }
         break;
       case "ERROR":
         textColor = "red";
-        if (console.hasOwnProperty("error")) {
-          logFunc = console.error;
-        }
         break;
       case "DEBUG":
         textColor = "brown";
-        if (console.hasOwnProperty("debug")) {
-          logFunc = console.debug;
-        }
         break;
       default:
         textColor = "blue";
-        logFunc = console.log;
         break;
     }
 
@@ -110,61 +87,22 @@ class App extends Component {
     return this.messageCache;
   }
 
-  notifyConsole() {
-    this.setState({ consoleNotifications: this.state.consoleNotifications + 1 });
-  }
-
-  notifyDashboard() {
-    this.setState({ dashboardNotifications: this.state.dashboardNotifications + 1 });
-  }
-
-  notifyCharts() {
-    this.setState({ chartsNotifications: this.state.chartsNotifications + 1 });
-  }
-
-  clearConsoleNotification() {
-    this.setState({ consoleNotifications: 0 });
-  }
-
-  clearDashboardNotification() {
-    this.setState({ dashboardNotifications: 0 });
-  }
-
-  clearChartsNotification() {
-    this.setState({ chartsNotifications: 0 });
-  }
-
-  setTitle(title) {
-    this.setState({ title });
-  }
-
+  setTitle = (title) => this.setState({ title });
   handleToggle = () => this.setState({ sideMenuOpen: !this.state.sideMenuOpen });
   closeDrawer = () => this.setState({ sideMenuOpen: false });
 
+  clearConsoleNotification = () => this.refs.topBar.clearConsoleNotification();
+  clearChartsNotification = () => this.refs.topBar.clearChartsNotification();
+  clearDashboardNotification = () => this.refs.topBar.clearDashboardNotification();
+
   render() {
-    const totalNotifications = this.state.consoleNotifications + this.state.chartsNotifications + this.state.dashboardNotifications;
     return (
       <MuiThemeProvider>
         <div>
           <BrowserRouter ref="router">
             <div>
               <div id="pageHeader">
-                <AppBar
-                  title={<span className="clickable">Open Satellite Project - {this.state.title}</span>}
-                  onLeftIconButtonTouchTap={this.handleToggle}
-                  onTitleTouchTap={this.handleToggle}
-                  iconElementLeft={
-                    <Badge
-                      badgeContent={totalNotifications}
-                      secondary={true}
-                      badgeStyle={{top: 0, right: 0,  display: totalNotifications > 0 ? 'flex' : 'none'}}
-                      style={{height: 60, padding: '0 0 0 0', marginRight: 20, top: 0 }}
-                    >
-                      <img src={atom} className="drawer-icon" width={64} height={64} />
-                    </Badge>
-                  }
-                  iconElementRight={<BarElementRight ospConn={conn}/>}
-                />
+                <TopBar ref="topBar" ospConn={conn} title={this.state.title} router={this.refs.router} toggleDrawer={this.handleToggle}/>
                 <Drawer
                   open={this.state.sideMenuOpen}
                   docked={false}
@@ -172,7 +110,7 @@ class App extends Component {
                 >
                   <div style={{display: 'flex', flexDirection: 'column'}}>
                     <Paper style={{display: 'flex', justifyContent: 'center', paddingTop: 25, paddingBottom: 25}} zDepth={1}>
-                      <img src="/android-icon-72x72.png"/>
+                      <img src="/android-icon-72x72.png" alt="OSP Logo"/>
                     </Paper>
                     <Link to="/" style={{ textDecoration: 'none' }}>
                       <MenuItem onTouchTap={() => { this.closeDrawer(); this.clearDashboardNotification(); }}><DashBoardIcon className="menu-icon"/>Dashboard</MenuItem>
@@ -186,9 +124,12 @@ class App extends Component {
                     <Link to="/explorer">
                       <MenuItem onTouchTap={() => { this.closeDrawer(); }}><ExplorerIcon className="menu-icon"/>Explorer</MenuItem>
                     </Link>
+                    <Link to="/config">
+                      <MenuItem onTouchTap={() => { this.closeDrawer(); }}><ConfigurationsIcon className="menu-icon"/>Configurations</MenuItem>
+                    </Link>
                     <div className="footer">
-                      Made by <a target="_blank" href="https://github.com/racerxdl">Lucas Teske</a><br/>
-                      Available at: <a target="_blank" href="https://github.com/opensatelliteproject/">Github</a>
+                      Made by <a target="_blank" rel="noopener noreferrer" href="https://github.com/racerxdl">Lucas Teske</a><br/>
+                      Available at: <a target="_blank" rel="noopener noreferrer" href="https://github.com/opensatelliteproject/">Github</a>
                     </div>
                   </div>
                 </Drawer>
@@ -201,6 +142,7 @@ class App extends Component {
                   <Route path="/console" render={(props) => { return <Console setTitle={this.setTitle} notify={this.notifyConsole} messageCache={this.getMessageCache} ospConn={conn} {...props} /> }}/>
                   <Route exact path="/explorer" render={(props) => { return <Explorer setTitle={this.setTitle} ospConn={conn} {...props} /> }}/>
                   <Route path="/explorer/:folder" render={(props) => { return <Explorer serverUrl={serverUrl} setTitle={this.setTitle} ospConn={conn} {...props} /> }}/>
+                  <Route path="/config" render={(props) => { return <Configuration serverUrl={serverUrl} setTitle={this.setTitle} ospConn={conn} {...props} /> }}/>
                 </switch>
               </div>
             </div>

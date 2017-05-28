@@ -32,6 +32,16 @@ namespace OpenSatelliteProject {
                                 Send(dl.toJSON());
                             }
                         break;
+                        case "configList":
+                            var configList = ProgConfig.GetConfig();
+                            UIConsole.Debug("Received request for listing config.");
+                            try {                               
+                                var cl = new ConfigEntryModel(configList);
+                                Send(cl.toJSON());
+                            } catch (Exception ex) {
+                                UIConsole.Error($"Error serializing configList: {ex}");
+                            }
+                            break;
                     }
                 }
             } catch (Exception) {

@@ -86,17 +86,17 @@ class BarElementRight extends Component {
   }
 
   render() {
-    let signalLevel = [<Wifi0Icon style={iconStyle}/>];
+    let signalLevel = [<Wifi0Icon key="signalLevel" style={iconStyle}/>];
     const signal = this.state.signalQuality;
 
     if (signal > 90) {
-      signalLevel = [<Wifi4Icon style={iconStyle}/>];
+      signalLevel = [<Wifi4Icon key="signalLevel" style={iconStyle}/>];
     } else if (signal > 70) {
-      signalLevel = [<Wifi3Icon style={iconStyle}/>];
+      signalLevel = [<Wifi3Icon key="signalLevel" style={iconStyle}/>];
     } else if (signal > 50) {
-      signalLevel = [<Wifi2Icon style={iconStyle}/>];
+      signalLevel = [<Wifi2Icon key="signalLevel" style={iconStyle}/>];
     } else if (signal > 40) {
-      signalLevel = [<Wifi1Icon style={iconStyle}/>];
+      signalLevel = [<Wifi1Icon key="signalLevel" style={iconStyle}/>];
     }
 
     return (
@@ -107,17 +107,17 @@ class BarElementRight extends Component {
           </p>
           <p data-tip data-for="frameLockStatus">
           {
-            this.state.frameLock ? (<GPSFixed style={iconStyle}/>) : (<GPSNotFixed style={iconStyle}/>)
+            this.state.frameLock ? (<GPSFixed key="frameLockStatus" style={iconStyle}/>) : (<GPSNotFixed key="frameLockStatus" style={iconStyle}/>)
           }
           </p>
           <p data-tip data-for="websocketStatus">
           {
-            this.state.websocket ? (<WifiTethering style={iconStyle}/>) : (<PortableWifiOff style={iconStyle}/>)
+            this.state.websocket ? (<WifiTethering key="websocketStatus" style={iconStyle}/>) : (<PortableWifiOff key="websocketStatus" style={iconStyle}/>)
           }
           </p>
           <p data-tip data-for="syncIcon">
           {
-            this.state.loading ? (<Cached className="rotation-fast"/>) : (<Cached/>)
+            this.state.loading ? (<Cached key="loadingStatus" className="rotation-fast"/>) : (<Cached key="loadingStatus"/>)
           }
           </p>
           <ReactTooltip id='signalQuality' aria-haspopup='true' place="bottom">

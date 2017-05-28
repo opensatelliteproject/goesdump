@@ -8,7 +8,7 @@
     <RootNamespace>OpenSatelliteProject</RootNamespace>
     <AssemblyName>XRIT</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <ReleaseVersion>1.0.3</ReleaseVersion>
+    <ReleaseVersion>1.1.0</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -126,6 +126,7 @@
     <Compile Include="GOES\ImageManager.cs" />
     <Compile Include="GOES\EMWIN.cs" />
     <Compile Include="GOES\FileHandler.cs" />
+    <Compile Include="Models\ConfigDescription.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

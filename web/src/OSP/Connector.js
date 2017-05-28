@@ -45,6 +45,12 @@ export default class OSPConnector extends EventEmitter {
         case "dirlist":
           this.handleDirList(data);
           break;
+        case "configList":
+          this.handleConfigList(data);
+          break;
+        default:
+          console.log(`OSPConnector -- Unknown DataType: ${data.DataType}`);
+          break;
       }
     } catch (e) {
       console.log(`OSPConnector -- Error parsing message: ${e}`);
@@ -82,6 +88,11 @@ export default class OSPConnector extends EventEmitter {
     this.emit('dirList', data.Listing);
   }
 
+  handleConfigList(data) {
+    this.emit('loadStatus', false);
+    this.emit('configList', data.Configuration);
+  }
+
   listDir(path) {
     console.log(`List dir path: ${path}`);
     this.emit('loadStatus', true);
@@ -89,6 +100,12 @@ export default class OSPConnector extends EventEmitter {
       type: 'dirlist',
       path,
     }));
+  }
+
+  listConfig() {
+    console.log('List config');
+    this.emit('loadStatus', true);
+    this.ws.send(JSON.stringify({ type: 'configList' }));
   }
 
   on(...args) {

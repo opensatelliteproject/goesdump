@@ -120,6 +120,9 @@ class Dashboard extends Component {
       case "red":
         colorClass = "led-red";
         break;
+      default:
+        colorClass = "led-blue";
+        break;
     }
 
     return colorClass;

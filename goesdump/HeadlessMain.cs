@@ -97,10 +97,8 @@ namespace OpenSatelliteProject {
             }
         }
 
-        public HeadlessMain() {
-
-            ManageConfig ();
-
+        void SetConfigVars() {
+            UIConsole.Log ("Setting Configuration");
             FileHandler.SkipEMWIN = !ProgConfig.EnableEMWIN;
             FileHandler.SkipDCS = !ProgConfig.EnableDCS;
             FileHandler.SkipWeatherData = !ProgConfig.EnableWeatherData;
@@ -144,6 +142,20 @@ namespace OpenSatelliteProject {
                     UIConsole.Warn("Your syslog is not enabled to receive UDP request. Please refer to https://opensatelliteproject.github.io/OpenSatelliteProject/");
                 }
             }
+        }
+
+        public HeadlessMain() {
+
+            ManageConfig ();
+
+            EventMaster.On("configChanged", d => {
+                var data = (ConfigChangeEventData)d.Data;
+                ProgConfig.UpdateProperty(data.Name, data.Value);
+                EventMaster.Post("configSaved", data.Name);
+                SetConfigVars();
+            });
+
+            SetConfigVars ();
 
             string fdFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_FULLDISK);
             string xxFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST);

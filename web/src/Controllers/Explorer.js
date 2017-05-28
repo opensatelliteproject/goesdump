@@ -84,12 +84,12 @@ class Explorer extends Component {
       const entry = this.state.data[i];
       files.push(
         <tr key={`${i}-${entry.Path}`}>
-          <td><img src={entry.IsFile ? "/file.gif" : "/folder.gif"}/></td>
+          <td><img alt={entry.IsFile ? "File Icon" : "Folder Icon"} src={entry.IsFile ? "/file.gif" : "/folder.gif"}/></td>
           <td>
             {
               !entry.IsFile ?
                 (<Link to={`/explorer/${entry.Path}`} onClick={() => { this.switchFolder(`/${entry.Path}`)}}>{entry.Name}</Link>) :
-                (<a target="_blank" href={`${this.props.serverUrl}/data/${entry.Path}`}>{entry.Name}</a>)
+                (<a target="_blank" rel="noopener noreferrer" href={`${this.props.serverUrl}/data/${entry.Path}`}>{entry.Name}</a>)
             }
           </td>
           <td>{entry.LastModified !== -1 ? moment(entry.LastModified*1000).toString() : '-'}</td>
@@ -104,7 +104,7 @@ class Explorer extends Component {
             <thead>
             <tr>
               <th>
-                <img src="/blank.gif"/>
+                <img src="/blank.gif" alt="Blank Icon"/>
               </th>
               <th style={{textAlign: 'left', minWidth: 200}}>Name</th>
               <th style={{textAlign: 'left'}}>Last modified</th>

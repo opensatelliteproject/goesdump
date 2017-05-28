@@ -36,6 +36,7 @@ Global
 		$2.inheritsScope = text/plain
 		$2.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $3
+		$3.IndentSwitchBody = True
 		$3.NamespaceBraceStyle = EndOfLine
 		$3.ClassBraceStyle = EndOfLine
 		$3.InterfaceBraceStyle = EndOfLine
@@ -196,6 +197,6 @@ Global
 		$32.NamingStyle = PascalCase
 		$32.IncludeInstanceMembers = True
 		$32.IncludeStaticEntities = True
-		version = 1.0.3
+		version = 1.1.0
 	EndGlobalSection
 EndGlobal

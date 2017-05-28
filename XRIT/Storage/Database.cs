@@ -76,7 +76,7 @@ namespace OpenSatelliteProject {
         }
 
         public bool GetBool(string key) {
-            return this[key] == "true";
+            return this[key].ToLower() == "true";
         }
 
         public float GetFloat(string key) {
