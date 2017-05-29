@@ -32,7 +32,6 @@ namespace OpenSatelliteProject {
                     }
                     statistics.Clear ();
                     lastCheck = LLTools.Timestamp ();
-                    Console.WriteLine($"Save time {LLTools.TimestampMS() - startTime} ms");
                 }
             }
         }
