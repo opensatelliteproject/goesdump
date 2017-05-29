@@ -24,8 +24,8 @@ import OSPConnector from './OSP/Connector';
 import TopBar from './Components/TopBar';
 
 injectTapEventPlugin();
-//const serverUrl = "http://" + window.location.host;
-const serverUrl = 'http://localhost:8090';
+const serverUrl = "http://" + window.location.host;
+//const serverUrl = 'http://localhost:8090';
 const conn = new OSPConnector(serverUrl);
 const MAXLINES = 15;
 

@@ -249,8 +249,13 @@ namespace OpenSatelliteProject {
             var res = e.Response;
 
             var path = req.RawUrl;
-            if (path == "/")
+            if (path.Contains ("?")) {
+                path = path.Split(new char [] {'?'}, 2)[0];
+            }
+
+            if (path == "/") {
                 path += "index.html";
+            }
 
             if (path.StartsWith(directoryHandler.BasePath)) {
                 try {
@@ -271,13 +276,13 @@ namespace OpenSatelliteProject {
                 return;
             }
 
-            if (path.EndsWith(".html")) {
-                res.ContentType = "text/html";
+            if (path.EndsWith (".html")) {
                 res.ContentEncoding = Encoding.UTF8;
-            } else if (path.EndsWith(".js")) {
-                res.ContentType = "application/javascript";
+            } else if (path.EndsWith (".js")) {
                 res.ContentEncoding = Encoding.UTF8;
             }
+
+            res.ContentType = MimeTypes.GetMimeType (Path.GetExtension(path));
 
             res.WriteContent(content);
         }
