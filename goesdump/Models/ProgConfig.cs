@@ -368,7 +368,7 @@ namespace OpenSatelliteProject {
                         break;
                     case "bool":
                     case "boolean":
-                        prop.SetValue (null, value == "true");
+                        prop.SetValue (null, value.ToLower() == "true");
                         break;
                     case "int":
                     case "int32":

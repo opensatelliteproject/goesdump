@@ -148,7 +148,7 @@ namespace OpenSatelliteProject {
 
             ManageConfig ();
 
-            EventMaster.On("configChanged", d => {
+            EventMaster.On("configChange", d => {
                 var data = (ConfigChangeEventData)d.Data;
                 ProgConfig.UpdateProperty(data.Name, data.Value);
                 EventMaster.Post("configSaved", data.Name);

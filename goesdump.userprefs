@@ -1,11 +1,13 @@
 ﻿<Properties StartupItem="goesdump/GOES Dumper.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/WebManager/WSHandler.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/Models/ProgConfig.cs">
     <Files>
-      <File FileName="goesdump/HeadlessMain.cs" Line="154" Column="60" />
-      <File FileName="goesdump/Models/ProgConfig.cs" Line="66" Column="62" />
+      <File FileName="goesdump/HeadlessMain.cs" Line="1" Column="1" />
+      <File FileName="goesdump/Models/ProgConfig.cs" Line="420" Column="1" />
       <File FileName="goesdump/WebManager/WSHandler.cs" Line="19" Column="36" />
-      <File FileName="goesdump/Models/ConsoleModel.cs" Line="7" Column="1" />
+      <File FileName="goesdump/Models/ConsoleModel.cs" Line="1" Column="1" />
+      <File FileName="XRIT/Storage/ConfigurationManager.cs" Line="41" Column="50" />
+      <File FileName="XRIT/Storage/Database.cs" Line="79" Column="39" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

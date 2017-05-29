@@ -82,6 +82,9 @@ class Configuration extends Component {
     const id = event.target.id;
     console.log(`Property ${id} changed to ${value}`);
     this.cache[id] = value;
+    if (typeof value === 'boolean') {
+      this.props.ospConn.updateConfig(id, value);
+    }
   }
 
   onSaveClick(field) {
@@ -90,6 +93,7 @@ class Configuration extends Component {
       console.log(`Field ${field} not changed.`);
     } else {
       console.log(`Saving ${field}: ${val}`);
+      this.props.ospConn.updateConfig(field, val.toString());
     }
   }
 

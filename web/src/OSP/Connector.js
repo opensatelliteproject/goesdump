@@ -108,6 +108,10 @@ export default class OSPConnector extends EventEmitter {
     this.ws.send(JSON.stringify({ type: 'configList' }));
   }
 
+  updateConfig(name, value) {
+    this.ws.send(JSON.stringify({ type: 'config', variable: name, value }));
+  }
+
   on(...args) {
     this.addListener(...args);
   }
