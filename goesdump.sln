@@ -11,32 +11,18 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
 		Release|x86 = Release|x86
-		Debug Headless|x86 = Debug Headless|x86
-		Release Headless|x86 = Release Headless|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{31BC62BD-1EE9-4B14-A931-19C572126A51}.Debug Headless|x86.ActiveCfg = Debug Headless|x86
-		{31BC62BD-1EE9-4B14-A931-19C572126A51}.Debug Headless|x86.Build.0 = Debug Headless|x86
 		{31BC62BD-1EE9-4B14-A931-19C572126A51}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{31BC62BD-1EE9-4B14-A931-19C572126A51}.Debug|x86.Build.0 = Debug|Any CPU
-		{31BC62BD-1EE9-4B14-A931-19C572126A51}.Release Headless|x86.ActiveCfg = Release Headless|x86
-		{31BC62BD-1EE9-4B14-A931-19C572126A51}.Release Headless|x86.Build.0 = Release Headless|x86
 		{31BC62BD-1EE9-4B14-A931-19C572126A51}.Release|x86.ActiveCfg = Release|Any CPU
 		{31BC62BD-1EE9-4B14-A931-19C572126A51}.Release|x86.Build.0 = Release|Any CPU
-		{7692605F-AC81-4688-A7D2-F8B5C4E0C397}.Debug Headless|x86.ActiveCfg = Debug|x86
-		{7692605F-AC81-4688-A7D2-F8B5C4E0C397}.Debug Headless|x86.Build.0 = Debug|x86
 		{7692605F-AC81-4688-A7D2-F8B5C4E0C397}.Debug|x86.ActiveCfg = Debug|x86
 		{7692605F-AC81-4688-A7D2-F8B5C4E0C397}.Debug|x86.Build.0 = Debug|x86
-		{7692605F-AC81-4688-A7D2-F8B5C4E0C397}.Release Headless|x86.ActiveCfg = Release|x86
-		{7692605F-AC81-4688-A7D2-F8B5C4E0C397}.Release Headless|x86.Build.0 = Release|x86
 		{7692605F-AC81-4688-A7D2-F8B5C4E0C397}.Release|x86.ActiveCfg = Release|x86
 		{7692605F-AC81-4688-A7D2-F8B5C4E0C397}.Release|x86.Build.0 = Release|x86
-		{E1B44542-24FF-409C-A2A3-237A00A8520D}.Debug Headless|x86.ActiveCfg = Debug Headless|x86
-		{E1B44542-24FF-409C-A2A3-237A00A8520D}.Debug Headless|x86.Build.0 = Debug Headless|x86
 		{E1B44542-24FF-409C-A2A3-237A00A8520D}.Debug|x86.ActiveCfg = Debug|x86
 		{E1B44542-24FF-409C-A2A3-237A00A8520D}.Debug|x86.Build.0 = Debug|x86
-		{E1B44542-24FF-409C-A2A3-237A00A8520D}.Release Headless|x86.ActiveCfg = Release Headless|x86
-		{E1B44542-24FF-409C-A2A3-237A00A8520D}.Release Headless|x86.Build.0 = Release Headless|x86
 		{E1B44542-24FF-409C-A2A3-237A00A8520D}.Release|x86.ActiveCfg = Release|x86
 		{E1B44542-24FF-409C-A2A3-237A00A8520D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
@@ -50,6 +36,7 @@ Global
 		$2.inheritsScope = text/plain
 		$2.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $3
+		$3.IndentSwitchBody = True
 		$3.NamespaceBraceStyle = EndOfLine
 		$3.ClassBraceStyle = EndOfLine
 		$3.InterfaceBraceStyle = EndOfLine
@@ -210,6 +197,6 @@ Global
 		$32.NamingStyle = PascalCase
 		$32.IncludeInstanceMembers = True
 		$32.IncludeStaticEntities = True
-		version = 1.0.3
+		version = 1.1.0
 	EndGlobalSection
 EndGlobal

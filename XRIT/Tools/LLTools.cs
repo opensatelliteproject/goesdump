@@ -24,13 +24,13 @@ namespace OpenSatelliteProject.Tools {
                 File.WriteAllText(Path.Combine(folder, "deleteme.txt"), "Test, you can remove me");
                 File.Delete(Path.Combine(folder, "deleteme.txt"));
                 return true;
-            } catch (Exception e) {
+            } catch (Exception) {
                 return false;
             }
         }
 
         public static string FixPathString(string path) {
-            foreach (var c in Path.InvalidPathChars) {
+            foreach (var c in Path.GetInvalidFileNameChars()) {
                 path = path.Replace(c, '_');
             }
             return path;
@@ -67,8 +67,15 @@ namespace OpenSatelliteProject.Tools {
             return dtDateTime;
         }
 
+        public static int DateTimeToTimestamp(DateTime datetime) {
+            return (Int32)(datetime.Subtract (new DateTime (1970, 1, 1))).TotalSeconds;
+        }
+
         public static int Timestamp() {
             return (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+        }
+        public static long TimestampMS() {
+            return (Int64)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
         }
 
         public static List<T> Clone<T>(this List<T> listToClone) where T: ICloneable {

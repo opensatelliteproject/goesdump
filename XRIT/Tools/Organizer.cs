@@ -9,12 +9,12 @@ using System.Text.RegularExpressions;
 
 namespace OpenSatelliteProject {
     public class Organizer {
-        private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        private Dictionary<int, GroupData> groupData;
-        private List<string> alreadyProcessed;
+        readonly Dictionary<int, GroupData> groupData;
+        readonly List<string> alreadyProcessed;
 
-        private string folder;
+        readonly string folder;
 
         public Dictionary<int, GroupData> GroupData { get { return groupData; } }
 
@@ -138,11 +138,7 @@ namespace OpenSatelliteProject {
                                 }
                                 break;
                             case 3: // Water Vapour
-                                if (satellite == "HIMAWARI8") {
-                                    od = grp.Infrared;
-                                } else {
-                                    od = grp.WaterVapour;
-                                }
+                                od = satellite == "HIMAWARI8" ? grp.Infrared : grp.WaterVapour;
                                 break;
                             case 4: // Infrared
                                 od = grp.Infrared;
@@ -178,22 +174,18 @@ namespace OpenSatelliteProject {
                             od.Lines = header.ImageStructureHeader.Lines;
                             od.PixelAspect = header.ImageNavigationHeader.ColumnScalingFactor / (float)header.ImageNavigationHeader.LineScalingFactor;
                             od.ColumnOffset = header.ImageNavigationHeader.ColumnOffset;
-                            if (header.SegmentIdentificationHeader != null) {
-                                od.MaxSegments = header.SegmentIdentificationHeader.MaxSegments;
-                            } else {
-                                od.MaxSegments = 1;
-                            }
+                            od.MaxSegments = header.SegmentIdentificationHeader != null ? header.SegmentIdentificationHeader.MaxSegments : 1;
                         } else {
                             od.Lines += header.ImageStructureHeader.Lines;
                         }
                         alreadyProcessed.Add(file);
                     } catch (Exception e) {
-                        Console.WriteLine("Error reading file {0}: {1}", file, e);
+                        UIConsole.Error($"Error reading file {file}: {e}");
                         alreadyProcessed.Add(file);
                     }
                 }
             } catch (Exception e) {
-                Console.WriteLine("Error checking folders {0}", e);
+                UIConsole.Error ($"Error checking folders: {e}");
             }
         }
     }

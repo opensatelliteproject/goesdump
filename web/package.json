@@ -1,15 +1,37 @@
 {
   "name": "goesdump-web",
-  "version": "1.0.0",
-  "description": "OpenSatelliteProject xRIT Ingestor WebUI",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Lucas Teske",
-  "license": "MIT",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
-    "jquery": "^3.1.1",
-    "material-design-lite": "^1.3.0"
+    "chart.js": "^2.6.0",
+    "classlist-polyfill": "^1.2.0",
+    "fbemitter": "^2.1.1",
+    "immutability-helper": "^2.2.2",
+    "material-ui": "^0.18.1",
+    "moment": "^2.18.1",
+    "rc-progress": "^2.1.2",
+    "react": "^15.5.4",
+    "react-chartjs-2": "^2.1.0",
+    "react-dom": "^15.5.4",
+    "react-flexbox-grid": "^1.1.3",
+    "react-list": "^0.8.6",
+    "react-material-icons": "git+https://github.com/mikamaunula/react-material-icons.git",
+    "react-router-dom": "^4.1.1",
+    "react-scroll-box": "^0.3.3-beta",
+    "react-scrollbar": "^0.5.1",
+    "react-tap-event-plugin": "^2.0.1",
+    "react-tooltip": "^3.3.0"
+  },
+  "devDependencies": {
+    "electron": "^1.6.10",
+    "react-scripts": "1.0.6"
+  },
+  "main": "electron-starter.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build && cp src/electron-starter.js build/",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "elec": "./node_modules/.bin/electron ."
   }
 }

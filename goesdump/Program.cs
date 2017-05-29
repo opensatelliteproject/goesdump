@@ -14,22 +14,12 @@ namespace OpenSatelliteProject {
     static class Program {
         
 
-        #if (HEADLESS)
         private static HeadlessMain main;
         internal static void RunProg() {
-            UIConsole.Init();
+            UIConsole.Log ("Starting GOES Dump");
             main = new HeadlessMain();
             main.Start();
         }
-        #else
-        private static Main main;
-        internal static void RunProg() {
-            UIConsole.Init();
-            main = new Main();
-            main.Run();
-            main.Dispose();
-        }
-        #endif
 
         /// <summary>
         /// The main entry point for the application.

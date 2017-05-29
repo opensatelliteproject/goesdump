@@ -476,14 +476,17 @@ namespace OpenSatelliteProject {
         /// </summary>
         /// <param name="bmp">The Bitmap</param>
         /// <param name="gc">A geoconverter initialized with Satellite Parameters</param>
+        /// <param name = "color"></param>
+        /// <param name = "lineWidth"></param>
+        /// <param name = "fixCrop"></param>
         public static void DrawLatLonLines(ref Bitmap bmp, GeoConverter gc, Color color, int lineWidth = 5, bool fixCrop = false) {
             Pen pen = new Pen(color, lineWidth);
-            float lastX = -1;
-            float lastY = -1;
+            float lastX;
+            float lastY;
             using (var graphics = Graphics.FromImage(bmp)) {
                 for (float lat = gc.MinLatitude; lat < gc.MaxLatitude; lat += 10f) {
-                    lastX = -1;
-                    lastY = -1;
+                    lastX = -1f;
+                    lastY = -1f;
                     for (float lon = gc.MinLongitude; lon < gc.MaxLongitude; lon += 0.1f) {
                         var xy = gc.latlon2xy(lat, lon);
 
@@ -499,8 +502,8 @@ namespace OpenSatelliteProject {
 
                 }
                 for (float lon = gc.MinLongitude; lon < gc.MaxLongitude; lon += 10f) {
-                    lastX = -1;
-                    lastY = -1;
+                    lastX = -1f;
+                    lastY = -1f;
                     for (float lat = gc.MinLatitude; lat < gc.MaxLatitude; lat += 0.1f) {
                         var xy = gc.latlon2xy(lat, lon);
 

@@ -10,6 +10,8 @@ using System.Threading;
 namespace LibraryTest {
     class MainClass {
         public static void Main (string[] args) {
+
+            /*
             //Organizer org = new Organizer("./himawari");
             //org.Update();
             //var gd = org.GroupData[1490489400];
@@ -92,7 +94,7 @@ namespace LibraryTest {
 			test1.Dispose();
 			overlay.Dispose();
 			*/
-
+            //*
             //string dcsFile = "/home/lucas/Works/OpenSatelliteProject/split/goesdump/XRITLibraryTest/bin/Debug/channels/DCS/pM-17085003239-A.dcs";
             //List<DCSHeader> d = DCSParser.parseDCS(dcsFile);
             //*
@@ -100,8 +102,8 @@ namespace LibraryTest {
             //string debugFrames = "/media/ELTN/tmp/debug5/demuxdump-1492732814.bin";
             //string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
             //string debugFrames = "/media/ELTN/tmp/debug3/raw_data.bin";
-            //string debugFrames = "/media/ELTN/tmp/goes13/demuxdump-1493619155.bin";
-            string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";
+            string debugFrames = "/media/ELTN/tmp/goes13/demuxdump-1493619155.bin";
+            //string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";
             var im0 = new ImageManager ("output/Images/Full Disk/");
             var im1 = new ImageManager ("output/Images/Northern Hemisphere/");
             var im2 = new ImageManager ("output/Images/Southern Hemisphere/");

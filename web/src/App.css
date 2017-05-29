@@ -1,0 +1,108 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.rotating-atom {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.rotation-fast {
+    animation: App-logo-spin-rev infinite 1s linear
+}
+
+.drawer-icon {
+  animation: App-logo-spin infinite 20s linear;
+  height: 48px;
+  cursor: pointer;
+}
+
+.card-header {
+  background: #46B6AC;
+}
+
+.menu-icon {
+    padding-top: 10px;
+    margin-bottom: -5px;
+    margin-right: 15px;
+}
+
+.statistics-ul {
+  padding: 0;
+  margin-top: 0;
+  list-style-type: none;
+  line-height: 18px;
+  color: rgba(0,0,0,.54);
+}
+
+.led-block {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 250px;
+}
+
+.led-block-item {
+}
+
+.statistics li {
+  height:18px;
+  padding: 0 0 0 0;
+  font-family: "Verdana", sans-serif;
+}
+
+.statistics-val {
+  float: right;
+}
+
+.console-card {
+    position: relative;
+    width: 100%;
+    height: 500px;
+}
+
+.console-area {
+    height: 400px;
+}
+
+.console-text {
+    font-family: "Lucida Console", monospace;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+@keyframes App-logo-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes App-logo-spin-rev {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+}
+
+.footer {
+    position: fixed;
+    text-align: right;
+    bottom: 15px;
+    right: 15px;
+    font-size: 10px;
+    color: #9E9E9E;
+}
+
+.footer a {
+    color: #9E9E9E;
+}
+

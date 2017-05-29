@@ -35,6 +35,10 @@ namespace OpenSatelliteProject.Log {
             }
         }
 
+        public static void Send(string syslogFacility, Level level, string message) {
+            SyslogClient.Send(new Message(syslogFacility, level, message));
+        }
+
         public static void Send(Message message) {
             if (Tools.LLTools.IsLinux) {
                 if (!IsActive) {

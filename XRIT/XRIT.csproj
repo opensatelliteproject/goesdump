@@ -8,7 +8,7 @@
     <RootNamespace>OpenSatelliteProject</RootNamespace>
     <AssemblyName>XRIT</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <ReleaseVersion>1.0.3</ReleaseVersion>
+    <ReleaseVersion>1.1.0</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,22 +30,6 @@
     <ConsolePause>false</ConsolePause>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug Headless|x86' ">
-    <Optimize>false</Optimize>
-    <OutputPath>bin\x86\Debug Headless</OutputPath>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release Headless|x86' ">
-    <Optimize>false</Optimize>
-    <OutputPath>bin\x86\Release Headless</OutputPath>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -60,6 +44,10 @@
     </Reference>
     <Reference Include="DotSpatial.Topology">
       <HintPath>..\packages\DotSpatial.Topology.1.9\lib\net40-Client\DotSpatial.Topology.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +109,26 @@
     <Compile Include="Geo\GeoTools.cs" />
     <Compile Include="Geo\GeoConverter.cs" />
     <Compile Include="Geo\MapDrawer.cs" />
+    <Compile Include="Storage\Database.cs" />
+    <Compile Include="SQLite.cs" />
+    <Compile Include="SQLiteAsync.cs" />
+    <Compile Include="Storage\DBConfig.cs" />
+    <Compile Include="Storage\DBStatistics.cs" />
+    <Compile Include="EventMaster\EventMaster.cs" />
+    <Compile Include="EventMaster\Events\ConfigChangeEventData.cs" />
+    <Compile Include="EventMaster\EventMasterData.cs" />
+    <Compile Include="Console\ConsoleMessage.cs" />
+    <Compile Include="Console\UIConsole.cs" />
+    <Compile Include="Storage\ConfigurationManager.cs" />
+    <Compile Include="GOES\Demuxer.cs" />
+    <Compile Include="GOES\DemuxManager.cs" />
+    <Compile Include="GOES\PacketManager.cs" />
+    <Compile Include="GOES\ImageManager.cs" />
+    <Compile Include="GOES\EMWIN.cs" />
+    <Compile Include="GOES\FileHandler.cs" />
+    <Compile Include="Models\ConfigDescription.cs" />
+    <Compile Include="Storage\StatisticsManager.cs" />
+    <Compile Include="Tools\MimeTypes.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -130,6 +138,11 @@
     <Folder Include="Log\" />
     <Folder Include="DCS\" />
     <Folder Include="Geo\" />
+    <Folder Include="Storage\" />
+    <Folder Include="EventMaster\" />
+    <Folder Include="EventMaster\Events\" />
+    <Folder Include="Console\" />
+    <Folder Include="GOES\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
