@@ -25,6 +25,8 @@ namespace OpenSatelliteProject {
 
         public const string KeyConstellationServerPort = "ConstellationServerPort";
         public const string KeyConstellationServerName = "ConstellationServerName";
+
+        public const string KeySaveStatistics = "SaveStatistics";
         #endregion
 
         #region Image Processing
@@ -117,6 +119,12 @@ namespace OpenSatelliteProject {
             get { return ConfigurationManager.GetInt(KeyConstellationServerPort); }
             set { ConfigurationManager.Set(KeyConstellationServerPort, value); }
         }
+
+        [ConfigDescription("Save Statistics to a statistics.sqlite file.", false)]
+        public static bool SaveStatistics {
+            get { return ConfigurationManager.GetBool(KeySaveStatistics); }
+            set { ConfigurationManager.Set(KeySaveStatistics, value); }
+        } 
         #endregion
 
         #region Image Processing
@@ -235,45 +243,13 @@ namespace OpenSatelliteProject {
         /// Sets the configuration defaults.
         /// </summary>
         public static void SetConfigDefaults() {
-            HTTPPort = (int) GetDefaultPropertyValue("HTTPPort");
-
-            TemporaryFileFolder = (string) GetDefaultPropertyValue("TemporaryFileFolder");
-            FinalFileFolder = (string) GetDefaultPropertyValue("FinalFileFolder");
-
-            RecordIntermediateFile = (bool) GetDefaultPropertyValue("RecordIntermediateFile");
-
-            ChannelDataServerName = (string) GetDefaultPropertyValue("ChannelDataServerName");
-            ChannelDataServerPort = (int) GetDefaultPropertyValue("ChannelDataServerPort");
-
-            StatisticsServerName = (string) GetDefaultPropertyValue("StatisticsServerName");
-            StatisticsServerPort = (int) GetDefaultPropertyValue("StatisticsServerPort");
-
-            ConstellationServerName = (string) GetDefaultPropertyValue("ConstellationServerName");
-            ConstellationServerPort = (int) GetDefaultPropertyValue("ConstellationServerPort");
-
-            GenerateVisibleImages = (bool) GetDefaultPropertyValue("GenerateVisibleImages");
-            GenerateInfraredImages = (bool) GetDefaultPropertyValue("GenerateInfraredImages");
-            GenerateWaterVapourImages = (bool) GetDefaultPropertyValue("GenerateWaterVapourImages");
-            GenerateOtherImages = (bool) GetDefaultPropertyValue("GenerateOtherImages");
-
-            GenerateFDFalseColor = (bool) GetDefaultPropertyValue("GenerateFDFalseColor");
-            GenerateXXFalseColor = (bool) GetDefaultPropertyValue("GenerateXXFalseColor");
-            GenerateNHFalseColor = (bool) GetDefaultPropertyValue("GenerateNHFalseColor");
-            GenerateSHFalseColor = (bool) GetDefaultPropertyValue("GenerateSHFalseColor");
-            GenerateUSFalseColor = (bool) GetDefaultPropertyValue("GenerateUSFalseColor");
-
-            EraseFilesAfterGeneratingFalseColor = (bool) GetDefaultPropertyValue("EraseFilesAfterGeneratingFalseColor");
-
-            UseNOAAFormat = (bool) GetDefaultPropertyValue("UseNOAAFormat");
-
-            EnableDCS = (bool) GetDefaultPropertyValue("EnableDCS");
-            EnableEMWIN = (bool) GetDefaultPropertyValue("EnableEMWIN");
-            EnableWeatherData = (bool) GetDefaultPropertyValue("EnableWeatherData");
-
-            SysLogServer = (string) GetDefaultPropertyValue("SysLogServer");
-            SysLogFacility = (string) GetDefaultPropertyValue("SysLogFacility");
-
-            MaxGenerateRetry = (int) GetDefaultPropertyValue("MaxGenerateRetry");
+            var properties = typeof(ProgConfig).GetProperties ();
+            foreach (var prop in properties) {
+                ConfigDescription cd = (ConfigDescription) Attribute.GetCustomAttribute (prop, typeof(ConfigDescription));
+                if (cd != null) {
+                    prop.SetValue (null, cd.Default);
+                }
+            }
         }
 
         /// <summary>
@@ -357,6 +333,10 @@ namespace OpenSatelliteProject {
             MaxGenerateRetry = MaxGenerateRetry == 0 ? 
                 (int) GetDefaultPropertyValue("MaxGenerateRetry") : 
                 MaxGenerateRetry;
+
+            SaveStatistics = ConfigurationManager.Get (KeySaveStatistics) == null ?
+                (bool) GetDefaultPropertyValue("SaveStatistics") : 
+                SaveStatistics;
         }
 
         public static void UpdateProperty(string name, string value) {
@@ -413,17 +393,19 @@ namespace OpenSatelliteProject {
         public static Dictionary<string, ConfigEntryInfo> GetConfig() {
             Dictionary<string, ConfigEntryInfo> config = new Dictionary<string, ConfigEntryInfo> ();
 
-            var properties = typeof(ProgConfig).GetProperties ().ToArray();
+            var properties = typeof(ProgConfig).GetProperties ();
 
             foreach (var prop in properties) {
                 ConfigDescription cd = (ConfigDescription) Attribute.GetCustomAttribute (prop, typeof(ConfigDescription));
-                config.Add (prop.Name, new ConfigEntryInfo {
-                    Name = prop.Name,
-                    Value = prop.GetValue(null),
-                    Type = prop.PropertyType.Name,
-                    Description = cd != null ? cd.Description : "",
-                    DefaultValue = cd != null ? cd.Default : null,
-                });
+                if (cd != null) {
+                    config.Add (prop.Name, new ConfigEntryInfo {
+                        Name = prop.Name,
+                        Value = prop.GetValue (null),
+                        Type = prop.PropertyType.Name,
+                        Description = cd != null ? cd.Description : "",
+                        DefaultValue = cd != null ? cd.Default : null,
+                    });
+                }
             }
 
             return config;

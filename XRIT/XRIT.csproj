@@ -127,6 +127,7 @@
     <Compile Include="GOES\EMWIN.cs" />
     <Compile Include="GOES\FileHandler.cs" />
     <Compile Include="Models\ConfigDescription.cs" />
+    <Compile Include="Storage\StatisticsManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

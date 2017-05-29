@@ -6,10 +6,12 @@ using System;
 namespace OpenSatelliteProject {
     public class Database {
         readonly SQLiteConnection conn;
+        readonly SQLiteConnection statConn;
         readonly Dictionary<string, string> configCache;
 
-        public Database (string filename) {
+        public Database (string filename, string statisticsFilename = "statistics.db") {
             conn = new SQLiteConnection (filename);
+            statConn = new SQLiteConnection (statisticsFilename);
             configCache = new Dictionary<string, string> ();
             Init ();
         }
@@ -19,33 +21,46 @@ namespace OpenSatelliteProject {
             if (x.Count == 0) {
                 conn.CreateTable<DBConfig> ();
             }
-            x = conn.GetTableInfo ("DBStatistics");
+            x = statConn.GetTableInfo ("DBStatistics");
             if (x.Count == 0) {
-                conn.CreateTable<DBStatistics> ();
+                statConn.CreateTable<DBStatistics> ();
             }
         }
 
         public void Close() {
-            conn.Close ();
+            lock (conn) {
+                conn.Close ();
+            }
+            lock (statConn) {
+                statConn.Close ();
+            }
         }
 
-        public void PutStatistic(DBStatistics statistics) {
-            statistics.Timestamp = LLTools.Timestamp ();
-            conn.Insert (statistics);
+        public void PutStatistic(DBStatistics statistics, bool autoTimestamp = true) {
+            lock (statConn) {
+                if (autoTimestamp) {
+                    statistics.Timestamp = LLTools.TimestampMS ();
+                }
+                statConn.Insert (statistics);
+            }
         }
 
         public string this[string key] {
             get {
-                if (!configCache.ContainsKey (key)) {
-                    // Fetch from DB
-                    var res = conn.Table<DBConfig> ().Where (a => a.Name == key);
-                    configCache [key] = res.Count () > 0 ? res.First ().Value : null;
+                lock (configCache) {
+                    if (!configCache.ContainsKey (key)) {
+                        // Fetch from DB
+                        var res = conn.Table<DBConfig> ().Where (a => a.Name == key);
+                        configCache [key] = res.Count () > 0 ? res.First ().Value : null;
+                    }
+                    return configCache [key];
                 }
-                return configCache[key];
             }
             set {
-                conn.Insert (new DBConfig () { Name = key, Value = value }, "OR REPLACE");
-                configCache [key] = value;
+                lock (configCache) {
+                    conn.Insert (new DBConfig () { Name = key, Value = value }, "OR REPLACE");
+                    configCache [key] = value;
+                }
             }
         }
 

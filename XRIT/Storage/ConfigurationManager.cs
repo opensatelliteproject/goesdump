@@ -9,6 +9,10 @@ namespace OpenSatelliteProject {
             ConfigurationManager.db = new Database (ConfigFileName);
         }
 
+        public static void PutStatistics(DBStatistics statistics, bool autoTimestamp = true) {
+            ConfigurationManager.db.PutStatistic (statistics, autoTimestamp);
+        }
+
         public static string Get(string key, string def = null) {
             return ConfigurationManager.db [key] ?? def;
         }

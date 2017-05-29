@@ -3,9 +3,9 @@ using SQLite;
 
 namespace OpenSatelliteProject {
     public class DBStatistics {
-        [PrimaryKey]
-        public int Timestamp { get; set; }
-
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; }
+        public long Timestamp { get; set; }
         public int SCID { get; set; }
         public int VCID { get; set; }
         public long PacketNumber { get; set; }
@@ -20,7 +20,7 @@ namespace OpenSatelliteProject {
         public byte PhaseCorrection { get; set; }
         public long LostPackets { get; set; }
         public int AverageVitCorrections { get; set; }
-        public byte VverageRSCorrections { get; set; }
+        public byte AverageRSCorrections { get; set; }
         public long DroppedPackets { get; set; }
         [MaxLength(16)]
         public string SyncWord { get; set; }

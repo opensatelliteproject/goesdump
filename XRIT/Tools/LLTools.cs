@@ -74,6 +74,9 @@ namespace OpenSatelliteProject.Tools {
         public static int Timestamp() {
             return (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
         }
+        public static long TimestampMS() {
+            return (Int64)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
+        }
 
         public static List<T> Clone<T>(this List<T> listToClone) where T: ICloneable {
             return listToClone.Select(item => (T)item.Clone()).ToList();

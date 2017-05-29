@@ -183,6 +183,29 @@ namespace OpenSatelliteProject {
                 statistics = data;
                 mtx.ReleaseMutex();
 
+                if (ProgConfig.SaveStatistics) {
+                    ThreadPool.QueueUserWorkItem((a) => StatisticsManager.Update (new DBStatistics {
+                        SCID = data.scid,
+                        VCID = data.vcid,
+                        PacketNumber = (long)data.packetNumber,
+                        VitErrors = data.vitErrors,
+                        FrameBits = data.frameBits,
+                        RSErrors0 = data.rsErrors [0],
+                        RSErrors1 = data.rsErrors [1],
+                        RSErrors2 = data.rsErrors [2],
+                        RSErrors3 = data.rsErrors [3],
+                        SignalQuality = data.signalQuality,
+                        SyncCorrelation = data.syncCorrelation,
+                        PhaseCorrection = data.phaseCorrection,
+                        LostPackets = (long)data.lostPackets,
+                        AverageVitCorrections = data.averageVitCorrections,
+                        AverageRSCorrections = data.averageRSCorrections,
+                        DroppedPackets = (long)data.droppedPackets,
+                        SyncWord = string.Format ("{0:X02}{1:X02}{2:X02}{3:X02}", data.syncWord [0], data.syncWord [1], data.syncWord [2], data.syncWord [3]),
+                        FrameLock = data.frameLock > 0,
+                    }));
+                }
+
                 stModel.Refresh(statistics);
                 httpsv.WebSocketServices.Broadcast(stModel.toJSON());
             };
