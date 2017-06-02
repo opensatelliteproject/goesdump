@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 
 namespace OpenSatelliteProject {
+    /// <summary>
+    /// An Global Event master to mimic Node.JS EventEmitter.
+    /// </summary>
     public class EventMaster {
 
         public static EventMaster Master { get; private set; }
@@ -10,16 +13,26 @@ namespace OpenSatelliteProject {
             Master = new EventMaster ();
         }
 
-        private readonly Dictionary<string, EMEventHandler> handlers;
+        readonly Dictionary<string, EMEventHandler> handlers;
 
-        private EventMaster () {
+        EventMaster () {
             handlers = new Dictionary<string, EMEventHandler> ();
         }
 
+        /// <summary>
+        /// Attaches a listener for the event described by parameter type.
+        /// </summary>
+        /// <param name="type">Event Type to listen</param>
+        /// <param name="handler">Event Handler</param>
         public static void On(string type, EMEventHandler handler) {
             EventMaster.Master._On (type, handler);
         }
 
+        /// <summary>
+        /// Post a event to everyone that is listening to.
+        /// </summary>
+        /// <param name="type">Event Type to listen</param>
+        /// <param name="data">Event Data</param>
         public static void Post(string type, object data) {
             EventMaster.Master._Post (new EventMasterData(type, data));
         }

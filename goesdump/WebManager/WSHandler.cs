@@ -21,7 +21,7 @@ namespace OpenSatelliteProject {
                             var variable = (string)json["variable"];
                             var value = (string)json["value"];
                             UIConsole.Debug($"Received config change request of {variable} to {value}");
-                            EventMaster.Post("configChange", new ConfigChangeEventData() { Name = variable, Value = value });
+                            EventMaster.Post(EventTypes.ConfigChangeEvent, new ConfigChangeEventData { Name = variable, Value = value });
                         break;
                         case "dirlist":
                             var path = (string)json["path"];

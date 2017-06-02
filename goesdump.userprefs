@@ -1,4 +1,4 @@
-﻿<Properties StartupItem="goesdump/GOES Dumper.csproj" RefactoringSettings.EnableRefactorings="True">
+﻿<Properties StartupItem="LibraryTest/LibraryTest.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/Models/ProgConfig.cs">
     <Files>

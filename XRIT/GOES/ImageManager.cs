@@ -4,6 +4,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using OpenSatelliteProject.Tools;
+using System.Collections.Generic;
 
 namespace OpenSatelliteProject {
     public class ImageManager {
@@ -27,10 +28,10 @@ namespace OpenSatelliteProject {
         public static bool GenerateOtherImages { get; set; }
         public static bool UseNOAAFileFormat { get; set; }
 
-        private Thread imageThread;
-        private bool running;
-        private Organizer organizer;
-        private string folder;
+        Thread imageThread;
+        bool running;
+        readonly Organizer organizer;
+        readonly string folder;
 
         static ImageManager() {
             EraseFiles = false;
@@ -194,6 +195,16 @@ namespace OpenSatelliteProject {
                                     bmp.Save(ofilename, ImageFormat.Png);
                                     bmp.Dispose();
                                     UIConsole.Log($"New Visible Image: {Path.GetFileName(ofilename)}");
+                                    EventMaster.Post("newFile", new NewFileReceivedEventData() {
+                                        Name = Path.GetFileName(ofilename),
+                                        Path = ofilename,
+                                        Metadata = {
+                                            { "channel", "visible" },
+                                            { "satelliteName", mData.SatelliteName },
+                                            { "regionName", mData.RegionName },
+                                            { "timestamp", z.Key.ToString() }
+                                        }
+                                    });
                                 }
                                 mData.IsVisibleProcessed = true;
                                 mData.Visible.OK = true;
@@ -209,6 +220,16 @@ namespace OpenSatelliteProject {
                                     bmp.Save(ofilename, ImageFormat.Png);
                                     bmp.Dispose();
                                     UIConsole.Log($"New Infrared Image: {Path.GetFileName(ofilename)}");
+                                    EventMaster.Post("newFile", new NewFileReceivedEventData() {
+                                        Name = Path.GetFileName(ofilename),
+                                        Path = ofilename,
+                                        Metadata = {
+                                            { "channel", "infrared" },
+                                            { "satelliteName", mData.SatelliteName },
+                                            { "regionName", mData.RegionName },
+                                            { "timestamp", z.Key.ToString() }
+                                        }
+                                    });
                                 }
                                 mData.IsInfraredProcessed = true;
                                 mData.Infrared.OK = true;
@@ -224,6 +245,16 @@ namespace OpenSatelliteProject {
                                     bmp.Save(ofilename, ImageFormat.Png);
                                     bmp.Dispose();
                                     UIConsole.Log($"New Water Vapour Image: {Path.GetFileName(ofilename)}");
+                                    EventMaster.Post("newFile", new NewFileReceivedEventData() {
+                                        Name = Path.GetFileName(ofilename),
+                                        Path = ofilename,
+                                        Metadata = {
+                                            { "channel", "watervapour" },
+                                            { "satelliteName", mData.SatelliteName },
+                                            { "regionName", mData.RegionName },
+                                            { "timestamp", z.Key.ToString() }
+                                        }
+                                    });
                                 }
                                 mData.IsWaterVapourProcessed = true;
                                 mData.WaterVapour.OK = true;
@@ -241,6 +272,16 @@ namespace OpenSatelliteProject {
                                     bmp.Save(filename, ImageFormat.Png);
                                     bmp.Dispose();
                                     UIConsole.Log($"New False Colour Image: {Path.GetFileName(filename)}");
+                                    EventMaster.Post("newFile", new NewFileReceivedEventData() {
+                                        Name = Path.GetFileName(filename),
+                                        Path = filename,
+                                        Metadata = {
+                                            { "channel", "filename" },
+                                            { "satelliteName", mData.SatelliteName },
+                                            { "regionName", mData.RegionName },
+                                            { "timestamp", z.Key.ToString() }
+                                        }
+                                    });
                                 }
                                 mData.IsFalseColorProcessed = true;
                             }
@@ -260,6 +301,16 @@ namespace OpenSatelliteProject {
                                             bmp.Save(ofilename, ImageFormat.Png);
                                             bmp.Dispose();
                                             UIConsole.Log($"New Image: {Path.GetFileName(ofilename)}");
+                                            EventMaster.Post("newFile", new NewFileReceivedEventData() {
+                                                Name = Path.GetFileName(ofilename),
+                                                Path = ofilename,
+                                                Metadata = {
+                                                    { "channel", "otherimages" },
+                                                    { "satelliteName", mData.SatelliteName },
+                                                    { "regionName", mData.RegionName },
+                                                    { "timestamp", z.Key.ToString() }
+                                                }
+                                            });
                                         }
                                         gd.OK = true;
                                     } else {

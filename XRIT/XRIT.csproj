@@ -129,6 +129,10 @@
     <Compile Include="Models\ConfigDescription.cs" />
     <Compile Include="Storage\StatisticsManager.cs" />
     <Compile Include="Tools\MimeTypes.cs" />
+    <Compile Include="EventMaster\Events\NewFileReceivedEventData.cs" />
+    <Compile Include="EventMaster\Events\FrameEventData.cs" />
+    <Compile Include="EventMaster\Events\EventTypes.cs" />
+    <Compile Include="Tools\Decompress.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

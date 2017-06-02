@@ -102,7 +102,14 @@ namespace LibraryTest {
             //string debugFrames = "/media/ELTN/tmp/debug5/demuxdump-1492732814.bin";
             //string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
             //string debugFrames = "/media/ELTN/tmp/debug3/raw_data.bin";
-            string debugFrames = "/media/ELTN/tmp/goes13/demuxdump-1493619155.bin";
+
+            EventMaster.On ("newFile", d => {
+                var ed = (NewFileReceivedEventData) d.Data;
+                Console.WriteLine($"Received event for new file {ed.Name} at {ed.Path}");
+                Console.WriteLine(ed.ToString());
+            });
+
+            string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
             //string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";
             var im0 = new ImageManager ("output/Images/Full Disk/");
             var im1 = new ImageManager ("output/Images/Northern Hemisphere/");
@@ -129,8 +136,8 @@ namespace LibraryTest {
             DemuxManager dm = new DemuxManager ();
             FileHandler.SkipDCS = true;
             FileHandler.SkipEMWIN = true;
-            //int startFrame = 956000;
-            int startFrame = 0;
+            //const int startFrame = 956000;
+            const int startFrame = 0;
             FileStream file = File.OpenRead (debugFrames);
             byte[] data = new byte[892];
             long bytesRead = startFrame * 892;

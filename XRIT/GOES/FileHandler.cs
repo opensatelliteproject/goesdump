@@ -9,8 +9,8 @@ namespace OpenSatelliteProject {
 
     public static class FileHandler {
 
-        private static Dictionary<int, FileHandlerFunction> byCompressionTypeHandler;
-        private static Dictionary<int, FileHandlerFunction> byProductIdHandler;
+        static Dictionary<int, FileHandlerFunction> byCompressionTypeHandler;
+        static Dictionary<int, FileHandlerFunction> byProductIdHandler;
 
         public static bool SkipDCS { get; set; }
         public static bool SkipEMWIN { get; set; }
@@ -93,6 +93,17 @@ namespace OpenSatelliteProject {
                     UIConsole.Log(String.Format("New {0} ({1})", fileHeader.Product.Name, ofilename));
                 }
             }
+
+            EventMaster.Post (EventTypes.NewFileEvent, new NewFileReceivedEventData {
+                Name = Path.GetFileName(ofilename),
+                Path = ofilename,
+                Metadata = {
+                    { "product", fileHeader.Product.Name },
+                    { "subProduct", fileHeader.SubProduct.Name },
+                    { "productId", fileHeader.Product.ID.ToString() },
+                    { "subProductId", fileHeader.SubProduct.ID.ToString() }
+                }
+            });
 
             try {
                 File.Move(filename, f);

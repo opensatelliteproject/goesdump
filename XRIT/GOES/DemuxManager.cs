@@ -3,19 +3,18 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using OpenSatelliteProject.Tools;
-using OpenSatelliteProject.PacketData.Enums;
 using System.Threading;
 
 namespace OpenSatelliteProject {
     public class DemuxManager {
-        private readonly static int FILL_VCID = 63;
-        private Dictionary<int, Demuxer> demuxers;
-        private bool recordFile = false;
-        private string fileName;
-        private FileStream fStream;
-        private Mutex recordMutex;
-        private Mutex resetMutex;
-        private Dictionary<int, long> productsReceived;
+        readonly static int FILL_VCID = 63;
+        readonly Dictionary<int, Demuxer> demuxers;
+        bool recordFile = false;
+        string fileName;
+        FileStream fStream;
+        readonly Mutex recordMutex;
+        readonly Mutex resetMutex;
+        Dictionary<int, long> productsReceived;
 
         public int CRCFails { get; set; }
         public int Bugs { get; set; }
@@ -23,10 +22,6 @@ namespace OpenSatelliteProject {
         public int LengthFails { get; set; }
         public long FrameLoss { get; set; }
         public uint FrameJumps { get; set; }
-
-        public delegate void FrameEventData(int vcid, int vccnt);
-
-        public event FrameEventData FrameEvent;
 
         public Dictionary<int, long> ProductsReceived {
             get {
@@ -54,7 +49,7 @@ namespace OpenSatelliteProject {
                     try {
                         fStream.Close();
                         fStream = null;
-                    } catch(Exception) {
+                    } catch (Exception) {
                         // Ignore
                     }
                 }
@@ -122,7 +117,7 @@ namespace OpenSatelliteProject {
             int vcid = (data[1] & 0x3F);
             int vcnt = (data[2] << 16 | data[3] << 8 | data[4]);
 
-            FrameEvent?.Invoke(vcid, vcnt);
+            EventMaster.Post(EventTypes.FrameEvent, new FrameEventData { ChannelID = vcid, PacketNumber = vcnt });
 
             if (vcid != FILL_VCID) {
                 resetMutex.WaitOne();
