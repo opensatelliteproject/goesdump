@@ -257,6 +257,16 @@ namespace OpenSatelliteProject {
                 path += "index.html";
             }
 
+            // Workarround for the React Single Page issue
+            if (
+                path.StartsWith ("/console") ||
+                path.StartsWith ("/explorer") ||
+                path.StartsWith ("/charts") ||
+                path.StartsWith ("/config")
+            ) {
+                path = "/index.html";
+            }
+
             if (path.StartsWith(directoryHandler.BasePath)) {
                 try {
                     directoryHandler.HandleAccess(httpsv, e);
