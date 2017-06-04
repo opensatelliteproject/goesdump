@@ -50,9 +50,10 @@ namespace OpenSatelliteProject.Tools {
             }
         }
 
-        private void ProcessCompressedFile(FileStream file, XRITHeader header, string outputFolder) {
+        void ProcessCompressedFile(FileStream file, XRITHeader header, string outputFolder) {
+            string outName;
             if (header.NOAASpecificHeader.Compression == CompressionType.GIF) {
-                string outName = header.Filename.Replace(".lrit", ".gif");
+                outName = header.Filename.Replace(".lrit", ".gif");
                 outName = Path.Combine(outputFolder, outName);
                 var file2 = File.OpenWrite(outName);
 
@@ -65,7 +66,7 @@ namespace OpenSatelliteProject.Tools {
 
                 file2.Close();
             } else if (header.NOAASpecificHeader.Compression == CompressionType.JPEG) {
-                string outName = header.Filename.Replace(".lrit", ".jpg");
+                outName = header.Filename.Replace(".lrit", ".jpg");
                 outName = Path.Combine(outputFolder, outName);
                 var file2 = File.OpenWrite(outName);
 
@@ -80,9 +81,20 @@ namespace OpenSatelliteProject.Tools {
             } else {
                 throw new Exception(string.Format("Unknown Compression type: {0}", header.NOAASpecificHeader.Compression.ToString()));
             }
+
+            EventMaster.Post (EventTypes.NewFileEvent, new NewFileReceivedEventData {
+                Name = Path.GetFileName(outName),
+                Path = outName,
+                Metadata = {
+                    { "product", header.Product.Name },
+                    { "subProduct", header.SubProduct.Name },
+                    { "productId", header.Product.ID.ToString() },
+                    { "subProductId", header.SubProduct.ID.ToString() }
+                }
+            });
         }
 
-        private void ProcessFile(FileStream file, XRITHeader header, string outputFolder) {
+        void ProcessFile(FileStream file, XRITHeader header, string outputFolder) {
             var width = header.ImageStructureHeader.Columns;
             var height = header.ImageStructureHeader.Lines;
             var bitsPerPixel = header.ImageStructureHeader.BitsPerPixel;
@@ -148,6 +160,17 @@ namespace OpenSatelliteProject.Tools {
             outName = Path.Combine(outputFolder, outName);
             b.Save(outName, ImageFormat.Jpeg);
             b.Dispose();
+
+            EventMaster.Post (EventTypes.NewFileEvent, new NewFileReceivedEventData {
+                Name = Path.GetFileName(outName),
+                Path = outName,
+                Metadata = {
+                    { "product", header.Product.Name },
+                    { "subProduct", header.SubProduct.Name },
+                    { "productId", header.Product.ID.ToString() },
+                    { "subProductId", header.SubProduct.ID.ToString() }
+                }
+            });
         }
     }
 }

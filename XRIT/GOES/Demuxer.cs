@@ -183,7 +183,7 @@ namespace OpenSatelliteProject {
 
                     if (missedPackets > 0)  {
                         UIConsole.Warn(String.Format("Missed {0} packets on image. Filling with null bytes. Last Packet Number: {1} Current: {2}", missedPackets, lastMSDU.PacketNumber, msdu.PacketNumber));
-                        byte[] fill = PacketManager.GenerateFillData(fileHeader.ImageStructureHeader.Columns);
+                        byte[] fill = Decompress.GenerateFillData(fileHeader.ImageStructureHeader.Columns);
                         using (FileStream fs = new FileStream(filename, FileMode.Append, FileAccess.Write)) {
                             using (BinaryWriter sw = new BinaryWriter(fs)) {
                                 while (missedPackets > 0) {
@@ -194,7 +194,7 @@ namespace OpenSatelliteProject {
                             }
                         }
                     }
-                    dataToSave = PacketManager.InMemoryDecompress(dataToSave, fileHeader.ImageStructureHeader.Columns, fileHeader.RiceCompressionHeader.Pixel, fileHeader.RiceCompressionHeader.Flags);
+                    dataToSave = Decompress.InMemoryDecompress(dataToSave, fileHeader.ImageStructureHeader.Columns, fileHeader.RiceCompressionHeader.Pixel, fileHeader.RiceCompressionHeader.Flags);
                 }
 
                 lastMSDU = msdu;

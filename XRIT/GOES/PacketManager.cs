@@ -1,38 +1,34 @@
 ﻿using System;
-using System.Linq;
 using System.IO;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
 using OpenSatelliteProject.PacketData;
 using OpenSatelliteProject.PacketData.Enums;
-using OpenSatelliteProject.PacketData.Structs;
 using OpenSatelliteProject.Tools;
 using ICSharpCode.SharpZipLib.Zip;
 
 namespace OpenSatelliteProject {
     public static class PacketManager {
-        private static readonly string DCSRgex = @"DCSdat(.*)";
-        private static readonly string XXRgex = @"gos(.*)XX(.*).lrit";
-        private static readonly string FDRgex = @"(.*)FD(.*).lrit";
-        private static readonly string GOSRgex = @"gos(.*).lrit";
-        private static readonly string ChartRgex = @"NWSchrt(.*).lrit";
-        private static readonly string TextRgex = @"(.*)TEXTdat(.*).lrit";
+        static readonly string DCSRgex = @"DCSdat(.*)";
+        static readonly string XXRgex = @"gos(.*)XX(.*).lrit";
+        static readonly string FDRgex = @"(.*)FD(.*).lrit";
+        static readonly string GOSRgex = @"gos(.*).lrit";
+        static readonly string ChartRgex = @"NWSchrt(.*).lrit";
+        static readonly string TextRgex = @"(.*)TEXTdat(.*).lrit";
 
-        private static readonly string DCSFolder = "DCS";
-        private static readonly string ImagesFolder = "Images";
-        private static readonly string TextFolder = "Text";
-        private static readonly string EMWINFolder = "EMWIN";
-        private static readonly string WeatherDataFolder = "Weather Data";
-        private static readonly string OtherSatellitesFolder = "Other Satellites";
-        private static readonly string UnknownDataFolder = "Unknown";
+        static readonly string DCSFolder = "DCS";
+        static readonly string ImagesFolder = "Images";
+        static readonly string TextFolder = "Text";
+        static readonly string EMWINFolder = "EMWIN";
+        static readonly string WeatherDataFolder = "Weather Data";
+        static readonly string OtherSatellitesFolder = "Other Satellites";
+        static readonly string UnknownDataFolder = "Unknown";
 
-        private static Regex dcsRegex = new Regex(DCSRgex, RegexOptions.IgnoreCase);
-        private static Regex xxRegex = new Regex(XXRgex, RegexOptions.IgnoreCase);
-        private static Regex fdRegex = new Regex(FDRgex, RegexOptions.IgnoreCase);
-        private static Regex chartRegex = new Regex(ChartRgex, RegexOptions.IgnoreCase);
-        private static Regex gosRegex = new Regex(GOSRgex, RegexOptions.IgnoreCase);
-        private static Regex textRegex = new Regex(TextRgex, RegexOptions.IgnoreCase);
+        static Regex dcsRegex = new Regex(DCSRgex, RegexOptions.IgnoreCase);
+        static Regex xxRegex = new Regex(XXRgex, RegexOptions.IgnoreCase);
+        static Regex fdRegex = new Regex(FDRgex, RegexOptions.IgnoreCase);
+        static Regex chartRegex = new Regex(ChartRgex, RegexOptions.IgnoreCase);
+        static Regex gosRegex = new Regex(GOSRgex, RegexOptions.IgnoreCase);
+        static Regex textRegex = new Regex(TextRgex, RegexOptions.IgnoreCase);
 
         public static string GetFolderByProduct(NOAAProductID product, int subProduct) {
             // TODO: Unify with other functions that use the same thing
@@ -180,7 +176,7 @@ namespace OpenSatelliteProject {
 
             } else {
                 // Old way
-                string folderName = UnknownDataFolder;
+                string folderName;
                 if (dcsRegex.IsMatch(filename)) {
                     folderName = DCSFolder;
                 } else if (xxRegex.IsMatch(filename)) {
@@ -267,6 +263,15 @@ namespace OpenSatelliteProject {
                                     }
                                 }
                             }
+
+                            EventMaster.Post (EventTypes.NewFileEvent, new NewFileReceivedEventData {
+                                Name = Path.GetFileName(fileName),
+                                Path = fileName,
+                                Metadata = {
+                                    { "product", "ZIP FILE" },
+                                    { "zipFile", zipfile },
+                                }
+                            });
                         }
                     }
                 }
@@ -424,9 +429,20 @@ namespace OpenSatelliteProject {
             fs.Close();
             os.Close();
 
-            if (f.Contains(".zip")) {
-                UIConsole.Log(String.Format("Extracting Zip File {0}", f));
-                ExtractZipFile(f);
+            if (f.Contains (".zip")) {
+                UIConsole.Log (String.Format ("Extracting Zip File {0}", f));
+                ExtractZipFile (f);
+            } else {
+                EventMaster.Post (EventTypes.NewFileEvent, new NewFileReceivedEventData {
+                    Name = fileHeader.Filename,
+                    Path = f,
+                    Metadata = {
+                        { "product", fileHeader.Product.Name },
+                        { "subProduct", fileHeader.SubProduct.Name },
+                        { "productId", fileHeader.Product.ID.ToString() },
+                        { "subProductId", fileHeader.SubProduct.ID.ToString() }
+                    }
+                });
             }
             if (!forceErase) {
                 // Keep the original lrit file
@@ -440,154 +456,6 @@ namespace OpenSatelliteProject {
                 }
                 return null;
             }
-        }
-
-        public static byte[] GenerateFillData(int pixels) {
-            byte[] outputData = new byte[pixels];
-
-            for (int i = 0; i < pixels; i++) {
-                outputData[i] = 0x00;
-            }
-
-            return outputData;
-        }
-
-        public static byte[] InMemoryDecompress(byte[] compressedData, int pixels, int pixelsPerBlock, int mask) {
-            byte[] outputData = GenerateFillData(pixels);
-
-            try {
-                AEC.LritRiceDecompress(ref outputData, compressedData, 8, pixelsPerBlock, pixels, mask);
-            } catch (Exception e) {
-                if (e is AECException) {
-                    AECException aece = (AECException)e;
-                    UIConsole.Error(string.Format("AEC Decompress Error: {0}", aece.status.ToString()));
-                } else {
-                    UIConsole.Error(string.Format("Decompress error: {0}", e.ToString()));
-                }
-            }
-
-            return outputData;
-        }
-
-        public static string Decompressor(string filename, int pixels, int pixelsPerBlock, int mask) {
-            /**
-             *  Temporary Workarround. Needs to change directly on Demuxer
-             */
-            string outputFile = String.Format("{0}_decomp.lrit", filename);
-            byte[] outputData = new byte[pixels];
-
-            for (int i = 0; i < pixels; i++) {
-                outputData[i] = 0x00;
-            }
-
-            try {
-                byte[] inputData = File.ReadAllBytes(filename);
-                AEC.LritRiceDecompress(ref outputData, inputData, 8, pixelsPerBlock, pixels, mask); //  AEC.ALLOW_K13_OPTION_MASK | AEC.MSB_OPTION_MASK | AEC.NN_OPTION_MASK
-                File.Delete(filename);
-            } catch (Exception e) {
-                if (e is AECException) {
-                    AECException aece = (AECException)e;
-                    UIConsole.Error(string.Format("AEC Decompress Error: {0}", aece.status.ToString()));
-                } else {
-                    UIConsole.Error(string.Format("Decompress error: {0}", e.ToString()));
-                }
-            }
-
-            File.WriteAllBytes(outputFile, outputData);
-            return outputFile;
-        }
-
-
-        public static string Decompressor(string prefix, int pixels, int startnum, int endnum, int pixelsPerBlock, int mask) {
-            /**
-             *  Temporary Workarround. Needs to change directly on Demuxer
-             */
-
-            string outputFile = String.Format("{0}_decomp{1}.lrit", prefix, startnum);
-            string ifile;
-            FileStream f = null;
-            try {
-                ifile = string.Format("{0}{1}.lrit", prefix, startnum);
-                byte[] input = File.ReadAllBytes(ifile);
-                byte[] outputData = new byte[pixels];
-
-                try {
-                    File.Delete(ifile);
-                } catch (IOException e) {
-                    UIConsole.Warn(String.Format("Cannot delete file {0}: {1}", ifile, e));
-                }
-
-                f = File.OpenWrite(outputFile);
-                startnum++;
-                // First file only contains header
-                f.Write(input, 0, input.Length);
-
-                int overflowCaseLast = -1;
-
-                // Check for overflow in file number
-                if (endnum < startnum) {
-                    overflowCaseLast = endnum;
-                    endnum = 16383;
-                }
-
-                for (int i = startnum; i <= endnum; i++) {
-                    ifile = string.Format("{0}{1}.lrit", prefix, i);
-                    for (int z = 0; z < outputData.Length; z++) {
-                        outputData[z] = 0x00;
-                    }
-
-                    try {
-                        input = File.ReadAllBytes(ifile);
-                        File.Delete(ifile);
-                        AEC.LritRiceDecompress(ref outputData, input, 8, pixelsPerBlock, pixels, mask);
-                    } catch (FileNotFoundException) {
-                        UIConsole.Error(String.Format("Decompressor cannot find file {0}", ifile));
-                    } catch (AECException e) {
-                        UIConsole.Error($"AEC Decompress problem decompressing file {ifile}: {e.status.ToString()}");
-                        UIConsole.Debug($"AEC Params: 8 - {pixelsPerBlock} - {pixels} - {mask}");
-                    } catch (IOException e) {
-                        UIConsole.Error($"AEC Decompress problem decompressing file {ifile}: {e}");
-                    }
-
-                    f.Write(outputData, 0, outputData.Length);
-                }
-
-                if (overflowCaseLast != -1) {
-                    for (int i = 0; i < overflowCaseLast; i++) {
-                        ifile = string.Format("{0}{1}.lrit", prefix, i);
-                        for (int z = 0; z < outputData.Length; z++) {
-                            outputData[z] = 0x00;
-                        }
-                        try {
-                            input = File.ReadAllBytes(ifile);
-                            File.Delete(ifile);
-                            AEC.LritRiceDecompress(ref outputData, input, 8, pixelsPerBlock, pixels, mask);
-                        } catch (FileNotFoundException) {
-                            UIConsole.Error(String.Format("Decompressor cannot find file {0}", ifile));
-                        } catch (AECException e) {
-                            UIConsole.Error($"AEC Decompress problem decompressing file {ifile}: {e.status.ToString()}");
-                            UIConsole.Debug($"AEC Params: 8 - {pixelsPerBlock} - {pixels} - {mask}");
-                        } catch (IOException e) {
-                            Console.WriteLine("Error deleting file {0}: {1}", ifile, e);
-                        }
-
-                        f.Write(outputData, 0, outputData.Length);
-                    }
-                }
-
-            } catch (Exception e) {
-                UIConsole.Error(string.Format("There was an error decompressing data: {0}", e));
-            }
-
-            try {
-                if (f != null) {
-                    f.Close();
-                }
-            } catch (Exception) {
-                // Do nothing
-            }
-
-            return outputFile;
         }
     }
 }

@@ -57,6 +57,17 @@ namespace OpenSatelliteProject.Tools {
             var fo = File.OpenWrite(outName);
             fo.Write(buffer, 0, bytesToRead);
             fo.Close();
+
+            EventMaster.Post (EventTypes.NewFileEvent, new NewFileReceivedEventData {
+                Name = Path.GetFileName(outName),
+                Path = outName,
+                Metadata = {
+                    { "product", header.Product.Name },
+                    { "subProduct", header.SubProduct.Name },
+                    { "productId", header.Product.ID.ToString() },
+                    { "subProductId", header.SubProduct.ID.ToString() }
+                }
+            });
         }
     }
 }
