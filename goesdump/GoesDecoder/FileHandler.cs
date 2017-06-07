@@ -56,7 +56,6 @@ namespace OpenSatelliteProject {
 
         public static void DefaultHandler(string filename, XRITHeader fileHeader) {
             string dir = Path.GetDirectoryName(filename); 
-            string f = PacketManager.FixFileFolder(dir, ofilename, fileHeader.Product, fileHeader.SubProduct);
             string ofilename = fileHeader.Filename ?? Path.GetFileName (filename);
 
             // Workarround for multi-segment HRIT
@@ -69,6 +68,8 @@ namespace OpenSatelliteProject {
                     ofilename = $"{baseName}-img{imageId}-seg{fileH}{ext}";
                 }
             }
+
+            string f = PacketManager.FixFileFolder(dir, ofilename, fileHeader.Product, fileHeader.SubProduct);
 
 
             if (
