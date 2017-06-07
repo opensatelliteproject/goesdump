@@ -126,12 +126,14 @@ namespace LibraryTest {
             ImageManager.GenerateOtherImages = true;
             ImageManager.EraseFiles = false;
             ImageManager.UseNOAAFileFormat = true;
+            // /*
             im0.Start ();
             im1.Start ();
             im2.Start ();
             im3.Start ();
             im4.Start ();
             im5.Start ();
+            // */
             //*/
              /*
             
