@@ -105,11 +105,12 @@ namespace LibraryTest {
 
             EventMaster.On ("newFile", d => {
                 var ed = (NewFileReceivedEventData) d.Data;
-                Console.WriteLine($"Received event for new file {ed.Name} at {ed.Path}");
-                Console.WriteLine(ed.ToString());
+                //Console.WriteLine($"Received event for new file {ed.Name} at {ed.Path}");
+                //Console.WriteLine(ed.ToString());
             });
 
-            string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
+            //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
+            string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1496761569.bin";
             //string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";
             var im0 = new ImageManager ("output/Images/Full Disk/");
             var im1 = new ImageManager ("output/Images/Northern Hemisphere/");
@@ -123,7 +124,7 @@ namespace LibraryTest {
             ImageManager.GenerateFalseColor = true;
             ImageManager.GenerateWaterVapour = true;
             ImageManager.GenerateOtherImages = true;
-            ImageManager.EraseFiles = true;
+            ImageManager.EraseFiles = false;
             ImageManager.UseNOAAFileFormat = true;
             im0.Start ();
             im1.Start ();
@@ -132,7 +133,8 @@ namespace LibraryTest {
             im4.Start ();
             im5.Start ();
             //*/
-            //*
+             /*
+            
             DemuxManager dm = new DemuxManager ();
             FileHandler.SkipDCS = true;
             FileHandler.SkipEMWIN = true;

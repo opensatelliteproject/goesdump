@@ -11,6 +11,13 @@ namespace OpenSatelliteProject {
         public int MaxSegments;
         public bool OK { get; set; }
         public int Timestamp { get; set; }
+        public int FirstSegment { get; set; }
+
+        /// <summary>
+        /// Code used for desambiguation
+        /// </summary>
+        /// <value>The code.</value>
+        public string Code { get; set; }
 
         public OrganizerData() {
             Segments = new Dictionary<int, string>();
@@ -21,6 +28,8 @@ namespace OpenSatelliteProject {
             MaxSegments = 1;
             OK = false;
             Timestamp = 0;
+            FirstSegment = 999999;
+            Code = DateTime.UtcNow.ToShortTimeString ();
         }
 
         public bool IsComplete { get { return Segments.Count == MaxSegments; }}
