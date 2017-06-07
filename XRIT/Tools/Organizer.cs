@@ -92,14 +92,14 @@ namespace OpenSatelliteProject {
                         }
 
                         var cropSection = region.ToLower().Contains("full disk") || header.IsFullDisk;
-                        var timestamp = 0;
+                        int timestamp = 0;
                         if (datetime.Year < 2005 && file.Contains("OR_ABI")) {
                             // Timestamp bug on G16
                             imageKey = header.SegmentIdentificationHeader != null ? 
                                 header.SegmentIdentificationHeader.ImageID : 
                                 (int)Math.Floor((datetime - UnixEpoch).TotalSeconds);
                             timestamp = (int)Math.Floor((datetime - UnixEpoch).TotalSeconds);
-                        } else if (imageKey < 0 && file.Contains("IMG_DK")) {
+                        } else if (datetime.Year < 2005 && file.Contains("IMG_DK")) {
                             // Himawari-8 relay BUG
                             //IMG_DK01VIS_201704161550
                             string bfile = Path.GetFileName(file);
@@ -110,11 +110,9 @@ namespace OpenSatelliteProject {
                             var hour = hdt.Substring(8, 2);
                             var minute = hdt.Substring(10, 2);
                             datetime = new DateTime(int.Parse(year), int.Parse(month), int.Parse(day), int.Parse(hour), int.Parse(minute), 0);
-                            imageKey = (int)Math.Floor((datetime - UnixEpoch).TotalSeconds);
-                            timestamp = (int)Math.Floor((datetime - UnixEpoch).TotalSeconds);
+                            imageKey = timestamp = (int)Math.Floor((datetime - UnixEpoch).TotalSeconds);
                         } else {
-                            imageKey = (int)Math.Floor((datetime - UnixEpoch).TotalSeconds);
-                            timestamp = (int)Math.Floor((datetime - UnixEpoch).TotalSeconds);
+                            imageKey = timestamp = (int)Math.Floor((datetime - UnixEpoch).TotalSeconds);
                         }
 
                         if (!groupData.ContainsKey(imageKey)) {
