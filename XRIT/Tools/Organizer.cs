@@ -184,6 +184,7 @@ namespace OpenSatelliteProject {
                         od.Code = grp.Code;
                         od.Timestamp = timestamp;
                         od.Segments[segmentId] = file;
+                        od.FirstSegment = Math.Min(od.FirstSegment, segmentId);
                         if (od.Columns == -1) {
                             od.Columns = header.ImageStructureHeader.Columns;
                             od.Lines = header.ImageStructureHeader.Lines;
