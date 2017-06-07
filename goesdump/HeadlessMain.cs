@@ -223,7 +223,7 @@ namespace OpenSatelliteProject {
             UIConsole.Log("Headless Main Created");
             httpsv = new HttpServer(ProgConfig.HTTPPort);
 
-            httpsv.RootPath = Path.Combine(".", "web");
+            httpsv.RootPath = Path.GetFullPath(Path.Combine(".", "web"));
             httpsv.OnGet += HandleHTTPGet;
             httpsv.AddWebSocketService("/mainws", () => new WSHandler {
                 dh = directoryHandler
@@ -242,6 +242,16 @@ namespace OpenSatelliteProject {
                 messageList.Add(data);
                 messageListMutex.ReleaseMutex();
             };
+        }
+
+        private byte[] GetFile(string path) {
+            // TODO: Make it better.
+            string absPath = Path.GetFullPath (Path.Combine (httpsv.RootPath, "./" + path));
+            if (!absPath.StartsWith(httpsv.RootPath) || !File.Exists(absPath)) {
+                return null;
+            }
+
+            return File.ReadAllBytes (absPath);
         }
 
         private void HandleHTTPGet(object sender, HttpRequestEventArgs e) {
@@ -278,7 +288,7 @@ namespace OpenSatelliteProject {
                 return;
             }
 
-            var content = httpsv.GetFile(path);
+            var content = GetFile(path);
             if (content == null) {
                 res.StatusCode = (int)HttpStatusCode.NotFound;
                 const string res404 = "File not found";

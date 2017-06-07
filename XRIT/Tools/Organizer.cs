@@ -120,6 +120,7 @@ namespace OpenSatelliteProject {
                         grp.LineScalingFactor = header.ImageNavigationHeader.LineScalingFactor;
                         grp.ColumnOffset = grp.ColumnOffset == -1 ? header.ImageNavigationHeader.ColumnOffset : grp.ColumnOffset;
                         grp.LineOffset = grp.LineOffset == -1 ? header.ImageNavigationHeader.LineOffset : grp.LineOffset;
+                        grp.Code = header.Product.Name + "-" + header.SubProduct.Name;
 
                         var od = new OrganizerData();
                         switch (channel) {
@@ -166,9 +167,10 @@ namespace OpenSatelliteProject {
                                 od = grp.OtherData[z];
                                 break;
                         } 
-
+                        od.Code = grp.Code;
                         od.Timestamp = timestamp;
                         od.Segments[segmentId] = file;
+                        od.FirstSegment = Math.Min(od.FirstSegment, segmentId);
                         if (od.Columns == -1) {
                             od.Columns = header.ImageStructureHeader.Columns;
                             od.Lines = header.ImageStructureHeader.Lines;

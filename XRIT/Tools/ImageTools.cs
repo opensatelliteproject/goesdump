@@ -62,7 +62,7 @@ namespace OpenSatelliteProject {
             var pdata = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, PixelFormat.Format8bppIndexed);
             // Dump files to bitmap
             for (int i = 0; i < data.Segments.Count; i++) {
-                var filename = data.Segments[i];
+                var filename = data.Segments[data.FirstSegment + i];
                 var header = FileParser.GetHeaderFromFile(filename);
                 var width = header.ImageStructureHeader.Columns;
                 var height = header.ImageStructureHeader.Lines;

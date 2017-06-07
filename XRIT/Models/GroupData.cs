@@ -34,6 +34,11 @@ namespace OpenSatelliteProject {
 
         public int RetryCount { get; set; }
         public bool Failed { get; set; }
+        /// <summary>
+        /// Code used for desambiguation
+        /// </summary>
+        /// <value>The code.</value>
+        public string Code { get; set; }
 
         public bool IsComplete { get { 
                 return Visible.IsComplete && 
@@ -90,6 +95,7 @@ namespace OpenSatelliteProject {
             LineOffset = -1;
             ColumnScalingFactor = 0f;
             LineScalingFactor = 0f;
+            Code = DateTime.UtcNow.ToString();
         }
 
         public override string ToString() {
