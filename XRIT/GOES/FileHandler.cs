@@ -18,7 +18,6 @@ namespace OpenSatelliteProject {
         public static string TemporaryFileFolder { get; set; }
         public static string FinalFileFolder { get; set; }
 
-
         static FileHandler() {
             byProductIdHandler = new Dictionary<int, FileHandlerFunction>();
             byCompressionTypeHandler = new Dictionary<int, FileHandlerFunction>();
@@ -56,7 +55,19 @@ namespace OpenSatelliteProject {
 
         public static void DefaultHandler(string filename, XRITHeader fileHeader) {
             string dir = Path.GetDirectoryName(filename);
-            string ofilename = fileHeader.Filename ?? Path.GetFileName (filename); 
+            string ofilename = fileHeader.Filename ?? Path.GetFileName (filename);
+
+            // Workarround for multi-segment HRIT
+            if (fileHeader.Product.ID == (int)NOAAProductID.GOES16_ABI) {
+                if (fileHeader.SegmentIdentificationHeader != null && fileHeader.SegmentIdentificationHeader.MaxSegments > 1) {
+                    string baseName = Path.GetFileNameWithoutExtension (ofilename);
+                    string ext = Path.GetExtension (ofilename);
+                    string fileH = fileHeader.SegmentIdentificationHeader.Sequence.ToString ();
+                    string imageId = fileHeader.SegmentIdentificationHeader.ImageID.ToString();
+                    ofilename = $"{baseName}-img{imageId}-seg{fileH}{ext}";
+                }
+            }
+
             string f = PacketManager.FixFileFolder(dir, ofilename, fileHeader.Product, fileHeader.SubProduct);
 
             if (

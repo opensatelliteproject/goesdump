@@ -133,11 +133,11 @@ namespace LibraryTest {
             im4.Start ();
             im5.Start ();
             //*/
-            /*
+            // /*
             
             DemuxManager dm = new DemuxManager ();
-            FileHandler.SkipDCS = false;
-            FileHandler.SkipEMWIN = false;
+            FileHandler.SkipDCS = true;
+            FileHandler.SkipEMWIN = true;
             //const int startFrame = 956000;
             const int startFrame = 0;
             FileStream file = File.OpenRead (debugFrames);
