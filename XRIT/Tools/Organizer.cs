@@ -44,6 +44,7 @@ namespace OpenSatelliteProject {
                         var datetime = header.TimestampHeader.DateTime; // Defaults to capture time
                         var channel = 99;
                         var segmentId = header.SegmentIdentificationHeader != null ? header.SegmentIdentificationHeader.Sequence : 0;
+                        var imageKey = header.SegmentIdentificationHeader != null ? header.SegmentIdentificationHeader.ImageID : -1;
 
                         if (header.Product.ID == (int)NOAAProductID.HIMAWARI8_ABI) {
                             channel = header.SubProduct.ID;
@@ -91,9 +92,14 @@ namespace OpenSatelliteProject {
                         }
 
                         var cropSection = region.ToLower().Contains("full disk") || header.IsFullDisk;
-                        var timestamp = (int)Math.Floor((datetime - UnixEpoch).TotalSeconds);
-
-                        if (timestamp < 0 && file.Contains("IMG_DK")) {
+                        int timestamp = 0;
+                        if (datetime.Year < 2005 && file.Contains("OR_ABI")) {
+                            // Timestamp bug on G16
+                            imageKey = header.SegmentIdentificationHeader != null ? 
+                                header.SegmentIdentificationHeader.ImageID : 
+                                (int)Math.Floor((datetime - UnixEpoch).TotalSeconds);
+                            timestamp = (int)Math.Floor((datetime - UnixEpoch).TotalSeconds);
+                        } else if (datetime.Year < 2005 && file.Contains("IMG_DK")) {
                             // Himawari-8 relay BUG
                             //IMG_DK01VIS_201704161550
                             string bfile = Path.GetFileName(file);
@@ -104,13 +110,15 @@ namespace OpenSatelliteProject {
                             var hour = hdt.Substring(8, 2);
                             var minute = hdt.Substring(10, 2);
                             datetime = new DateTime(int.Parse(year), int.Parse(month), int.Parse(day), int.Parse(hour), int.Parse(minute), 0);
-                            timestamp = (int)Math.Floor((datetime - UnixEpoch).TotalSeconds);
+                            imageKey = timestamp = (int)Math.Floor((datetime - UnixEpoch).TotalSeconds);
+                        } else {
+                            imageKey = timestamp = (int)Math.Floor((datetime - UnixEpoch).TotalSeconds);
                         }
 
-                        if (!groupData.ContainsKey(timestamp)) {
-                            groupData[timestamp] = new GroupData();
+                        if (!groupData.ContainsKey(imageKey)) {
+                            groupData[imageKey] = new GroupData();
                         }
-                        var grp = groupData[timestamp];
+                        var grp = groupData[imageKey];
                         grp.SatelliteName = satellite;
                         grp.RegionName = region;
                         grp.FrameTime = datetime;
@@ -120,6 +128,9 @@ namespace OpenSatelliteProject {
                         grp.LineScalingFactor = header.ImageNavigationHeader.LineScalingFactor;
                         grp.ColumnOffset = grp.ColumnOffset == -1 ? header.ImageNavigationHeader.ColumnOffset : grp.ColumnOffset;
                         grp.LineOffset = grp.LineOffset == -1 ? header.ImageNavigationHeader.LineOffset : grp.LineOffset;
+                        grp.Code = header.SegmentIdentificationHeader != null ? 
+                            header.SegmentIdentificationHeader.ImageID + "_" + header.SubProduct.Name :
+                            header.Product.Name + "_" + header.SubProduct.Name;
 
                         var od = new OrganizerData();
                         switch (channel) {
@@ -170,7 +181,7 @@ namespace OpenSatelliteProject {
                                 od = grp.OtherData[z];
                                 break;
                         } 
-
+                        od.Code = grp.Code;
                         od.Timestamp = timestamp;
                         od.Segments[segmentId] = file;
                         if (od.Columns == -1) {

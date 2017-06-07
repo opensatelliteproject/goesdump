@@ -175,7 +175,7 @@ namespace OpenSatelliteProject {
                     if (!mData.IsProcessed) {
                         try {
                             if (ImageManager.GenerateVisible && mData.Visible.IsComplete && mData.Visible.MaxSegments != 0 && !mData.IsVisibleProcessed) {
-                                string ofilename = Path.Combine(folder, GenFilename(mData.SatelliteName, mData.RegionName, "VIS", z.Key, mData.Visible.Segments[0]));
+                                string ofilename = Path.Combine(folder, GenFilename(mData.SatelliteName, mData.RegionName, "VIS", z.Key, mData.Visible.Segments[mData.Visible.FirstSegment]));
                                 if (File.Exists(ofilename)) {
                                     UIConsole.GlobalConsole.Debug(string.Format("Skipping generating Visible for {0}. Image already exists.", Path.GetFileName(ofilename)));
                                     mData.IsVisibleProcessed = true;
@@ -191,7 +191,7 @@ namespace OpenSatelliteProject {
                             }
 
                             if (ImageManager.GenerateInfrared && mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
-                                string ofilename = Path.Combine(folder, GenFilename(mData.SatelliteName, mData.RegionName, "IR", z.Key, mData.Infrared.Segments[0]));
+                                string ofilename = Path.Combine(folder, GenFilename(mData.SatelliteName, mData.RegionName, "IR", z.Key, mData.Infrared.Segments[mData.Infrared.FirstSegment]));
                                 if (File.Exists(ofilename)) {
                                     UIConsole.GlobalConsole.Debug(string.Format("Skipping generating Infrared for {0}. Image already exists.", Path.GetFileName(ofilename)));
                                 } else {
@@ -206,7 +206,7 @@ namespace OpenSatelliteProject {
                             }
 
                             if (ImageManager.GenerateWaterVapour && mData.WaterVapour.IsComplete && mData.WaterVapour.MaxSegments != 0 && !mData.IsWaterVapourProcessed) {
-                                string ofilename = Path.Combine(folder, GenFilename(mData.SatelliteName, mData.RegionName, "WV", z.Key, mData.WaterVapour.Segments[0]));
+                                string ofilename = Path.Combine(folder, GenFilename(mData.SatelliteName, mData.RegionName, "WV", z.Key, mData.WaterVapour.Segments[mData.WaterVapour.FirstSegment]));
                                 if (File.Exists(ofilename)) {
                                     UIConsole.GlobalConsole.Debug(string.Format("Skipping generating Water Vapour for {0}. Image already exists.", Path.GetFileName(ofilename)));
                                 } else {
@@ -220,7 +220,15 @@ namespace OpenSatelliteProject {
                                 mData.WaterVapour.OK = true;
                             }
                             if (GenerateFalseColor && !mData.IsFalseColorProcessed  && ImageTools.CanGenerateFalseColor(mData)) {
-                                string filename = GenFilename(mData.SatelliteName, mData.RegionName, "FSCLR", z.Key, mData.Visible.Segments[0].Replace("VS", "FC"));
+                                string filename = GenFilename(
+                                    mData.SatelliteName, 
+                                    mData.RegionName, 
+                                    "FSCLR", 
+                                    z.Key, 
+                                    mData.Visible.Segments[mData.Visible.FirstSegment]
+                                    .Replace("VS", "FC")
+                                    .Replace("VIS", "FC")
+                                );
                                 filename = Path.Combine(folder, filename);
 
                                 if (File.Exists(filename)) {
@@ -240,7 +248,7 @@ namespace OpenSatelliteProject {
                                 mData.OtherData.Keys.ToList().ForEach(k => {
                                     var gd = mData.OtherData[k];
                                     if (gd.IsComplete && gd.MaxSegments != 0 && !gd.OK) {
-                                        string ofilename = GenFilename(mData.SatelliteName, mData.RegionName, "", gd.Timestamp, gd.Segments[0]);
+                                        string ofilename = GenFilename(mData.SatelliteName, mData.RegionName, gd.Code, gd.Timestamp, gd.Segments[0]);
                                         ofilename = Path.Combine(folder, ofilename);
 
                                         if (File.Exists(ofilename)) {
