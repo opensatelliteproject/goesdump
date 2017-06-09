@@ -108,7 +108,10 @@ namespace LibraryTest {
                 //Console.WriteLine($"Received event for new file {ed.Name} at {ed.Path}");
                 //Console.WriteLine(ed.ToString());
             });
-
+            Console.WriteLine ("Hash: " + LibInfo.CommitID);
+            Console.WriteLine ("Log: " + LibInfo.LogLines);
+            Console.WriteLine ("Short Hash: " + LibInfo.ShortCommitID);
+            Console.WriteLine ("Version: " + LibInfo.Version);
             //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
             string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1496761569.bin";
             //string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";

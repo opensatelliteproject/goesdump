@@ -133,6 +133,7 @@
     <Compile Include="EventMaster\Events\FrameEventData.cs" />
     <Compile Include="EventMaster\Events\EventTypes.cs" />
     <Compile Include="Tools\Decompress.cs" />
+    <Compile Include="Properties\LibInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -150,5 +151,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <Target Name="BeforeBuild" BeforeTargets="Build">
+    <Exec Command="git rev-parse HEAD &gt;git-hash.txt" WorkingDirectory="$(ProjectDir)" IgnoreExitCode="true" />
+    <Exec Command="git log --pretty=format:'&#37;h %ad &#37;s' --date=short | head -n 10 &gt;git-log.txt" WorkingDirectory="$(ProjectDir)" IgnoreExitCode="true" />
+  </Target>
+  <ItemGroup>
+    <EmbeddedResource Include="git-hash.txt" />
+    <EmbeddedResource Include="git-log.txt" />
   </ItemGroup>
 </Project>

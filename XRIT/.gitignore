@@ -4,3 +4,5 @@ Content/bin
 Content/obj
 build/*.nupkg
 build/lib/*
+git-hash.txt
+git-log.txt
