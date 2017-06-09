@@ -113,6 +113,7 @@ namespace LibraryTest {
             Console.WriteLine ("Short Hash: " + LibInfo.ShortCommitID);
             Console.WriteLine ("Version: " + LibInfo.Version);
             //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
+            //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1496790733.bin";
             string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1496761569.bin";
             //string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";
             var im0 = new ImageManager ("output/Images/Full Disk/");
@@ -124,10 +125,10 @@ namespace LibraryTest {
 
             ImageManager.GenerateVisible = true;
             ImageManager.GenerateInfrared = true;
-            ImageManager.GenerateFalseColor = true;
+            ImageManager.GenerateFalseColor = false;
             ImageManager.GenerateWaterVapour = true;
             ImageManager.GenerateOtherImages = true;
-            ImageManager.EraseFiles = false;
+            ImageManager.EraseFiles = true;
             ImageManager.UseNOAAFileFormat = true;
             // /*
             im0.Start ();
@@ -138,7 +139,7 @@ namespace LibraryTest {
             im5.Start ();
             // */
             //*/
-             /*
+            // /*
             
             DemuxManager dm = new DemuxManager ();
             FileHandler.SkipDCS = true;
