@@ -197,6 +197,9 @@ namespace OpenSatelliteProject {
                                 }
                                 mData.IsVisibleProcessed = true;
                                 mData.Visible.OK = true;
+                            } else if (mData.Visible.MaxSegments == 0) {
+                                mData.IsVisibleProcessed = true;
+                                mData.Visible.OK = true;
                             }
 
                             if (ImageManager.GenerateInfrared && mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
@@ -210,6 +213,9 @@ namespace OpenSatelliteProject {
                                     bmp.Dispose();
                                     UIConsole.GlobalConsole.Log(string.Format("New Infrared Image: {0}", Path.GetFileName(ofilename)));
                                 }
+                                mData.IsInfraredProcessed = true;
+                                mData.Infrared.OK = true;
+                            } else if (mData.Infrared.MaxSegments == 0) {
                                 mData.IsInfraredProcessed = true;
                                 mData.Infrared.OK = true;
                             }
@@ -227,7 +233,11 @@ namespace OpenSatelliteProject {
                                 }
                                 mData.IsWaterVapourProcessed = true;
                                 mData.WaterVapour.OK = true;
+                            } else if (mData.WaterVapour.MaxSegments == 0) {
+                                mData.IsWaterVapourProcessed = true;
+                                mData.WaterVapour.OK = true;
                             }
+
                             if (GenerateFalseColor && !mData.IsFalseColorProcessed  && ImageTools.CanGenerateFalseColor(mData)) {
                                 string filename = GenFilename(
                                     mData.SatelliteName, 

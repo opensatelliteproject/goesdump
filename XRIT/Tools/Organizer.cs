@@ -133,6 +133,7 @@ namespace OpenSatelliteProject {
                             header.Product.Name + "_" + header.SubProduct.Name;
 
                         var od = new OrganizerData();
+                        string z;
                         switch (channel) {
                             case 1: // Visible
                                 od = grp.Visible;
@@ -161,20 +162,38 @@ namespace OpenSatelliteProject {
                             case 7: 
                                 if (satellite == "HIMAWARI8") {
                                     od = grp.WaterVapour;
+                                    break;
                                 }
+                                z = $"{timestamp%1000}-{((NOAAProductID)header.Product.ID).ToString()}-{header.SubProduct.Name}";
+                                if (!grp.OtherData.ContainsKey(z)) {
+                                    grp.OtherData.Add(z, new OrganizerData());
+                                }
+                                od = grp.OtherData[z];
                                 break;
                             case 8:
                                 if (satellite == "G16") {
                                     od = grp.WaterVapour;
+                                    break;
                                 }
+                                z = $"{timestamp%1000}-{((NOAAProductID)header.Product.ID).ToString()}-{header.SubProduct.Name}";
+                                if (!grp.OtherData.ContainsKey(z)) {
+                                    grp.OtherData.Add(z, new OrganizerData());
+                                }
+                                od = grp.OtherData[z];
                                 break;
                             case 13: // Infrared for G16
                                 if (satellite == "G16") {
                                     od = grp.Infrared;
+                                    break;
                                 }
+                                z = $"{timestamp%1000}-{((NOAAProductID)header.Product.ID).ToString()}-{header.SubProduct.Name}";
+                                if (!grp.OtherData.ContainsKey(z)) {
+                                    grp.OtherData.Add(z, new OrganizerData());
+                                }
+                                od = grp.OtherData[z];
                                 break;
                             default:
-                                string z = $"{timestamp%1000}-{((NOAAProductID)header.Product.ID).ToString()}-{header.SubProduct.Name}";
+                                z = $"{timestamp%1000}-{((NOAAProductID)header.Product.ID).ToString()}-{header.SubProduct.Name}";
                                 if (!grp.OtherData.ContainsKey(z)) {
                                     grp.OtherData.Add(z, new OrganizerData());
                                 }
