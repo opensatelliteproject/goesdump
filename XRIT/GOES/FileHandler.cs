@@ -62,7 +62,7 @@ namespace OpenSatelliteProject {
                 if (fileHeader.SegmentIdentificationHeader != null && fileHeader.SegmentIdentificationHeader.MaxSegments > 1) {
                     string baseName = Path.GetFileNameWithoutExtension (ofilename);
                     string ext = Path.GetExtension (ofilename);
-                    string fileH = fileHeader.SegmentIdentificationHeader.Sequence.ToString ();
+                    string fileH = fileHeader.SegmentIdentificationHeader.Sequence.ToString ("D2");
                     string imageId = fileHeader.SegmentIdentificationHeader.ImageID.ToString();
                     ofilename = $"{baseName}-img{imageId}-seg{fileH}{ext}";
                 }

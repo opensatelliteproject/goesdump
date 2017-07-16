@@ -210,9 +210,6 @@ namespace OpenSatelliteProject {
                             od.Lines += header.ImageStructureHeader.Lines;
                         }
                         alreadyProcessed.Add(file);
-                        if (file.EndsWith("OR_ABI-L2-CMIPM2-M3C07_G16_s20171580844569_e20171580845039_c20171580845069.lrit")) {
-                            Console.WriteLine("FOUND");
-                        }
                     } catch (Exception e) {
                         UIConsole.Error($"Error reading file {file}: {e}");
                         alreadyProcessed.Add(file);

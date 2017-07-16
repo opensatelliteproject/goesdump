@@ -114,7 +114,7 @@ namespace LibraryTest {
             Console.WriteLine ("Version: " + LibInfo.Version);
             //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
             //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1496790733.bin";
-            string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1496761569.bin";
+            string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1500170251.bin";
             //string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";
             var im0 = new ImageManager ("output/Images/Full Disk/");
             var im1 = new ImageManager ("output/Images/Northern Hemisphere/");
@@ -140,7 +140,7 @@ namespace LibraryTest {
             // */
             //*/
             // /*
-            
+            /*
             DemuxManager dm = new DemuxManager ();
             FileHandler.SkipDCS = true;
             FileHandler.SkipEMWIN = true;

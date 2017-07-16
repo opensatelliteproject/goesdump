@@ -31,6 +31,25 @@ namespace OpenSatelliteProject.PacketData {
 
             noaaProducts.Add((int)NOAAProductID.HRIT_EMWIN, new NOAAProduct(NOAAProductID.HRIT_EMWIN, "HRIT EMWIN TEXT"));
 
+            noaaProducts.Add((int)NOAAProductID.ABI_RELAY, new NOAAProduct(NOAAProductID.ABI_RELAY, "ABI RELAY", new Dictionary<int, NOAASubproduct>() { // So far, only received GOES 13 images. Coecidence?
+                { (int) ScannerSubProduct.NONE,                         new NOAASubproduct(ScannerSubProduct.NONE,                          "None") },
+                { (int) ScannerSubProduct.INFRARED_FULLDISK,            new NOAASubproduct(ScannerSubProduct.INFRARED_FULLDISK,             "Infrared Full Disk") },
+                { (int) ScannerSubProduct.INFRARED_NORTHERN,            new NOAASubproduct(ScannerSubProduct.INFRARED_NORTHERN,             "Infrared Northern Hemisphere") },
+                { (int) ScannerSubProduct.INFRARED_SOUTHERN,            new NOAASubproduct(ScannerSubProduct.INFRARED_SOUTHERN,             "Infrared Southern Hemisphere") },
+                { (int) ScannerSubProduct.INFRARED_UNITEDSTATES,        new NOAASubproduct(ScannerSubProduct.INFRARED_UNITEDSTATES,         "Infrared United States") },
+                { (int) ScannerSubProduct.INFRARED_AREA_OF_INTEREST,    new NOAASubproduct(ScannerSubProduct.INFRARED_AREA_OF_INTEREST,     "Infrared Area of Interest") },
+                { (int) ScannerSubProduct.VISIBLE_FULLDISK,             new NOAASubproduct(ScannerSubProduct.VISIBLE_FULLDISK,              "Visible Full Disk") },
+                { (int) ScannerSubProduct.VISIBLE_NORTHERN,             new NOAASubproduct(ScannerSubProduct.VISIBLE_NORTHERN,              "Visible Northern Hemisphere") },
+                { (int) ScannerSubProduct.VISIBLE_SOUTHERN,             new NOAASubproduct(ScannerSubProduct.VISIBLE_SOUTHERN,              "Visible Southern Hemisphere") },
+                { (int) ScannerSubProduct.VISIBLE_UNITEDSTATES,         new NOAASubproduct(ScannerSubProduct.VISIBLE_UNITEDSTATES,          "Visible United States") },
+                { (int) ScannerSubProduct.VISIBLE_AREA_OF_INTEREST,     new NOAASubproduct(ScannerSubProduct.VISIBLE_AREA_OF_INTEREST,      "Visible Area of Interest") },
+                { (int) ScannerSubProduct.WATERVAPOUR_FULLDISK,         new NOAASubproduct(ScannerSubProduct.WATERVAPOUR_FULLDISK,          "Water Vapour Full Disk") },
+                { (int) ScannerSubProduct.WATERVAPOUR_NORTHERN,         new NOAASubproduct(ScannerSubProduct.WATERVAPOUR_NORTHERN,          "Water Vapour Northern Hemisphere") },
+                { (int) ScannerSubProduct.WATERVAPOUR_SOUTHERN,         new NOAASubproduct(ScannerSubProduct.WATERVAPOUR_SOUTHERN,          "Water Vapour Southern Hemisphere") },
+                { (int) ScannerSubProduct.WATERVAPOUR_UNITEDSTATES,     new NOAASubproduct(ScannerSubProduct.WATERVAPOUR_UNITEDSTATES,      "Water Vapour United States") },
+                { (int) ScannerSubProduct.WATERVAPOUR_AREA_OF_INTEREST, new NOAASubproduct(ScannerSubProduct.WATERVAPOUR_AREA_OF_INTEREST,  "Water Vapour Area of Interest") }
+            }));
+
             noaaProducts.Add((int)NOAAProductID.GOES13_ABI, new NOAAProduct(NOAAProductID.GOES13_ABI, "GOES 13 ABI", new Dictionary<int, NOAASubproduct>() { // So far, only received GOES 13 images. Coecidence?
                 { (int) ScannerSubProduct.NONE,                         new NOAASubproduct(ScannerSubProduct.NONE,                          "None") },
                 { (int) ScannerSubProduct.INFRARED_FULLDISK,            new NOAASubproduct(ScannerSubProduct.INFRARED_FULLDISK,             "Infrared Full Disk") },

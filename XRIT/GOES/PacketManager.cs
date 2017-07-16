@@ -35,7 +35,7 @@ namespace OpenSatelliteProject {
             string folderName = UnknownDataFolder;
             if (product == NOAAProductID.GOES16_ABI) {
                 folderName = Path.Combine(ImagesFolder, "FM1");
-            } else  if (product == NOAAProductID.GOES13_ABI || product == NOAAProductID.GOES15_ABI) {
+            } else  if (product == NOAAProductID.GOES13_ABI || product == NOAAProductID.GOES15_ABI || product == NOAAProductID.ABI_RELAY) {
                 switch (subProduct) {
                     case (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST:
                     case (int)ScannerSubProduct.VISIBLE_AREA_OF_INTEREST:
@@ -103,7 +103,7 @@ namespace OpenSatelliteProject {
                     folderName = Path.Combine(ImagesFolder, "FM1");
                 } else if (product.ID == (int)NOAAProductID.HIMAWARI8_ABI) {
                     folderName = Path.Combine(ImagesFolder, "Full Disk");
-                } else if (product.ID == (int)NOAAProductID.GOES13_ABI || product.ID == (int)NOAAProductID.GOES15_ABI) {
+                } else if (product.ID == (int)NOAAProductID.GOES13_ABI || product.ID == (int)NOAAProductID.GOES15_ABI || product.ID == (int)NOAAProductID.ABI_RELAY) {
                     switch (subProduct.ID) {
                         case (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST:
                         case (int)ScannerSubProduct.VISIBLE_AREA_OF_INTEREST:
