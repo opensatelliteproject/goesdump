@@ -121,8 +121,8 @@ namespace OpenSatelliteProject {
                 });
             }
             // Erase Other Images LRIT
-            if ((GenerateOtherImages && mData.IsOtherDataProcessed || !GenerateOtherImages)) {
-                mData.OtherData.Select(x => x.Value).ToList().ForEach(k => {
+            mData.OtherData.Select(x => x.Value).ToList().ForEach(k => {
+                if (k.OK) {
                     k.Segments.Select(x => x.Value).ToList().ForEach(f => {
                         try {
                             File.Delete(f);
@@ -130,8 +130,8 @@ namespace OpenSatelliteProject {
                             UIConsole.Error($"Error erasing file {f}: {e}");
                         }
                     });
-                });
-            }
+                }
+            });
 
             // Do not erase files until false color is processed if required.
             if (GenerateFalseColor && !mData.IsFalseColorProcessed) {
@@ -208,6 +208,9 @@ namespace OpenSatelliteProject {
                                 }
                                 mData.IsVisibleProcessed = true;
                                 mData.Visible.OK = true;
+                            } else if (mData.Visible.MaxSegments == 0) {
+                                mData.IsVisibleProcessed = true;
+                                mData.Visible.OK = true;
                             }
 
                             if (ImageManager.GenerateInfrared && mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
@@ -231,6 +234,9 @@ namespace OpenSatelliteProject {
                                         }
                                     });
                                 }
+                                mData.IsInfraredProcessed = true;
+                                mData.Infrared.OK = true;
+                            } else if (mData.Infrared.MaxSegments == 0) {
                                 mData.IsInfraredProcessed = true;
                                 mData.Infrared.OK = true;
                             }
@@ -326,6 +332,8 @@ namespace OpenSatelliteProject {
                                     }
                                 });
                                 mData.IsOtherDataProcessed = Processed;
+                            } else if (mData.OtherData.Count == 0) {
+                                mData.IsOtherDataProcessed = true;
                             }
 
                             mData.IsProcessed = 
