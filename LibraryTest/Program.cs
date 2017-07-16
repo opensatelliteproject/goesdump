@@ -114,7 +114,7 @@ namespace LibraryTest {
             Console.WriteLine ("Version: " + LibInfo.Version);
             //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
             //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1496790733.bin";
-            string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1500170251.bin";
+            string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1500179126.bin";
             //string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";
             var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
             //var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_50m_admin_0_countries.shp");

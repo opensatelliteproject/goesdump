@@ -1,11 +1,13 @@
 ﻿<Properties StartupItem="LibraryTest/LibraryTest.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/Tools/Presets.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/GOES/ImageManager.cs">
     <Files>
       <File FileName="XRIT/GOES/PacketManager.cs" Line="1" Column="1" />
       <File FileName="XRIT/GOES/FileHandler.cs" Line="1" Column="1" />
       <File FileName="XRIT/GOES/Demuxer.cs" Line="1" Column="1" />
-      <File FileName="XRIT/Tools/Presets.cs" Line="35" Column="43" />
+      <File FileName="XRIT/GOES/ImageManager.cs" Line="348" Column="80" />
+      <File FileName="LibraryTest/Program.cs" Line="148" Column="15" />
+      <File FileName="XRIT/Geo/MapDrawer.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

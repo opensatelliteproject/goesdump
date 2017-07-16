@@ -329,7 +329,6 @@ namespace OpenSatelliteProject {
                                 mData.IsFalseColorProcessed = true;
                             }
                             if (GenerateOtherImages && !mData.IsOtherDataProcessed && mData.OtherData.Count > 0) {
-                                bool Processed = true;
                                 mData.OtherData.Keys.ToList().ForEach(k => {
                                     var gd = mData.OtherData[k];
                                     if (gd.IsComplete && gd.MaxSegments != 0 && !gd.OK) {
@@ -360,11 +359,8 @@ namespace OpenSatelliteProject {
                                             });
                                         }
                                         gd.OK = true;
-                                    } else {
-                                        Processed = false;
                                     }
                                 });
-                                mData.IsOtherDataProcessed = Processed;
                             } else if (mData.OtherData.Count == 0) {
                                 mData.IsOtherDataProcessed = true;
                             }
