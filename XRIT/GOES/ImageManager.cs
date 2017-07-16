@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using OpenSatelliteProject.Tools;
 using System.Collections.Generic;
+using OpenSatelliteProject.Geo;
+using System.Drawing;
 
 namespace OpenSatelliteProject {
     public class ImageManager {
@@ -26,7 +28,9 @@ namespace OpenSatelliteProject {
         public static bool GenerateInfrared { get; set; }
         public static bool GenerateWaterVapour { get; set; }
         public static bool GenerateOtherImages { get; set; }
+        public static bool GenerateOverlays { get; set; }
         public static bool UseNOAAFileFormat { get; set; }
+        public static MapDrawer MapDrawer { get; set; }
 
         Thread imageThread;
         bool running;
@@ -42,6 +46,8 @@ namespace OpenSatelliteProject {
             GenerateWaterVapour = true;
             GenerateOtherImages = true;
             UseNOAAFileFormat = false;
+            GenerateOverlays = false;
+            MapDrawer = null;
         }
 
         private static string GenFilename(string satelliteName, string regionName, string imageName, int timestamp, string origName = null) {
@@ -171,6 +177,12 @@ namespace OpenSatelliteProject {
             }
         }
 
+        private void GenerateImageOverlay(ref Bitmap bmp, GroupData gd, OrganizerData od) {
+            var gc = new GeoConverter(gd.SatelliteLongitude, gd.ColumnOffset, gd.LineOffset, gd.ColumnScalingFactor, gd.LineScalingFactor, true, od.Columns);
+            MapDrawer.DrawMap(ref bmp, gc, Color.Aqua, 2, true);
+            ImageTools.DrawLatLonLines(ref bmp, gc, Color.Brown, 1, true);
+        }
+
         private void ThreadLoop() {
             while (running) {
                 organizer.Update();
@@ -192,6 +204,10 @@ namespace OpenSatelliteProject {
                                 } else {
                                     UIConsole.Debug(string.Format("Starting Generation of Visible for {0}.", Path.GetFileName(ofilename)));
                                     var bmp = ImageTools.GenerateFullImage(mData.Visible, mData.CropImage);
+                                    if (GenerateOverlays) {
+                                        UIConsole.Debug(string.Format("Generating Overlays Visible for {0}.", Path.GetFileName(ofilename)));
+                                        GenerateImageOverlay(ref bmp, mData, mData.Visible);
+                                    }
                                     bmp.Save(ofilename, ImageFormat.Png);
                                     bmp.Dispose();
                                     UIConsole.Log($"New Visible Image: {Path.GetFileName(ofilename)}");
@@ -220,6 +236,10 @@ namespace OpenSatelliteProject {
                                 } else {
                                     UIConsole.Debug($"Starting Generation of Infrared for {Path.GetFileName(ofilename)}.");
                                     var bmp = ImageTools.GenerateFullImage(mData.Infrared, mData.CropImage);
+                                    if (GenerateOverlays) {
+                                        UIConsole.Debug(string.Format("Generating Overlays Infrared for {0}.", Path.GetFileName(ofilename)));
+                                        GenerateImageOverlay(ref bmp, mData, mData.Infrared);
+                                    }
                                     bmp.Save(ofilename, ImageFormat.Png);
                                     bmp.Dispose();
                                     UIConsole.Log($"New Infrared Image: {Path.GetFileName(ofilename)}");
@@ -248,6 +268,10 @@ namespace OpenSatelliteProject {
                                 } else {
                                     UIConsole.Debug($"Starting Generation of Water Vapour for {Path.GetFileName(ofilename)}.");
                                     var bmp = ImageTools.GenerateFullImage(mData.WaterVapour, mData.CropImage);
+                                    if (GenerateOverlays) {
+                                        UIConsole.Debug(string.Format("Generating Overlays WaterVapour for {0}.", Path.GetFileName(ofilename)));
+                                        GenerateImageOverlay(ref bmp, mData, mData.WaterVapour);
+                                    }
                                     bmp.Save(ofilename, ImageFormat.Png);
                                     bmp.Dispose();
                                     UIConsole.Log($"New Water Vapour Image: {Path.GetFileName(ofilename)}");
@@ -282,7 +306,10 @@ namespace OpenSatelliteProject {
                                 } else {
                                     UIConsole.Debug($"Starting Generation of FSLCR for {Path.GetFileName(filename)}.");
                                     var bmp = ImageTools.GenerateFalseColor(mData);
-
+                                    if (GenerateOverlays) {
+                                        UIConsole.Debug(string.Format("Generating Overlays False Colour for {0}.", Path.GetFileName(filename)));
+                                        GenerateImageOverlay(ref bmp, mData, mData.Visible); // Using visible coordinates
+                                    }
                                     bmp.Save(filename, ImageFormat.Png);
                                     bmp.Dispose();
                                     UIConsole.Log($"New False Colour Image: {Path.GetFileName(filename)}");
@@ -312,6 +339,10 @@ namespace OpenSatelliteProject {
                                         } else {
                                             UIConsole.Debug($"Starting Generation of {Path.GetFileName(ofilename)}.");
                                             var bmp = ImageTools.GenerateFullImage(gd, false);
+                                            if (GenerateOverlays) {
+                                                UIConsole.Debug(string.Format("Generating Overlays for {0}.", Path.GetFileName(ofilename)));
+                                                GenerateImageOverlay(ref bmp, mData, gd);
+                                            }
                                             bmp.Save(ofilename, ImageFormat.Png);
                                             bmp.Dispose();
                                             UIConsole.Log($"New Image: {Path.GetFileName(ofilename)}");

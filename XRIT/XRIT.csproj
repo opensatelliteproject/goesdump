@@ -49,6 +49,9 @@
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
+    <Reference Include="DotSpatial.Mono">
+      <HintPath>..\packages\DotSpatial.Mono.1.9\lib\net40-Client\DotSpatial.Mono.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -154,7 +157,7 @@
   </ItemGroup>
   <Target Name="BeforeBuild" BeforeTargets="Build">
     <Exec Command="git rev-parse HEAD &gt;git-hash.txt" WorkingDirectory="$(ProjectDir)" IgnoreExitCode="true" />
-    <Exec Command="git log --pretty=format:'&#37;h %ad &#37;s' --date=short | head -n 10 &gt;git-log.txt" WorkingDirectory="$(ProjectDir)" IgnoreExitCode="true" />
+    <Exec Command="git log --pretty=format:'%h %ad %s' --date=short | head -n 10 &gt;git-log.txt" WorkingDirectory="$(ProjectDir)" IgnoreExitCode="true" />
   </Target>
   <ItemGroup>
     <EmbeddedResource Include="git-hash.txt" />

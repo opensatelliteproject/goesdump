@@ -12,7 +12,7 @@ namespace OpenSatelliteProject.Geo {
     /// Just load the .shp file
     /// </summary>
     public class MapDrawer {
-        private Shapefile shapeFile;
+        private readonly Shapefile shapeFile;
         
         public MapDrawer(string shapeFile) {
             this.shapeFile = Shapefile.OpenFile(shapeFile);
@@ -35,36 +35,39 @@ namespace OpenSatelliteProject.Geo {
             float lastY = -1;
 
             using (var graphics = Graphics.FromImage(bmp)) {
-                foreach (var f in shapeFile.Features) {
-                    for (int i = 0; i < f.NumGeometries; i++) {
-                        var geom = f.GetBasicGeometryN(i);
-                        var k = geom.Coordinates;
+                lock(shapeFile) {   // TODO: This is BAD, SO BAD, PLEASE FIX ME
+                                    // Thats because for some reason running this in multiple
+                                    // threads is causing Features to be modified (wtf?)
+                foreach (var f in shapeFile.Features.ToList()) {
+                        for (int i = 0; i < f.NumGeometries; i++) {
+                            var geom = f.GetBasicGeometryN (i);
+                            var k = geom.Coordinates;
 
-                        lastX = -1;
-                        lastY = -1;
+                            lastX = -1;
+                            lastY = -1;
 
-                        foreach (var z in k) {
-                            float lon = (float)z.X;
-                            float lat = (float)z.Y;
-                            if (lat < gc.MaxLatitude && lat > gc.MinLatitude && lon < gc.MaxLongitude && lon > gc.MinLongitude) {
-                                var xy = gc.latlon2xy(lat, lon);
-                                float cx = (float)xy.Item1;
-                                float cy = (float)xy.Item2;
+                            foreach (var z in k) {
+                                float lon = (float)z.X;
+                                float lat = (float)z.Y;
+                                if (lat < gc.MaxLatitude && lat > gc.MinLatitude && lon < gc.MaxLongitude && lon > gc.MinLongitude) {
+                                    var xy = gc.latlon2xy (lat, lon);
+                                    float cx = (float)xy.Item1;
+                                    float cy = (float)xy.Item2;
 
-                                if (fixCrop) {
-                                    cx -= gc.CropLeft;
+                                    if (fixCrop) {
+                                        cx -= gc.CropLeft;
+                                    }
+                                    if (
+                                        (lastX != -1 && lastY != -1) &&
+                                        (cx > 0 && cy > 0) &&
+                                        (cx < bmp.Width && cy < bmp.Height) &&
+                                        (lastX > 0 && lastY > 0) &&
+                                        (lastX < bmp.Width && lastY < bmp.Height)) {
+                                        graphics.DrawLine (pen, lastX, lastY, cx, cy);
+                                    }
+                                    lastX = cx;
+                                    lastY = cy;
                                 }
-                                if (
-                                    ( lastX != -1 && lastY != -1 ) && 
-                                    ( cx > 0 && cy > 0 ) &&
-                                    ( cx < bmp.Width && cy < bmp.Height ) &&
-                                    ( lastX > 0 && lastY > 0) &&
-                                    ( lastX < bmp.Width && lastY < bmp.Height)
-                                ){
-                                    graphics.DrawLine(pen, lastX, lastY, cx, cy);
-                                }
-                                lastX = cx;
-                                lastY = cy;
                             }
                         }
                     }
