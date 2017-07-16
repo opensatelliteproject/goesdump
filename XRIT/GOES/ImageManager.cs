@@ -178,9 +178,11 @@ namespace OpenSatelliteProject {
         }
 
         private void GenerateImageOverlay(ref Bitmap bmp, GroupData gd, OrganizerData od) {
-            var gc = new GeoConverter(gd.SatelliteLongitude, gd.ColumnOffset, gd.LineOffset, gd.ColumnScalingFactor, gd.LineScalingFactor, true, od.Columns);
-            MapDrawer.DrawMap(ref bmp, gc, Color.Aqua, 2, true);
-            ImageTools.DrawLatLonLines(ref bmp, gc, Color.Brown, 1, true);
+            if (MapDrawer != null) {
+                var gc = new GeoConverter (gd.SatelliteLongitude, gd.ColumnOffset, gd.LineOffset, gd.ColumnScalingFactor, gd.LineScalingFactor, true, od.Columns);
+                MapDrawer.DrawMap (ref bmp, gc, Color.Aqua, 2, true);
+                ImageTools.DrawLatLonLines (ref bmp, gc, Color.Brown, 1, true);
+            }
         }
 
         private void ThreadLoop() {
