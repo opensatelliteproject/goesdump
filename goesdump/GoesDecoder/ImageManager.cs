@@ -263,7 +263,6 @@ namespace OpenSatelliteProject {
                                 mData.IsFalseColorProcessed = true;
                             }
                             if (GenerateOtherImages && !mData.IsOtherDataProcessed && mData.OtherData.Count > 0) {
-                                bool Processed = true;
                                 mData.OtherData.Keys.ToList().ForEach(k => {
                                     var gd = mData.OtherData[k];
                                     if (gd.IsComplete && gd.MaxSegments != 0 && !gd.OK) {
@@ -280,11 +279,8 @@ namespace OpenSatelliteProject {
                                             UIConsole.GlobalConsole.Log(string.Format("New Image: {0}", Path.GetFileName(ofilename)));
                                         }
                                         gd.OK = true;
-                                    } else {
-                                        Processed = false;
                                     }
                                 });
-                                mData.IsOtherDataProcessed = Processed;
                             }
 
                             mData.IsProcessed = 
