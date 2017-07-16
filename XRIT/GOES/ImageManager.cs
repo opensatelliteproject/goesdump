@@ -121,8 +121,8 @@ namespace OpenSatelliteProject {
                 });
             }
             // Erase Other Images LRIT
-            if ((GenerateOtherImages && mData.IsOtherDataProcessed || !GenerateOtherImages)) {
-                mData.OtherData.Select(x => x.Value).ToList().ForEach(k => {
+            mData.OtherData.Select(x => x.Value).ToList().ForEach(k => {
+                if (k.OK) {
                     k.Segments.Select(x => x.Value).ToList().ForEach(f => {
                         try {
                             File.Delete(f);
@@ -130,8 +130,8 @@ namespace OpenSatelliteProject {
                             UIConsole.Error($"Error erasing file {f}: {e}");
                         }
                     });
-                });
-            }
+                }
+            });
 
             // Do not erase files until false color is processed if required.
             if (GenerateFalseColor && !mData.IsFalseColorProcessed) {
