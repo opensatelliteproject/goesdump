@@ -122,12 +122,14 @@ namespace OpenSatelliteProject {
                         grp.SatelliteName = satellite;
                         grp.RegionName = region;
                         grp.FrameTime = datetime;
-                        grp.CropImage = cropSection;
-                        grp.SatelliteLongitude = satLon;
-                        grp.ColumnScalingFactor = header.ImageNavigationHeader.ColumnScalingFactor;
-                        grp.LineScalingFactor = header.ImageNavigationHeader.LineScalingFactor;
-                        grp.ColumnOffset = grp.ColumnOffset == -1 ? header.ImageNavigationHeader.ColumnOffset : grp.ColumnOffset;
-                        grp.LineOffset = grp.LineOffset == -1 ? header.ImageNavigationHeader.LineOffset : grp.LineOffset;
+                        if (segmentId == 0) {
+                            grp.CropImage = cropSection;
+                            grp.SatelliteLongitude = satLon;
+                            grp.ColumnScalingFactor = header.ImageNavigationHeader.ColumnScalingFactor;
+                            grp.LineScalingFactor = header.ImageNavigationHeader.LineScalingFactor;
+                            grp.ColumnOffset = grp.ColumnOffset == -1 ? header.ImageNavigationHeader.ColumnOffset : grp.ColumnOffset;
+                            grp.LineOffset = grp.LineOffset == -1 ? header.ImageNavigationHeader.LineOffset : grp.LineOffset;
+                        }
                         grp.Code = header.SegmentIdentificationHeader != null ? 
                             header.SegmentIdentificationHeader.ImageID + "_" + header.SubProduct.Name :
                             header.Product.Name + "_" + header.SubProduct.Name;

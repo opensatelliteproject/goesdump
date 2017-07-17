@@ -100,6 +100,7 @@ namespace OpenSatelliteProject {
                 running = true;
                 imageThread = new Thread(new ThreadStart(ThreadLoop));
                 imageThread.IsBackground = true;
+                imageThread.Priority = ThreadPriority.BelowNormal;
                 imageThread.Start();
             }
         }
@@ -180,8 +181,8 @@ namespace OpenSatelliteProject {
         private void GenerateImageOverlay(ref Bitmap bmp, GroupData gd, OrganizerData od) {
             if (MapDrawer != null) {
                 var gc = new GeoConverter (gd.SatelliteLongitude, gd.ColumnOffset, gd.LineOffset, gd.ColumnScalingFactor, gd.LineScalingFactor, true, od.Columns);
-                MapDrawer.DrawMap (ref bmp, gc, Color.Aqua, 2, true);
-                ImageTools.DrawLatLonLines (ref bmp, gc, Color.Brown, 1, true);
+                MapDrawer.DrawMap (ref bmp, gc, Color.Aqua, 2, gd.CropImage);
+                ImageTools.DrawLatLonLines (ref bmp, gc, Color.Brown, 1, gd.CropImage);
             }
         }
 
