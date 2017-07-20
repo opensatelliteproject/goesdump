@@ -2,16 +2,16 @@
 <package >
   <metadata>
     <id>OpenSatelliteProject.XRIT</id>
-    <version>1.1</version>
+    <version>1.2</version>
     <title>XRIT Library</title>
     <authors>Lucas Teske</authors>
     <owners>Lucas Teske</owners>
     <licenseUrl>https://github.com/opensatelliteproject/goesdump/blob/master/XRIT/LICENSE</licenseUrl>
     <projectUrl>https://github.com/opensatelliteproject/goesdump/</projectUrl>
     <iconUrl>https://github.com/opensatelliteproject/goesdump/raw/master/goesdump/icon.png</iconUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>xRIT File / Packet Processing Library</description>
-    <releaseNotes>First release on Nuget, working already on goesdump</releaseNotes>
+    <releaseNotes>Experimental Auto-Overlay</releaseNotes>
     <copyright>Copyright 2017</copyright>
     <tags>GOES XRIT NOAA Satellite OpenSatelliteProject OSP SDR Ingestor</tags>
     <dependencies>

@@ -118,8 +118,11 @@ namespace LibraryTest {
             string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1496790733.bin";
             //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1500179126.bin";
             //string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";
-            var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
-            //var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_50m_admin_0_countries.shp");
+            //var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
+
+            string defaultShapeFile = ShapeFiles.InitShapeFiles ();
+
+            var mapDrawer = new MapDrawer(defaultShapeFile);
 
             var im0 = new ImageManager ("output/Images/Full Disk/");
             var im1 = new ImageManager ("output/Images/Northern Hemisphere/");
@@ -135,7 +138,8 @@ namespace LibraryTest {
             ImageManager.GenerateOtherImages = true;
             ImageManager.EraseFiles = true;
             ImageManager.UseNOAAFileFormat = true;
-            ImageManager.GenerateOverlays = true;
+            ImageManager.GenerateLatLonOverlays = true;
+            ImageManager.GenerateMapOverlays = true;
             ImageManager.MapDrawer = mapDrawer;
             // /*
             im0.Start ();
