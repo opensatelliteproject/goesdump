@@ -66,6 +66,12 @@ namespace OpenSatelliteProject {
         public static bool GenerateMapOverlays { get; set; }
 
         /// <summary>
+        /// Generate Informative Labels on Image
+        /// </summary>
+        /// <value><c>true</c> if generate labels; otherwise, <c>false</c>.</value>
+        public static bool GenerateLabels { get; set; }
+
+        /// <summary>
         /// Use default noaa file name format.
         /// </summary>
         /// <value><c>true</c> if use NOAA file format; otherwise, <c>false</c>.</value>
@@ -119,6 +125,7 @@ namespace OpenSatelliteProject {
             MapOverlayPenThickness = 5;
             MapOverlayPenColor = Color.Aqua;
             MapDrawer = null;
+            GenerateLabels = false;
         }
 
         private static string GenFilename(string satelliteName, string regionName, string imageName, int timestamp, string origName = null) {
@@ -257,6 +264,9 @@ namespace OpenSatelliteProject {
             if (GenerateLatLonOverlays) {
                 ImageTools.DrawLatLonLines (ref bmp, gc, LatLonOverlayPenColor, LatLonOverlayPenThickness, gd.CropImage);
             }
+            if (GenerateLabels) {
+                ImageTools.ImageLabel (ref bmp, gd, od);
+            }
         }
 
         private void ThreadLoop() {
@@ -280,7 +290,7 @@ namespace OpenSatelliteProject {
                                 } else {
                                     UIConsole.Debug(string.Format("Starting Generation of Visible for {0}.", Path.GetFileName(ofilename)));
                                     var bmp = ImageTools.GenerateFullImage(mData.Visible, mData.CropImage);
-                                    if (GenerateMapOverlays || GenerateLatLonOverlays) {
+                                    if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
                                         UIConsole.Debug(string.Format("Generating Overlays Visible for {0}.", Path.GetFileName(ofilename)));
                                         GenerateImageOverlay(ref bmp, mData, mData.Visible);
                                     }
@@ -312,7 +322,7 @@ namespace OpenSatelliteProject {
                                 } else {
                                     UIConsole.Debug($"Starting Generation of Infrared for {Path.GetFileName(ofilename)}.");
                                     var bmp = ImageTools.GenerateFullImage(mData.Infrared, mData.CropImage);
-                                    if (GenerateMapOverlays || GenerateLatLonOverlays) {
+                                    if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
                                         UIConsole.Debug(string.Format("Generating Overlays Infrared for {0}.", Path.GetFileName(ofilename)));
                                         GenerateImageOverlay(ref bmp, mData, mData.Infrared);
                                     }
@@ -344,7 +354,7 @@ namespace OpenSatelliteProject {
                                 } else {
                                     UIConsole.Debug($"Starting Generation of Water Vapour for {Path.GetFileName(ofilename)}.");
                                     var bmp = ImageTools.GenerateFullImage(mData.WaterVapour, mData.CropImage);
-                                    if (GenerateMapOverlays || GenerateLatLonOverlays) {
+                                    if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
                                         UIConsole.Debug(string.Format("Generating Overlays WaterVapour for {0}.", Path.GetFileName(ofilename)));
                                         GenerateImageOverlay(ref bmp, mData, mData.WaterVapour);
                                     }
@@ -382,7 +392,7 @@ namespace OpenSatelliteProject {
                                 } else {
                                     UIConsole.Debug($"Starting Generation of FSLCR for {Path.GetFileName(filename)}.");
                                     var bmp = ImageTools.GenerateFalseColor(mData);
-                                    if (GenerateMapOverlays || GenerateLatLonOverlays) {
+                                    if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
                                         UIConsole.Debug(string.Format("Generating Overlays False Colour for {0}.", Path.GetFileName(filename)));
                                         GenerateImageOverlay(ref bmp, mData, mData.Visible); // Using visible coordinates
                                     }
@@ -414,7 +424,7 @@ namespace OpenSatelliteProject {
                                         } else {
                                             UIConsole.Debug($"Starting Generation of {Path.GetFileName(ofilename)}.");
                                             var bmp = ImageTools.GenerateFullImage(gd, false);
-                                            if (GenerateMapOverlays || GenerateLatLonOverlays) {
+                                            if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
                                                 UIConsole.Debug(string.Format("Generating Overlays for {0}.", Path.GetFileName(ofilename)));
                                                 GenerateImageOverlay(ref bmp, mData, gd);
                                             }

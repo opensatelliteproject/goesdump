@@ -35,6 +35,7 @@ namespace OpenSatelliteProject.Geo {
             float lastY = -1;
 
             using (var graphics = Graphics.FromImage(bmp)) {
+                graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
                 lock(shapeFile) {   // TODO: This is BAD, SO BAD, PLEASE FIX ME
                                     // Thats because for some reason running this in multiple
                                     // threads is causing Features to be modified (wtf?)

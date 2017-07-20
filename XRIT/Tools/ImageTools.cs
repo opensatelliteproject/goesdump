@@ -6,12 +6,50 @@ using System.Runtime.InteropServices;
 using System.IO;
 using System.Drawing.Drawing2D;
 using OpenSatelliteProject.Geo;
+using OpenSatelliteProject.PacketData;
 
 namespace OpenSatelliteProject {
     public static class ImageTools {
 
         private const int OVERLAY_THRESHOLD = 10;
         private const float OVERLAY_ALPHA_HOLD = 100f;
+        private static readonly int[] LABEL_SIZE = { 40, 80, 200 };
+        private static readonly int[] FONT_SIZES = { 12, 48, 96 };
+        public static string OSPLABEL = $"OpenSatelliteProject {LibInfo.Version}";
+
+        public static void ImageLabel(ref Bitmap inbmp, GroupData gd, OrganizerData od) {
+            var usedLabelSize = inbmp.Width < 1000 ? LABEL_SIZE [0] : (inbmp.Width < 4000 ? LABEL_SIZE [1] : LABEL_SIZE [2]);
+            var usedFontSize = inbmp.Width < 1000 ? FONT_SIZES [0] : (inbmp.Width < 4000 ? FONT_SIZES [1] : FONT_SIZES [2]); 
+            Bitmap bmp = new Bitmap(inbmp.Width, inbmp.Height + usedLabelSize * 2, inbmp.PixelFormat);
+            var bgBrush = new SolidBrush (Color.Black);
+            var font = new Font ("Arial", usedFontSize);
+            var fontBrush = new SolidBrush (Color.White);
+            string upperText = $"{gd.SatelliteName} ({gd.SatelliteLongitude}) - {gd.RegionName}";
+
+            if (od.FileHeader != null) {
+                if (od.FileHeader.SubProduct.Name != "None") {
+                    upperText = upperText + " - " + od.FileHeader.SubProduct.Name;
+                }
+            }
+            var dt = LLTools.UnixTimeStampToDateTime (od.Timestamp);
+            string lowerText = $"{dt.ToShortDateString ()} {dt.ToLongTimeString()} UTC - {OSPLABEL}";
+
+            using(Graphics g = Graphics.FromImage(bmp)) {
+                g.CompositingQuality = CompositingQuality.HighQuality;
+                g.FillRectangle (bgBrush, 0, 0, bmp.Width, bmp.Height);
+                g.DrawImage(inbmp, 0, usedLabelSize, inbmp.Width, inbmp.Height);
+
+                // Upper Label
+                var textSize = g.MeasureString (upperText, font);
+                g.DrawString (upperText, font, fontBrush, bmp.Width / 2 - textSize.Width / 2, usedLabelSize / 2 - textSize.Height / 2);
+
+                // Lower Label
+                textSize = g.MeasureString (lowerText, font);
+                g.DrawString (lowerText, font, fontBrush, bmp.Width / 2 - textSize.Width / 2, inbmp.Height + usedLabelSize + usedLabelSize / 2 - textSize.Height / 2);
+            }
+            inbmp.Dispose ();
+            inbmp = bmp;
+        }
 
         /// <summary>
         /// Determines if can generate false color for the specified data.
