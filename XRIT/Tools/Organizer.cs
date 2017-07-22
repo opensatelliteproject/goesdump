@@ -118,6 +118,7 @@ namespace OpenSatelliteProject {
                         if (!groupData.ContainsKey(imageKey)) {
                             groupData[imageKey] = new GroupData();
                         }
+
                         var grp = groupData[imageKey];
                         grp.SatelliteName = satellite;
                         grp.RegionName = region;
@@ -125,10 +126,17 @@ namespace OpenSatelliteProject {
                         if (segmentId == 0) {
                             grp.CropImage = cropSection;
                             grp.SatelliteLongitude = satLon;
-                            grp.ColumnScalingFactor = header.ImageNavigationHeader.ColumnScalingFactor;
-                            grp.LineScalingFactor = header.ImageNavigationHeader.LineScalingFactor;
-                            grp.ColumnOffset = grp.ColumnOffset == -1 ? header.ImageNavigationHeader.ColumnOffset : grp.ColumnOffset;
-                            grp.LineOffset = grp.LineOffset == -1 ? header.ImageNavigationHeader.LineOffset : grp.LineOffset;
+                            if (
+                                header.ImageNavigationHeader != null && 
+                                header.ImageNavigationHeader.ColumnScalingFactor != 0 &&
+                                header.ImageNavigationHeader.LineScalingFactor != 0
+                            ) {
+                                grp.HasNavigationData = true;
+                                grp.ColumnScalingFactor = header.ImageNavigationHeader.ColumnScalingFactor;
+                                grp.LineScalingFactor = header.ImageNavigationHeader.LineScalingFactor;
+                                grp.ColumnOffset = grp.ColumnOffset == -1 ? header.ImageNavigationHeader.ColumnOffset : grp.ColumnOffset;
+                                grp.LineOffset = grp.LineOffset == -1 ? header.ImageNavigationHeader.LineOffset : grp.LineOffset;
+                            }
                         }
                         grp.Code = header.SegmentIdentificationHeader != null ? 
                             header.SegmentIdentificationHeader.ImageID + "_" + header.SubProduct.Name :

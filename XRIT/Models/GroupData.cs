@@ -10,6 +10,7 @@ namespace OpenSatelliteProject {
         /// Default: 2h
         /// </summary>
         private const int DATA_TIMEOUT = 2 * 3600; // 2h
+        private const int MIN_DATA_MARK = 15 * 60; // 15 minutes
 
         public string SatelliteName { get; set; }
         public string RegionName { get; set; }
@@ -31,6 +32,7 @@ namespace OpenSatelliteProject {
         public bool IsWaterVapourProcessed { get; set; }
         public bool IsOtherDataProcessed { get; set; }
         public bool CropImage { get; set; }
+        public bool HasNavigationData { get; set; }
 
         public int RetryCount { get; set; }
         public bool Failed { get; set; }
@@ -59,6 +61,12 @@ namespace OpenSatelliteProject {
         public bool Timeout {
             get {
                 return (LLTools.Timestamp() - Created) > DATA_TIMEOUT;
+            }
+        }
+
+        public bool ReadyToMark {
+            get {
+                return (LLTools.Timestamp () - Created) > MIN_DATA_MARK;
             }
         }
 
@@ -96,6 +104,7 @@ namespace OpenSatelliteProject {
             ColumnScalingFactor = 0f;
             LineScalingFactor = 0f;
             Code = DateTime.UtcNow.ToString();
+            HasNavigationData = false;
         }
 
         public override string ToString() {

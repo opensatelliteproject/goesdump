@@ -114,15 +114,11 @@ namespace LibraryTest {
             Console.WriteLine ("Log: " + LibInfo.LogLines);
             Console.WriteLine ("Short Hash: " + LibInfo.ShortCommitID);
             Console.WriteLine ("Version: " + LibInfo.Version);
-            string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
+            //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
             //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1496790733.bin";
             //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1500179126.bin";
             //string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";
-            //var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
-
-            string defaultShapeFile = ShapeFiles.InitShapeFiles ();
-
-            var mapDrawer = new MapDrawer(defaultShapeFile);
+            string debugFrames = "/media/ELTN/tmp/trango/demuxdump-1500736657.bin";
             //var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
 
             var im0 = new ImageManager ("output/Images/Full Disk/");
@@ -131,6 +127,15 @@ namespace LibraryTest {
             var im3 = new ImageManager ("output/Images/Area of Interest/");
             var im4 = new ImageManager ("output/Images/United States/");
             var im5 = new ImageManager ("output/Images/FM1/");
+            var im6 = new ImageManager ("output/Images/Unknown/");
+
+            im0.InitMapDrawer ();
+            im1.InitMapDrawer ();
+            im2.InitMapDrawer ();
+            im3.InitMapDrawer ();
+            im4.InitMapDrawer ();
+            im5.InitMapDrawer ();
+            im6.InitMapDrawer ();
 
             ImageManager.GenerateVisible = true;
             ImageManager.GenerateInfrared = true;
@@ -143,7 +148,7 @@ namespace LibraryTest {
             ImageManager.GenerateMapOverlays = true;
             ImageManager.GenerateLabels = true;
             ImageManager.GenerateLatLonLabel = true;
-            ImageManager.MapDrawer = mapDrawer;
+            ImageManager.SaveNonOverlay = false;
             // ImageTools.OSPLABEL = "© USA-Satcom.com";
             // /*
             im0.Start ();
@@ -152,6 +157,7 @@ namespace LibraryTest {
             im3.Start ();
             im4.Start ();
             im5.Start ();
+            im6.Start ();
             // */
             //*/
             // /*

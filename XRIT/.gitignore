@@ -6,3 +6,4 @@ build/*.nupkg
 build/lib/*
 git-hash.txt
 git-log.txt
+build/XRIT-rc.nuspec

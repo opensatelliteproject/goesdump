@@ -14,24 +14,39 @@ namespace OpenSatelliteProject {
 
         private const int OVERLAY_THRESHOLD = 10;
         private const float OVERLAY_ALPHA_HOLD = 100f;
-        private static readonly int[] LABEL_SIZE = { 40, 80, 200 };
-        private static readonly int[] FONT_SIZES = { 12, 48, 96 };
+        private static readonly int[] FONT_SIZES = { 12, 24, 48, 96 };
+        private const int PADDING = 10; // px
         public static string OSPLABEL = $"OpenSatelliteProject {LibInfo.Version}";
 
         public static void ImageLabel(ref Bitmap inbmp, GroupData gd, OrganizerData od, GeoConverter gc, bool genLatLonLabel) {
-            var usedLabelSize = inbmp.Width < 1000 ? LABEL_SIZE [0] : (inbmp.Width < 4000 ? LABEL_SIZE [1] : LABEL_SIZE [2]);
-            var usedFontSize = inbmp.Width < 1000 ? FONT_SIZES [0] : (inbmp.Width < 4000 ? FONT_SIZES [1] : FONT_SIZES [2]); 
-            Bitmap bmp = new Bitmap(inbmp.Width, inbmp.Height + (genLatLonLabel ? usedLabelSize * 3 : usedLabelSize * 2), inbmp.PixelFormat);
+            var usedFontSize = FONT_SIZES [0];
+            if (inbmp.Width >= 4000) {
+                usedFontSize = FONT_SIZES [3];
+            } else if (inbmp.Width >= 2000) {
+                usedFontSize = FONT_SIZES [2];
+            } else if (inbmp.Width >= 1000) {
+                usedFontSize = FONT_SIZES [1];
+            }
             var bgBrush = new SolidBrush (Color.Black);
             var font = new Font ("Arial", usedFontSize);
             var fontBrush = new SolidBrush (Color.White);
             string upperText = $"{gd.SatelliteName} ({gd.SatelliteLongitude}) - {gd.RegionName}";
 
-            if (od.FileHeader != null) {
-                if (od.FileHeader.SubProduct.Name != "None") {
-                    upperText = upperText + " - " + od.FileHeader.SubProduct.Name;
-                }
+            var usedLabelSize = PADDING * 2;
+
+            using (Graphics g = Graphics.FromImage (inbmp)) {
+                usedLabelSize += (int) Math.Round(g.MeasureString (upperText, font).Height);
             }
+
+            Bitmap bmp = new Bitmap(inbmp.Width, inbmp.Height + ((genLatLonLabel && gc != null) ? usedLabelSize * 3 : usedLabelSize * 2), inbmp.PixelFormat);
+            StringFormat sf = new StringFormat();
+            sf.LineAlignment = StringAlignment.Center;
+            sf.Alignment = StringAlignment.Center;
+
+            if (od.FileHeader != null && od.FileHeader.SubProduct.Name != "None") {
+                upperText = upperText + " - " + od.FileHeader.SubProduct.Name;
+            }
+
             var dt = LLTools.UnixTimeStampToDateTime (od.Timestamp);
             string lowerText = $"{dt.ToShortDateString ()} {dt.ToLongTimeString()} UTC - {OSPLABEL}";
 
@@ -42,20 +57,23 @@ namespace OpenSatelliteProject {
 
                 // Upper Label
                 var textSize = g.MeasureString (upperText, font);
-                g.DrawString (upperText, font, fontBrush, bmp.Width / 2 - textSize.Width / 2, usedLabelSize / 2 - textSize.Height / 2);
+                var rect = new RectangleF (PADDING, 0, bmp.Width - PADDING * 2, usedLabelSize);
+                g.DrawString (upperText, font, fontBrush, rect, sf);
 
-                // Lower Label
-                textSize = g.MeasureString (lowerText, font);
-                g.DrawString (lowerText, font, fontBrush, bmp.Width / 2 - textSize.Width / 2, inbmp.Height + usedLabelSize + usedLabelSize / 2 - textSize.Height / 2);
-
-                // Lower Label LatLon
-                if (genLatLonLabel) {
+                // Lower Label with Lat/Lon
+                if (genLatLonLabel && gc != null) {
                     var latlon = gc.xy2latlon (inbmp.Width / 2, inbmp.Height / 2);
                     var lat = latlon.Item1.ToString ("##.000000", CultureInfo.InvariantCulture);
                     var lon = latlon.Item2.ToString ("##.000000", CultureInfo.InvariantCulture);
                     string latLonText = $"Center Coord: ({lat}; {lon})";
-                    textSize = g.MeasureString (latLonText, font);
-                    g.DrawString (latLonText, font, fontBrush, bmp.Width / 2 - textSize.Width / 2, inbmp.Height + usedLabelSize + usedLabelSize / 2  + textSize.Height - textSize.Height / 2);
+                    lowerText += $"\r\n{latLonText}";
+                    textSize = g.MeasureString (lowerText, font);
+                    rect = new RectangleF (PADDING, usedLabelSize + inbmp.Height, bmp.Width - PADDING * 2, usedLabelSize * 2);
+                    g.DrawString (lowerText, font, fontBrush, rect, sf);
+                } else { // Lower Label without Lat/Lon
+                    textSize = g.MeasureString (lowerText, font);
+                    rect = new RectangleF (PADDING, usedLabelSize + inbmp.Height, bmp.Width - PADDING * 2, usedLabelSize);
+                    g.DrawString (lowerText, font, fontBrush, rect, sf);
                 }
             }
             inbmp.Dispose ();

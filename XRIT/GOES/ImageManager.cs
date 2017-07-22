@@ -78,17 +78,16 @@ namespace OpenSatelliteProject {
         public static bool GenerateLatLonLabel { get; set; }
 
         /// <summary>
+        /// If a PNG without the overlays should also be saved
+        /// </summary>
+        /// <value><c>true</c> if should be saved; otherwise, <c>false</c>.</value>
+        public static bool SaveNonOverlay { get; set; }
+
+        /// <summary>
         /// Use default noaa file name format.
         /// </summary>
         /// <value><c>true</c> if use NOAA file format; otherwise, <c>false</c>.</value>
         public static bool UseNOAAFileFormat { get; set; }
-
-        /// <summary>
-        /// MapDrawer class for drawing maps
-        /// (Not needed for Lat/Lon lines)
-        /// </summary>
-        /// <value>The map drawer.</value>
-        public static MapDrawer MapDrawer { get; set; }
 
         /// <summary>
         /// The LatLon Overlay Pen Thickness
@@ -114,6 +113,8 @@ namespace OpenSatelliteProject {
         bool running;
         readonly Organizer organizer;
         readonly string folder;
+        readonly static string defaultShapeFile;
+        MapDrawer mapDrawer;
 
         static ImageManager() {
             EraseFiles = false;
@@ -130,19 +131,31 @@ namespace OpenSatelliteProject {
             LatLonOverlayPenColor = Color.Brown;
             MapOverlayPenThickness = 5;
             MapOverlayPenColor = Color.Aqua;
-            MapDrawer = null;
             GenerateLabels = false;
             GenerateLatLonLabel = true;
+            SaveNonOverlay = false;
+            defaultShapeFile = ShapeFiles.InitShapeFiles ();
+        }
+
+        /// <summary>
+        /// Loads default map drawer
+        /// </summary>
+        public void InitMapDrawer() {
+            mapDrawer = new MapDrawer(defaultShapeFile);
+        }
+
+        /// <summary>
+        /// Loads a mapDrawer with given SHP file
+        /// </summary>
+        /// <param name="filename">Filename.</param>
+        public void InitMapDrawer(string filename) {
+            mapDrawer = new MapDrawer(filename);
         }
 
         private static string GenFilename(string satelliteName, string regionName, string imageName, int timestamp, string origName = null) {
             if (UseNOAAFileFormat) {
                 //gos15chnIR04rgnFDseg001res04dat130 18 06 19 190.lrit
-                if (origName != null) {
-                    origName = Path.GetFileName(origName);
-                } else {
-                    origName = "";
-                }
+                origName = origName != null ? Path.GetFileName (origName) : "";
 
                 var dt = LLTools.UnixTimeStampToDateTime(timestamp);
                 var year = dt.Year.ToString ("0000");
@@ -264,19 +277,23 @@ namespace OpenSatelliteProject {
         }
 
         private void GenerateImageOverlay(ref Bitmap bmp, GroupData gd, OrganizerData od) {
-            var gc = new GeoConverter (gd.SatelliteLongitude, gd.ColumnOffset, gd.LineOffset, gd.ColumnScalingFactor, gd.LineScalingFactor, true, od.Columns);
-            if (MapDrawer != null && GenerateMapOverlays) {
-                MapDrawer.DrawMap (ref bmp, gc, MapOverlayPenColor, MapOverlayPenThickness, gd.CropImage);
-            }
-            if (GenerateLatLonOverlays) {
-                ImageTools.DrawLatLonLines (ref bmp, gc, LatLonOverlayPenColor, LatLonOverlayPenThickness, gd.CropImage);
-            }
-            if (GenerateLabels) {
-                ImageTools.ImageLabel (ref bmp, gd, od, gc, GenerateLatLonLabel);
+            if (gd.HasNavigationData) {
+                var gc = new GeoConverter (gd.SatelliteLongitude, gd.ColumnOffset, gd.LineOffset, gd.ColumnScalingFactor, gd.LineScalingFactor, true, od.Columns);
+                if (mapDrawer != null && GenerateMapOverlays) {
+                    mapDrawer.DrawMap (ref bmp, gc, MapOverlayPenColor, MapOverlayPenThickness, gd.CropImage);
+                }
+                if (GenerateLatLonOverlays) {
+                    ImageTools.DrawLatLonLines (ref bmp, gc, LatLonOverlayPenColor, LatLonOverlayPenThickness, gd.CropImage);
+                }
+                if (GenerateLabels) {
+                    ImageTools.ImageLabel (ref bmp, gd, od, gc, GenerateLatLonLabel);
+                }
+            } else if (GenerateLabels) {
+                ImageTools.ImageLabel (ref bmp, gd, od, null, false);
             }
         }
 
-        private void ThreadLoop() {
+        void ThreadLoop() {
             while (running) {
                 organizer.Update();
                 var data = organizer.GroupData;
@@ -298,6 +315,10 @@ namespace OpenSatelliteProject {
                                     UIConsole.Debug(string.Format("Starting Generation of Visible for {0}.", Path.GetFileName(ofilename)));
                                     var bmp = ImageTools.GenerateFullImage(mData.Visible, mData.CropImage);
                                     if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
+                                        if (SaveNonOverlay) {
+                                            string orgFileName = Path.Combine(folder, $"{Path.GetFileNameWithoutExtension(ofilename)}-original.png");
+                                            bmp.Save(orgFileName, ImageFormat.Png);
+                                        }
                                         UIConsole.Debug(string.Format("Generating Overlays Visible for {0}.", Path.GetFileName(ofilename)));
                                         GenerateImageOverlay(ref bmp, mData, mData.Visible);
                                     }
@@ -330,6 +351,10 @@ namespace OpenSatelliteProject {
                                     UIConsole.Debug($"Starting Generation of Infrared for {Path.GetFileName(ofilename)}.");
                                     var bmp = ImageTools.GenerateFullImage(mData.Infrared, mData.CropImage);
                                     if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
+                                        if (SaveNonOverlay) {
+                                            string orgFileName = Path.Combine(folder, $"{Path.GetFileNameWithoutExtension(ofilename)}-original.png");
+                                            bmp.Save(orgFileName, ImageFormat.Png);
+                                        }
                                         UIConsole.Debug(string.Format("Generating Overlays Infrared for {0}.", Path.GetFileName(ofilename)));
                                         GenerateImageOverlay(ref bmp, mData, mData.Infrared);
                                     }
@@ -362,6 +387,10 @@ namespace OpenSatelliteProject {
                                     UIConsole.Debug($"Starting Generation of Water Vapour for {Path.GetFileName(ofilename)}.");
                                     var bmp = ImageTools.GenerateFullImage(mData.WaterVapour, mData.CropImage);
                                     if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
+                                        if (SaveNonOverlay) {
+                                            string orgFileName = Path.Combine(folder, $"{Path.GetFileNameWithoutExtension(ofilename)}-original.png");
+                                            bmp.Save(orgFileName, ImageFormat.Png);
+                                        }
                                         UIConsole.Debug(string.Format("Generating Overlays WaterVapour for {0}.", Path.GetFileName(ofilename)));
                                         GenerateImageOverlay(ref bmp, mData, mData.WaterVapour);
                                     }
@@ -400,6 +429,10 @@ namespace OpenSatelliteProject {
                                     UIConsole.Debug($"Starting Generation of FSLCR for {Path.GetFileName(filename)}.");
                                     var bmp = ImageTools.GenerateFalseColor(mData);
                                     if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
+                                        if (SaveNonOverlay) {
+                                            string orgFileName = Path.Combine(folder, $"{Path.GetFileNameWithoutExtension(filename)}-original.png");
+                                            bmp.Save(orgFileName, ImageFormat.Png);
+                                        }
                                         UIConsole.Debug(string.Format("Generating Overlays False Colour for {0}.", Path.GetFileName(filename)));
                                         GenerateImageOverlay(ref bmp, mData, mData.Visible); // Using visible coordinates
                                     }
@@ -432,6 +465,10 @@ namespace OpenSatelliteProject {
                                             UIConsole.Debug($"Starting Generation of {Path.GetFileName(ofilename)}.");
                                             var bmp = ImageTools.GenerateFullImage(gd, false);
                                             if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
+                                                if (SaveNonOverlay) {
+                                                    string orgFileName = Path.Combine(folder, $"{Path.GetFileNameWithoutExtension(ofilename)}-original.png");
+                                                    bmp.Save(orgFileName, ImageFormat.Png);
+                                                }
                                                 UIConsole.Debug(string.Format("Generating Overlays for {0}.", Path.GetFileName(ofilename)));
                                                 GenerateImageOverlay(ref bmp, mData, gd);
                                             }
@@ -453,15 +490,19 @@ namespace OpenSatelliteProject {
                                     }
                                 });
                             } else if (mData.OtherData.Count == 0) {
-                                mData.IsOtherDataProcessed = true;
+                                if (mData.ReadyToMark) {
+                                    mData.IsOtherDataProcessed = true;
+                                }
                             }
 
-                            mData.IsProcessed = 
-                                (!GenerateFalseColor    || ( GenerateFalseColor && mData.IsFalseColorProcessed) ) &&
-                                (!GenerateVisible       || ( GenerateVisible && mData.IsVisibleProcessed) ) &&
-                                (!GenerateInfrared      || ( GenerateInfrared && mData.IsInfraredProcessed) ) &&
-                                (!GenerateWaterVapour   || ( GenerateWaterVapour && mData.IsWaterVapourProcessed) ) &&
-                                (!GenerateOtherImages   || ( GenerateOtherImages && mData.IsOtherDataProcessed) );
+                            if (mData.ReadyToMark) {
+                                mData.IsProcessed = 
+                                    (!GenerateFalseColor    || ( GenerateFalseColor && mData.IsFalseColorProcessed) ) &&
+                                    (!GenerateVisible       || ( GenerateVisible && mData.IsVisibleProcessed) ) &&
+                                    (!GenerateInfrared      || ( GenerateInfrared && mData.IsInfraredProcessed) ) &&
+                                    (!GenerateWaterVapour   || ( GenerateWaterVapour && mData.IsWaterVapourProcessed) ) &&
+                                    (!GenerateOtherImages   || ( GenerateOtherImages && mData.IsOtherDataProcessed) );
+                            }
 
                             if (mData.Timeout) {
                                 // Timeout completing, so let's erase the files.

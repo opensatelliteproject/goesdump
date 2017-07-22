@@ -1,9 +1,6 @@
 ﻿using System;
 using DotSpatial.Data;
 using System.Drawing;
-using OpenSatelliteProject.PacketData;
-using System.Text.RegularExpressions;
-using System.Globalization;
 
 namespace OpenSatelliteProject.Geo {
     /// <summary>
@@ -31,8 +28,8 @@ namespace OpenSatelliteProject.Geo {
         /// <param name="lineWidth">Thickness of the Lines</param>
         public void DrawMap(ref Bitmap bmp, GeoConverter gc, Color color, int lineWidth = 5, bool fixCrop = false) {
             Pen pen = new Pen(color, lineWidth);
-            float lastX = -1;
-            float lastY = -1;
+            float lastX = -1f;
+            float lastY = -1f;
 
             using (var graphics = Graphics.FromImage(bmp)) {
                 graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
@@ -44,8 +41,8 @@ namespace OpenSatelliteProject.Geo {
                             var geom = f.GetBasicGeometryN (i);
                             var k = geom.Coordinates;
 
-                            lastX = -1;
-                            lastY = -1;
+                            lastX = -1f;
+                            lastY = -1f;
 
                             foreach (var z in k) {
                                 float lon = (float)z.X;
@@ -59,7 +56,7 @@ namespace OpenSatelliteProject.Geo {
                                         cx -= gc.CropLeft;
                                     }
                                     if (
-                                        (lastX != -1 && lastY != -1) &&
+                                        (lastX != -1f && lastY != -1f) &&
                                         (cx > 0 && cy > 0) &&
                                         (cx < bmp.Width && cy < bmp.Height) &&
                                         (lastX > 0 && lastY > 0) &&
