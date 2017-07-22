@@ -480,15 +480,19 @@ namespace OpenSatelliteProject {
                                     }
                                 });
                             } else if (mData.OtherData.Count == 0) {
-                                mData.IsOtherDataProcessed = true;
+                                if (mData.ReadyToMark) {
+                                    mData.IsOtherDataProcessed = true;
+                                }
                             }
 
+                            if (mData.ReadyToMark) {
                             mData.IsProcessed = 
                                 (!GenerateFalseColor    || ( GenerateFalseColor && mData.IsFalseColorProcessed) ) &&
                                 (!GenerateVisible       || ( GenerateVisible && mData.IsVisibleProcessed) ) &&
                                 (!GenerateInfrared      || ( GenerateInfrared && mData.IsInfraredProcessed) ) &&
                                 (!GenerateWaterVapour   || ( GenerateWaterVapour && mData.IsWaterVapourProcessed) ) &&
                                 (!GenerateOtherImages   || ( GenerateOtherImages && mData.IsOtherDataProcessed) );
+                            }
 
                             if (mData.Timeout) {
                                 // Timeout completing, so let's erase the files.

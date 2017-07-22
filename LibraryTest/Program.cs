@@ -114,10 +114,11 @@ namespace LibraryTest {
             Console.WriteLine ("Log: " + LibInfo.LogLines);
             Console.WriteLine ("Short Hash: " + LibInfo.ShortCommitID);
             Console.WriteLine ("Version: " + LibInfo.Version);
-            string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
+            //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
             //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1496790733.bin";
             //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1500179126.bin";
             //string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";
+            string debugFrames = "/media/ELTN/tmp/trango/demuxdump-1500736657.bin";
             //var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
 
             string defaultShapeFile = ShapeFiles.InitShapeFiles ();
@@ -137,13 +138,13 @@ namespace LibraryTest {
             ImageManager.GenerateFalseColor = false;
             ImageManager.GenerateWaterVapour = true;
             ImageManager.GenerateOtherImages = true;
-            ImageManager.EraseFiles = false;
+            ImageManager.EraseFiles = true;
             ImageManager.UseNOAAFileFormat = true;
             ImageManager.GenerateLatLonOverlays = true;
             ImageManager.GenerateMapOverlays = true;
             ImageManager.GenerateLabels = true;
             ImageManager.GenerateLatLonLabel = true;
-            ImageManager.SaveNonOverlay = true;
+            ImageManager.SaveNonOverlay = false;
             ImageManager.MapDrawer = mapDrawer;
             // ImageTools.OSPLABEL = "© USA-Satcom.com";
             // /*
@@ -156,7 +157,7 @@ namespace LibraryTest {
             // */
             //*/
             // /*
-            /*
+            ///*
             DemuxManager dm = new DemuxManager ();
             FileHandler.SkipDCS = true;
             FileHandler.SkipEMWIN = true;

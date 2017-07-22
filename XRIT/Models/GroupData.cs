@@ -10,6 +10,7 @@ namespace OpenSatelliteProject {
         /// Default: 2h
         /// </summary>
         private const int DATA_TIMEOUT = 2 * 3600; // 2h
+        private const int MIN_DATA_MARK = 15 * 60; // 15 minutes
 
         public string SatelliteName { get; set; }
         public string RegionName { get; set; }
@@ -59,6 +60,12 @@ namespace OpenSatelliteProject {
         public bool Timeout {
             get {
                 return (LLTools.Timestamp() - Created) > DATA_TIMEOUT;
+            }
+        }
+
+        public bool ReadyToMark {
+            get {
+                return (LLTools.Timestamp () - Created) > MIN_DATA_MARK;
             }
         }
 

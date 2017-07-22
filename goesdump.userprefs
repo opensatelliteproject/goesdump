@@ -1,13 +1,23 @@
 ﻿<Properties StartupItem="LibraryTest/LibraryTest.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/HeadlessMain.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="LibraryTest/Program.cs">
     <Files>
-      <File FileName="LibraryTest/Program.cs" Line="147" Column="16" />
-      <File FileName="XRIT/GOES/ImageManager.cs" Line="428" Column="41" />
-      <File FileName="XRIT/Tools/Organizer.cs" Line="115" Column="49" />
-      <File FileName="XRIT/Properties/LibInfo.cs" Line="1" Column="1" />
-      <File FileName="goesdump/Models/ProgConfig.cs" Line="340" Column="72" />
+      <File FileName="LibraryTest/Program.cs" Line="146" Column="13" />
+      <File FileName="XRIT/GOES/ImageManager.cs" Line="438" Column="80" />
+      <File FileName="XRIT/Tools/Organizer.cs" Line="1" Column="1" />
+      <File FileName="XRIT/Properties/LibInfo.cs" Line="40" Column="38" />
+      <File FileName="goesdump/Models/ProgConfig.cs" Line="1" Column="1" />
       <File FileName="goesdump/HeadlessMain.cs" Line="127" Column="56" />
+      <File FileName="XRIT/GOES/DemuxManager.cs" Line="119" Column="1" />
+      <File FileName="XRIT/EventMaster/Events/FrameEventData.cs" Line="2" Column="32" />
+      <File FileName="XRIT/EventMaster/EventMaster.cs" Line="46" Column="35" />
+      <File FileName="XRIT/EventMaster/EventMasterData.cs" Line="12" Column="56" />
+      <File FileName="XRIT/Console/UIConsole.cs" Line="20" Column="40" />
+      <File FileName="XRIT/Storage/ConfigurationManager.cs" Line="9" Column="48" />
+      <File FileName="XRIT/Storage/Database.cs" Line="9" Column="26" />
+      <File FileName="XRIT/SQLite.cs" Line="32" Column="31" />
+      <File FileName="XRIT/SQLiteAsync.cs" Line="1" Column="1" />
+      <File FileName="XRIT/Properties/AssemblyInfo.cs" Line="20" Column="27" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
