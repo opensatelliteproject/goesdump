@@ -143,6 +143,7 @@ namespace LibraryTest {
             ImageManager.GenerateMapOverlays = true;
             ImageManager.GenerateLabels = true;
             ImageManager.GenerateLatLonLabel = true;
+            ImageManager.SaveNonOverlay = true;
             ImageManager.MapDrawer = mapDrawer;
             // ImageTools.OSPLABEL = "© USA-Satcom.com";
             // /*
