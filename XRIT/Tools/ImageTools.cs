@@ -21,7 +21,7 @@ namespace OpenSatelliteProject {
         public static void ImageLabel(ref Bitmap inbmp, GroupData gd, OrganizerData od, GeoConverter gc, bool genLatLonLabel) {
             var usedLabelSize = inbmp.Width < 1000 ? LABEL_SIZE [0] : (inbmp.Width < 4000 ? LABEL_SIZE [1] : LABEL_SIZE [2]);
             var usedFontSize = inbmp.Width < 1000 ? FONT_SIZES [0] : (inbmp.Width < 4000 ? FONT_SIZES [1] : FONT_SIZES [2]); 
-            Bitmap bmp = new Bitmap(inbmp.Width, inbmp.Height + (genLatLonLabel ? usedLabelSize * 3 : usedLabelSize * 2), inbmp.PixelFormat);
+            Bitmap bmp = new Bitmap(inbmp.Width, inbmp.Height + ((genLatLonLabel && gc != null) ? usedLabelSize * 3 : usedLabelSize * 2), inbmp.PixelFormat);
             var bgBrush = new SolidBrush (Color.Black);
             var font = new Font ("Arial", usedFontSize);
             var fontBrush = new SolidBrush (Color.White);
@@ -49,7 +49,7 @@ namespace OpenSatelliteProject {
                 g.DrawString (lowerText, font, fontBrush, bmp.Width / 2 - textSize.Width / 2, inbmp.Height + usedLabelSize + usedLabelSize / 2 - textSize.Height / 2);
 
                 // Lower Label LatLon
-                if (genLatLonLabel) {
+                if (genLatLonLabel && gc != null) {
                     var latlon = gc.xy2latlon (inbmp.Width / 2, inbmp.Height / 2);
                     var lat = latlon.Item1.ToString ("##.000000", CultureInfo.InvariantCulture);
                     var lon = latlon.Item2.ToString ("##.000000", CultureInfo.InvariantCulture);

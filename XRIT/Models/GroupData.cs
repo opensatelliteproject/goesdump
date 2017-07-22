@@ -32,6 +32,7 @@ namespace OpenSatelliteProject {
         public bool IsWaterVapourProcessed { get; set; }
         public bool IsOtherDataProcessed { get; set; }
         public bool CropImage { get; set; }
+        public bool HasNavigationData { get; set; }
 
         public int RetryCount { get; set; }
         public bool Failed { get; set; }
@@ -103,6 +104,7 @@ namespace OpenSatelliteProject {
             ColumnScalingFactor = 0f;
             LineScalingFactor = 0f;
             Code = DateTime.UtcNow.ToString();
+            HasNavigationData = false;
         }
 
         public override string ToString() {

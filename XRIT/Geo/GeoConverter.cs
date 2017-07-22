@@ -5,11 +5,11 @@ namespace OpenSatelliteProject.Geo {
     /// Class to convert Pixels to LatLon or the inverse using LRIT Geolocation Parameters
     /// </summary>
     public class GeoConverter {
-        private int coff;
-        private int loff;
-        private float cfac;
-        private float lfac;
-        private float satelliteLongitude;
+        private readonly int coff;
+        private readonly int loff;
+        private readonly float cfac;
+        private readonly float lfac;
+        private readonly float satelliteLongitude;
         private float aspectRatio;
         private bool fixAspect;
         private int cropLeft;
@@ -66,6 +66,8 @@ namespace OpenSatelliteProject.Geo {
         /// <param name="loff">Line Offset</param>
         /// <param name="cfac">Column Scaling Factor</param>
         /// <param name="lfac">Line Scaling Factor</param>
+        /// <param name = "fixAspect"> Fix Aspect Ratio Cut</param>
+        /// <param name = "imageWidth">Image Width</param>
         public GeoConverter(float satelliteLongitude, int coff, int loff, float cfac, float lfac, bool fixAspect=false, int imageWidth = 0) {
             this.satelliteLongitude = satelliteLongitude;
             this.coff = coff;
@@ -74,7 +76,7 @@ namespace OpenSatelliteProject.Geo {
             this.lfac = lfac;
             this.aspectRatio = cfac / lfac;
             this.fixAspect = fixAspect;
-            this.cropLeft = (int) coff - Math.Min(imageWidth - coff, coff);
+            this.cropLeft = coff - Math.Min(imageWidth - coff, coff);
         }
 
         /// <summary>
@@ -84,8 +86,8 @@ namespace OpenSatelliteProject.Geo {
         /// <param name="lon">Longitude in Degrees</param>
         public Tuple<int, int> latlon2xy(float lat, float lon) {
             var xy = GeoTools.lonlat2xy(satelliteLongitude, GeoTools.deg2rad(lon), GeoTools.deg2rad(lat), coff, cfac, loff, lfac);
-            if (this.fixAspect) {
-                xy = new Tuple<int, int>(xy.Item1, (int) (xy.Item2 * this.aspectRatio));
+            if (fixAspect) {
+                xy = new Tuple<int, int>(xy.Item1, (int) (xy.Item2 * aspectRatio));
             }
 
             return xy;

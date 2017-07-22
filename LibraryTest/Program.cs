@@ -121,17 +121,19 @@ namespace LibraryTest {
             string debugFrames = "/media/ELTN/tmp/trango/demuxdump-1500736657.bin";
             //var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
 
-            string defaultShapeFile = ShapeFiles.InitShapeFiles ();
-
-            var mapDrawer = new MapDrawer(defaultShapeFile);
-            //var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
-
             var im0 = new ImageManager ("output/Images/Full Disk/");
             var im1 = new ImageManager ("output/Images/Northern Hemisphere/");
             var im2 = new ImageManager ("output/Images/Southern Hemisphere/");
             var im3 = new ImageManager ("output/Images/Area of Interest/");
             var im4 = new ImageManager ("output/Images/United States/");
             var im5 = new ImageManager ("output/Images/FM1/");
+
+            im0.InitMapDrawer ();
+            im1.InitMapDrawer ();
+            im2.InitMapDrawer ();
+            im3.InitMapDrawer ();
+            im4.InitMapDrawer ();
+            im5.InitMapDrawer ();
 
             ImageManager.GenerateVisible = true;
             ImageManager.GenerateInfrared = true;
@@ -145,7 +147,6 @@ namespace LibraryTest {
             ImageManager.GenerateLabels = true;
             ImageManager.GenerateLatLonLabel = true;
             ImageManager.SaveNonOverlay = false;
-            ImageManager.MapDrawer = mapDrawer;
             // ImageTools.OSPLABEL = "© USA-Satcom.com";
             // /*
             im0.Start ();
