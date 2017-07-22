@@ -123,11 +123,15 @@ namespace OpenSatelliteProject {
                         grp.SatelliteName = satellite;
                         grp.RegionName = region;
                         grp.FrameTime = datetime;
-                        grp.HasNavigationData = header.ImageNavigationHeader != null;
                         if (segmentId == 0) {
                             grp.CropImage = cropSection;
                             grp.SatelliteLongitude = satLon;
-                            if (header.ImageNavigationHeader != null) {
+                            if (
+                                header.ImageNavigationHeader != null && 
+                                header.ImageNavigationHeader.ColumnScalingFactor != 0 &&
+                                header.ImageNavigationHeader.LineScalingFactor != 0
+                            ) {
+                                grp.HasNavigationData = true;
                                 grp.ColumnScalingFactor = header.ImageNavigationHeader.ColumnScalingFactor;
                                 grp.LineScalingFactor = header.ImageNavigationHeader.LineScalingFactor;
                                 grp.ColumnOffset = grp.ColumnOffset == -1 ? header.ImageNavigationHeader.ColumnOffset : grp.ColumnOffset;

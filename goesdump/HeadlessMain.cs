@@ -22,6 +22,7 @@ namespace OpenSatelliteProject {
         readonly ImageManager SHImageManager;
         readonly ImageManager USImageManager;
         readonly ImageManager FMImageManager;
+        readonly ImageManager UNKImageManager;
 
         DirectoryHandler directoryHandler;
 
@@ -167,6 +168,7 @@ namespace OpenSatelliteProject {
             string shFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_SOUTHERN);
             string usFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_UNITEDSTATES);
             string fmFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES16_ABI, (int)ScannerSubProduct.NONE);
+            string unkFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.NONE); // Same for any unknown ABI
 
             FDImageManager = new ImageManager(fdFolder);
             XXImageManager = new ImageManager(xxFolder);
@@ -174,6 +176,7 @@ namespace OpenSatelliteProject {
             SHImageManager = new ImageManager(shFolder);
             USImageManager = new ImageManager(usFolder);
             FMImageManager = new ImageManager(fmFolder);
+            UNKImageManager = new ImageManager (unkFolder);
 
             FDImageManager.InitMapDrawer ();
             XXImageManager.InitMapDrawer ();
@@ -181,6 +184,7 @@ namespace OpenSatelliteProject {
             SHImageManager.InitMapDrawer ();
             USImageManager.InitMapDrawer ();
             FMImageManager.InitMapDrawer ();
+            UNKImageManager.InitMapDrawer ();
 
             directoryHandler = new DirectoryHandler(FileHandler.FinalFileFolder, "/data");
 
@@ -332,6 +336,7 @@ namespace OpenSatelliteProject {
             SHImageManager.Start();
             USImageManager.Start();
             FMImageManager.Start();
+            UNKImageManager.Start ();
 
             cn.Start();
             httpsv.Start();
@@ -351,6 +356,7 @@ namespace OpenSatelliteProject {
             SHImageManager.Stop();
             USImageManager.Stop();
             FMImageManager.Stop();
+            UNKImageManager.Stop ();
         }
     }
 }

@@ -127,6 +127,7 @@ namespace LibraryTest {
             var im3 = new ImageManager ("output/Images/Area of Interest/");
             var im4 = new ImageManager ("output/Images/United States/");
             var im5 = new ImageManager ("output/Images/FM1/");
+            var im6 = new ImageManager ("output/Images/Unknown/");
 
             im0.InitMapDrawer ();
             im1.InitMapDrawer ();
@@ -134,13 +135,14 @@ namespace LibraryTest {
             im3.InitMapDrawer ();
             im4.InitMapDrawer ();
             im5.InitMapDrawer ();
+            im6.InitMapDrawer ();
 
             ImageManager.GenerateVisible = true;
             ImageManager.GenerateInfrared = true;
             ImageManager.GenerateFalseColor = false;
             ImageManager.GenerateWaterVapour = true;
             ImageManager.GenerateOtherImages = true;
-            ImageManager.EraseFiles = true;
+            ImageManager.EraseFiles = false;
             ImageManager.UseNOAAFileFormat = true;
             ImageManager.GenerateLatLonOverlays = true;
             ImageManager.GenerateMapOverlays = true;
@@ -155,10 +157,11 @@ namespace LibraryTest {
             im3.Start ();
             im4.Start ();
             im5.Start ();
+            im6.Start ();
             // */
             //*/
             // /*
-            ///*
+            /*
             DemuxManager dm = new DemuxManager ();
             FileHandler.SkipDCS = true;
             FileHandler.SkipEMWIN = true;
