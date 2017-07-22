@@ -72,6 +72,12 @@ namespace OpenSatelliteProject {
         public static bool GenerateLabels { get; set; }
 
         /// <summary>
+        /// Generate the label with center lat/lon
+        /// </summary>
+        /// <value><c>true</c> if generate lat lon label; otherwise, <c>false</c>.</value>
+        public static bool GenerateLatLonLabel { get; set; }
+
+        /// <summary>
         /// Use default noaa file name format.
         /// </summary>
         /// <value><c>true</c> if use NOAA file format; otherwise, <c>false</c>.</value>
@@ -126,6 +132,7 @@ namespace OpenSatelliteProject {
             MapOverlayPenColor = Color.Aqua;
             MapDrawer = null;
             GenerateLabels = false;
+            GenerateLatLonLabel = true;
         }
 
         private static string GenFilename(string satelliteName, string regionName, string imageName, int timestamp, string origName = null) {
@@ -265,7 +272,7 @@ namespace OpenSatelliteProject {
                 ImageTools.DrawLatLonLines (ref bmp, gc, LatLonOverlayPenColor, LatLonOverlayPenThickness, gd.CropImage);
             }
             if (GenerateLabels) {
-                ImageTools.ImageLabel (ref bmp, gd, od);
+                ImageTools.ImageLabel (ref bmp, gd, od, gc, GenerateLatLonLabel);
             }
         }
 

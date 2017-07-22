@@ -75,18 +75,6 @@ namespace OpenSatelliteProject.Geo {
                 }
             }
         }
-
-        public void GenerateCacheMap(XRITHeader header, Color color, int lineWidth = 5) {
-            // Generate GeoConverter
-            Regex x = new Regex(@".*\((.*)\)", RegexOptions.IgnoreCase);
-            var regMatch = x.Match(header.ImageNavigationHeader.ProjectionName);
-            float satelliteLongitude = float.Parse(regMatch.Groups[1].Captures[0].Value, CultureInfo.InvariantCulture);
-            var inh = header.ImageNavigationHeader;
-            var gc = new GeoConverter(satelliteLongitude, inh.ColumnOffset, inh.LineOffset, inh.ColumnScalingFactor, inh.LineScalingFactor);
-
-            // Create Bitmap
-
-        }
     }
 }
 

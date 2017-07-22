@@ -123,6 +123,7 @@ namespace LibraryTest {
             string defaultShapeFile = ShapeFiles.InitShapeFiles ();
 
             var mapDrawer = new MapDrawer(defaultShapeFile);
+            //var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
 
             var im0 = new ImageManager ("output/Images/Full Disk/");
             var im1 = new ImageManager ("output/Images/Northern Hemisphere/");
@@ -136,11 +137,14 @@ namespace LibraryTest {
             ImageManager.GenerateFalseColor = false;
             ImageManager.GenerateWaterVapour = true;
             ImageManager.GenerateOtherImages = true;
-            ImageManager.EraseFiles = true;
+            ImageManager.EraseFiles = false;
             ImageManager.UseNOAAFileFormat = true;
             ImageManager.GenerateLatLonOverlays = true;
             ImageManager.GenerateMapOverlays = true;
+            ImageManager.GenerateLabels = true;
+            ImageManager.GenerateLatLonLabel = true;
             ImageManager.MapDrawer = mapDrawer;
+            // ImageTools.OSPLABEL = "© USA-Satcom.com";
             // /*
             im0.Start ();
             im1.Start ();

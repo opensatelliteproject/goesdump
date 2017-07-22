@@ -40,6 +40,10 @@ namespace OpenSatelliteProject {
         public const string KeyGenerateNHFalseColor = "GenerateNHFalseColor";
         public const string KeyGenerateSHFalseColor = "GenerateSHFalseColor";
         public const string KeyGenerateUSFalseColor = "GenerateUSFalseColor";
+        public const string KeyGenerateLatLonOverlays = "GenerateLatLonOverlays";
+        public const string KeyGenerateMapOverlays = "GenerateMapOverlays";
+        public const string KeyGenerateLabels = "GenerateLabels";
+        public const string KeyGenerateLatLonLabel = "GenerateLatLonLabel";
 
         public const string KeyMaxGenerateRetry = "MaxGenerateRetry";
 
@@ -189,6 +193,30 @@ namespace OpenSatelliteProject {
             set { ConfigurationManager.Set(KeyGenerateUSFalseColor, value); }
         }
 
+        [ConfigDescription("Generate Lat/Lon Overlays", false)]
+        public static bool GenerateLatLonOverlays {
+            get { return ConfigurationManager.GetBool(KeyGenerateLatLonOverlays); }
+            set { ConfigurationManager.Set(KeyGenerateLatLonOverlays, value); }
+        }
+
+        [ConfigDescription("Generate Map Overlays", false)]
+        public static bool GenerateMapOverlays {
+            get { return ConfigurationManager.GetBool(KeyGenerateMapOverlays); }
+            set { ConfigurationManager.Set(KeyGenerateMapOverlays, value); }
+        }
+
+        [ConfigDescription("Generate Labels", false)]
+        public static bool GenerateLabels {
+            get { return ConfigurationManager.GetBool(KeyGenerateLabels); }
+            set { ConfigurationManager.Set(KeyGenerateLabels, value); }
+        }
+
+        [ConfigDescription("Generate Lat/Lon Labels", true)]
+        public static bool GenerateLatLonLabel {
+            get { return ConfigurationManager.GetBool(KeyGenerateLatLonLabel); }
+            set { ConfigurationManager.Set(KeyGenerateLatLonLabel, value); }
+        }
+
         [ConfigDescription("If .lrit files should be erased after generating requested images", false)]
         public static bool EraseFilesAfterGeneratingFalseColor {
             get { return ConfigurationManager.GetBool(KeyEraseFilesAfterGeneratingFalseColor); }
@@ -308,6 +336,18 @@ namespace OpenSatelliteProject {
             GenerateUSFalseColor = ConfigurationManager.Get (KeyGenerateUSFalseColor) == null ?
                 (bool) GetDefaultPropertyValue("GenerateUSFalseColor") :
                 GenerateUSFalseColor;
+            GenerateMapOverlays = ConfigurationManager.Get (KeyGenerateMapOverlays) == null ?
+                (bool) GetDefaultPropertyValue("GenerateMapOverlays") :
+                GenerateMapOverlays;
+            GenerateLatLonOverlays = ConfigurationManager.Get (KeyGenerateLatLonOverlays) == null ?
+                (bool) GetDefaultPropertyValue("GenerateLatLonOverlays") :
+                GenerateLatLonOverlays;
+            GenerateLabels = ConfigurationManager.Get (KeyGenerateLabels) == null ?
+                (bool) GetDefaultPropertyValue("GenerateLabels") :
+                GenerateLabels;
+            GenerateLatLonLabel = ConfigurationManager.Get (KeyGenerateLatLonLabel) == null ?
+                (bool) GetDefaultPropertyValue("GenerateLatLonLabel") :
+                GenerateLatLonLabel;
 
             EraseFilesAfterGeneratingFalseColor = ConfigurationManager.Get (KeyEraseFilesAfterGeneratingFalseColor) == null ?
                 (bool) GetDefaultPropertyValue("EraseFilesAfterGeneratingFalseColor") :
