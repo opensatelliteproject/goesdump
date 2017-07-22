@@ -16,7 +16,7 @@ namespace OpenSatelliteProject {
         static readonly SyslogClient syslog = new SyslogClient();
 
         readonly Mutex messageMutex;
-        public bool LogConsole { get; set; }
+        public static bool LogConsole { get; set; }
         public delegate void ConsoleEvent(ConsoleMessage data);
         public static event ConsoleEvent MessageAvailable;
 

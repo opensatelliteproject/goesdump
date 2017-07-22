@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using OpenSatelliteProject.PacketData;
 
 namespace OpenSatelliteProject {
     public class OrganizerData {
@@ -19,6 +20,8 @@ namespace OpenSatelliteProject {
         /// <value>The code.</value>
         public string Code { get; set; }
 
+        public XRITHeader FileHeader { get; set; }
+
         public OrganizerData() {
             Segments = new Dictionary<int, string>();
             Lines = -1;
@@ -30,6 +33,7 @@ namespace OpenSatelliteProject {
             Timestamp = 0;
             FirstSegment = 999999;
             Code = DateTime.UtcNow.ToShortTimeString ();
+            FileHeader = null;
         }
 
         public bool IsComplete { get { return Segments.Count == MaxSegments; }}

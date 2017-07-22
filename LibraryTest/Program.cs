@@ -6,12 +6,14 @@ using System.Drawing.Imaging;
 using System.IO;
 using OpenSatelliteProject.PacketData.Enums;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace LibraryTest {
     class MainClass {
+
         public static void Main (string[] args) {
 
-            /*
+            //*
             //Organizer org = new Organizer("./himawari");
             //org.Update();
             //var gd = org.GroupData[1490489400];
@@ -112,10 +114,17 @@ namespace LibraryTest {
             Console.WriteLine ("Log: " + LibInfo.LogLines);
             Console.WriteLine ("Short Hash: " + LibInfo.ShortCommitID);
             Console.WriteLine ("Version: " + LibInfo.Version);
-            //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
+            string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
             //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1496790733.bin";
-            string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1496761569.bin";
+            //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1500179126.bin";
             //string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";
+            //var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
+
+            string defaultShapeFile = ShapeFiles.InitShapeFiles ();
+
+            var mapDrawer = new MapDrawer(defaultShapeFile);
+            //var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
+
             var im0 = new ImageManager ("output/Images/Full Disk/");
             var im1 = new ImageManager ("output/Images/Northern Hemisphere/");
             var im2 = new ImageManager ("output/Images/Southern Hemisphere/");
@@ -128,8 +137,14 @@ namespace LibraryTest {
             ImageManager.GenerateFalseColor = false;
             ImageManager.GenerateWaterVapour = true;
             ImageManager.GenerateOtherImages = true;
-            ImageManager.EraseFiles = true;
+            ImageManager.EraseFiles = false;
             ImageManager.UseNOAAFileFormat = true;
+            ImageManager.GenerateLatLonOverlays = true;
+            ImageManager.GenerateMapOverlays = true;
+            ImageManager.GenerateLabels = true;
+            ImageManager.GenerateLatLonLabel = true;
+            ImageManager.MapDrawer = mapDrawer;
+            // ImageTools.OSPLABEL = "© USA-Satcom.com";
             // /*
             im0.Start ();
             im1.Start ();
@@ -140,7 +155,7 @@ namespace LibraryTest {
             // */
             //*/
             // /*
-            
+            /*
             DemuxManager dm = new DemuxManager ();
             FileHandler.SkipDCS = true;
             FileHandler.SkipEMWIN = true;

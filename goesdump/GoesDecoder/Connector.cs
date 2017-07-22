@@ -60,6 +60,10 @@ namespace OpenSatelliteProject {
             statisticsThread.IsBackground = true;
             channelDataThread.IsBackground = true;
             constellationDataThread.IsBackground = true;
+
+            statisticsThread.Priority = ThreadPriority.BelowNormal;
+            channelDataThread.Priority = ThreadPriority.AboveNormal;
+            constellationDataThread.Priority = ThreadPriority.BelowNormal;
         }
 
         public void Start() {

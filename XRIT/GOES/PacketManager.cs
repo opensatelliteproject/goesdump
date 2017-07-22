@@ -35,7 +35,7 @@ namespace OpenSatelliteProject {
             string folderName = UnknownDataFolder;
             if (product == NOAAProductID.GOES16_ABI) {
                 folderName = Path.Combine(ImagesFolder, "FM1");
-            } else  if (product == NOAAProductID.GOES13_ABI || product == NOAAProductID.GOES15_ABI) {
+            } else  if (product == NOAAProductID.GOES13_ABI || product == NOAAProductID.GOES15_ABI || product == NOAAProductID.ABI_RELAY) {
                 switch (subProduct) {
                     case (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST:
                     case (int)ScannerSubProduct.VISIBLE_AREA_OF_INTEREST:
@@ -103,7 +103,7 @@ namespace OpenSatelliteProject {
                     folderName = Path.Combine(ImagesFolder, "FM1");
                 } else if (product.ID == (int)NOAAProductID.HIMAWARI8_ABI) {
                     folderName = Path.Combine(ImagesFolder, "Full Disk");
-                } else if (product.ID == (int)NOAAProductID.GOES13_ABI || product.ID == (int)NOAAProductID.GOES15_ABI) {
+                } else if (product.ID == (int)NOAAProductID.GOES13_ABI || product.ID == (int)NOAAProductID.GOES15_ABI || product.ID == (int)NOAAProductID.ABI_RELAY) {
                     switch (subProduct.ID) {
                         case (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST:
                         case (int)ScannerSubProduct.VISIBLE_AREA_OF_INTEREST:
@@ -331,14 +331,15 @@ namespace OpenSatelliteProject {
                 }
 
                 try {
-                    UIConsole.Log(string.Format("New Weather Data - {0} - {1}", header.SubProduct.Name, header.Filename));
+                    UIConsole.Log ($"New {header.ToNameString()}");
+                    //UIConsole.Log($"New Weather Data - {header.SubProduct.Name}");
                     if (!Directory.Exists(basedir)) {
                         Directory.CreateDirectory(basedir);
                     }
                     ImageHandler.Handler.HandleFile(filename, basedir);
                     File.Delete(filename);
                 } catch (Exception e) {
-                    UIConsole.Warn(string.Format("Failed to parse Weather Data Image at {0}: {1}", filename, e));
+                    UIConsole.Warn($"Failed to parse Weather Data Image at {filename}: {e}");
                 }
             } else if (header.PrimaryHeader.FileType == FileTypeCode.TEXT) {
                 string fz = DumpFile(filename, header, "txt");
@@ -361,14 +362,14 @@ namespace OpenSatelliteProject {
                 basedir = Path.Combine(basedir, TextFolder);
 
                 try {
-                    UIConsole.Log(string.Format("New NOAA Text ({0})", header.Filename));
+                    UIConsole.Log ($"New {header.ToNameString()}");
                     if (!Directory.Exists(basedir)) {
                         Directory.CreateDirectory(basedir);
                     }
                     TextHandler.Handler.HandleFile(filename, basedir);
                     File.Delete(filename);
                 } catch (Exception e) {
-                    UIConsole.Warn(string.Format("Failed to parse Weather Data Image at {0}: {1}", filename, e));
+                    UIConsole.Warn($"Failed to parse Weather Data Image at {filename}: {e}");
                 }
             } else {
                 FileHandler.DefaultHandler(filename, header);
@@ -399,22 +400,15 @@ namespace OpenSatelliteProject {
                 f = f.Replace(String.Format("{0}", ext), append);
             }
 
-            if (!String.Equals(Path.GetFileName(f), fileHeader.Filename)) {
-                if (fileHeader.SubProduct.Name != "Unknown") {
-                    UIConsole.Log(String.Format("New {0} - {1} ({2}) saved as {3}", fileHeader.Product.Name, fileHeader.SubProduct.Name, fileHeader.Filename, Path.GetFileName(f)));
-                } else {
-                    UIConsole.Log(String.Format("New {0} ({1}) saved as {2}", fileHeader.Product.Name, fileHeader.Filename, Path.GetFileName(f)));
-                }
+            UIConsole.Log ($"New {fileHeader.ToNameString()}");
+                
+            /*
+            if (fileHeader.SubProduct.Name != "Unknown") {
+                UIConsole.Log(String.Format("New {0} - {1} ({2})", fileHeader.Product.Name, fileHeader.SubProduct.Name, fileHeader.Filename));
             } else {
-                if (fileHeader.SubProduct.Name != "Unknown") {
-                    UIConsole.Log(String.Format("New {0} - {1} ({2})", fileHeader.Product.Name, fileHeader.SubProduct.Name, fileHeader.Filename));
-                } else {
-                    UIConsole.Log(String.Format("New {0} ({1})", fileHeader.Product.Name, fileHeader.Filename));
-                }
-            }
+                UIConsole.Log(String.Format("New {0} ({1})", fileHeader.Product.Name, fileHeader.Filename));
+            }*/
 
-            //UIConsole.GlobalConsole.Log(String.Format("New JPEG file {0}", fileHeader.Filename));
-            //Console.WriteLine("Renaming {0} to {1}", filename, f);
             FileStream fs = File.OpenRead(filename);
             fs.Seek(fileHeader.PrimaryHeader.HeaderLength, SeekOrigin.Begin);
             FileStream os = File.OpenWrite(f);

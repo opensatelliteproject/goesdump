@@ -122,12 +122,14 @@ namespace OpenSatelliteProject {
                         grp.SatelliteName = satellite;
                         grp.RegionName = region;
                         grp.FrameTime = datetime;
-                        grp.CropImage = cropSection;
-                        grp.SatelliteLongitude = satLon;
-                        grp.ColumnScalingFactor = header.ImageNavigationHeader.ColumnScalingFactor;
-                        grp.LineScalingFactor = header.ImageNavigationHeader.LineScalingFactor;
-                        grp.ColumnOffset = grp.ColumnOffset == -1 ? header.ImageNavigationHeader.ColumnOffset : grp.ColumnOffset;
-                        grp.LineOffset = grp.LineOffset == -1 ? header.ImageNavigationHeader.LineOffset : grp.LineOffset;
+                        if (segmentId == 0) {
+                            grp.CropImage = cropSection;
+                            grp.SatelliteLongitude = satLon;
+                            grp.ColumnScalingFactor = header.ImageNavigationHeader.ColumnScalingFactor;
+                            grp.LineScalingFactor = header.ImageNavigationHeader.LineScalingFactor;
+                            grp.ColumnOffset = grp.ColumnOffset == -1 ? header.ImageNavigationHeader.ColumnOffset : grp.ColumnOffset;
+                            grp.LineOffset = grp.LineOffset == -1 ? header.ImageNavigationHeader.LineOffset : grp.LineOffset;
+                        }
                         grp.Code = header.SegmentIdentificationHeader != null ? 
                             header.SegmentIdentificationHeader.ImageID + "_" + header.SubProduct.Name :
                             header.Product.Name + "_" + header.SubProduct.Name;
@@ -200,6 +202,7 @@ namespace OpenSatelliteProject {
                         od.Timestamp = timestamp;
                         od.Segments[segmentId] = file;
                         od.FirstSegment = Math.Min(od.FirstSegment, segmentId);
+                        od.FileHeader = header;
                         if (od.Columns == -1) {
                             od.Columns = header.ImageStructureHeader.Columns;
                             od.Lines = header.ImageStructureHeader.Lines;
@@ -210,9 +213,6 @@ namespace OpenSatelliteProject {
                             od.Lines += header.ImageStructureHeader.Lines;
                         }
                         alreadyProcessed.Add(file);
-                        if (file.EndsWith("OR_ABI-L2-CMIPM2-M3C07_G16_s20171580844569_e20171580845039_c20171580845069.lrit")) {
-                            Console.WriteLine("FOUND");
-                        }
                     } catch (Exception e) {
                         UIConsole.Error($"Error reading file {file}: {e}");
                         alreadyProcessed.Add(file);

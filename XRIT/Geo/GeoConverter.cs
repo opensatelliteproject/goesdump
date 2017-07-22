@@ -98,7 +98,7 @@ namespace OpenSatelliteProject.Geo {
         /// <param name="y">The y coordinate.</param>
         public Tuple<float, float> xy2latlon(int x, int y) {
             var radCoord = GeoTools.xy2lonlat(satelliteLongitude, x, y, coff, cfac, loff, lfac);
-            return new Tuple<float, float>(GeoTools.rad2deg(radCoord.Item1), GeoTools.rad2deg(radCoord.Item2));
+            return new Tuple<float, float>(GeoTools.rad2deg(radCoord.Item2), GeoTools.rad2deg(radCoord.Item1));
         }
     }
 }

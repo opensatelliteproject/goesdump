@@ -62,7 +62,7 @@ namespace OpenSatelliteProject {
                 if (fileHeader.SegmentIdentificationHeader != null && fileHeader.SegmentIdentificationHeader.MaxSegments > 1) {
                     string baseName = Path.GetFileNameWithoutExtension (ofilename);
                     string ext = Path.GetExtension (ofilename);
-                    string fileH = fileHeader.SegmentIdentificationHeader.Sequence.ToString ();
+                    string fileH = fileHeader.SegmentIdentificationHeader.Sequence.ToString ("D2");
                     string imageId = fileHeader.SegmentIdentificationHeader.ImageID.ToString();
                     ofilename = $"{baseName}-img{imageId}-seg{fileH}{ext}";
                 }
@@ -91,19 +91,13 @@ namespace OpenSatelliteProject {
                 f = f.Replace(String.Format("{0}", ext), append);
             }
 
-            if (!String.Equals(Path.GetFileName(f), ofilename)) {
-                if (fileHeader.SubProduct.Name != "Unknown") {
-                    UIConsole.Log(String.Format("New {0} - {1} ({2}) saved as {3}", fileHeader.Product.Name, fileHeader.SubProduct.Name, ofilename, Path.GetFileName(f)));
-                } else {
-                    UIConsole.Log(String.Format("New {0} ({1}) saved as {2}", fileHeader.Product.Name, ofilename, Path.GetFileName(f)));
-                }
+            UIConsole.Log ($"New {fileHeader.ToNameString()}");
+
+            /*if (fileHeader.SubProduct.Name != "Unknown") {
+                UIConsole.Log($"New {fileHeader.Product.Name} - {fileHeader.SubProduct.Name}");
             } else {
-                if (fileHeader.SubProduct.Name != "Unknown") {
-                    UIConsole.Log(String.Format("New {0} - {1} ({2})", fileHeader.Product.Name, fileHeader.SubProduct.Name, ofilename));
-                } else {
-                    UIConsole.Log(String.Format("New {0} ({1})", fileHeader.Product.Name, ofilename));
-                }
-            }
+                UIConsole.Log($"New {fileHeader.Product.Name}");
+            }*/
 
             EventMaster.Post (EventTypes.NewFileEvent, new NewFileReceivedEventData {
                 Name = Path.GetFileName(ofilename),

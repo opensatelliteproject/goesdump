@@ -1,21 +1,19 @@
 ﻿<Properties StartupItem="LibraryTest/LibraryTest.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/Properties/LibInfo.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/HeadlessMain.cs">
     <Files>
-      <File FileName="XRIT/GOES/Demuxer.cs" Line="1" Column="1" />
-      <File FileName="goesdump/HeadlessMain.cs" Line="1" Column="1" />
-      <File FileName="goesdump/Models/ProgConfig.cs" Line="1" Column="1" />
-      <File FileName="XRIT/packages.config" Line="1" Column="1" />
-      <File FileName="XRIT/Properties/AssemblyInfo.cs" Line="1" Column="1" />
-      <File FileName="LibraryTest/Program.cs" Line="1" Column="1" />
-      <File FileName="goesdump/GoesDecoder/Connector.cs" Line="1" Column="1" />
-      <File FileName="XRIT/Properties/LibInfo.cs" Line="17" Column="36" />
+      <File FileName="LibraryTest/Program.cs" Line="147" Column="16" />
+      <File FileName="XRIT/GOES/ImageManager.cs" Line="428" Column="41" />
+      <File FileName="XRIT/Tools/Organizer.cs" Line="115" Column="49" />
+      <File FileName="XRIT/Properties/LibInfo.cs" Line="1" Column="1" />
+      <File FileName="goesdump/Models/ProgConfig.cs" Line="340" Column="72" />
+      <File FileName="goesdump/HeadlessMain.cs" Line="127" Column="56" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
       <Catchpoint exceptionName="System.ArgumentException" includeSubclasses="True" />
-      <Breakpoint file="/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/HeadlessMain.cs" line="187" column="21" />
+      <Breakpoint file="/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/HeadlessMain.cs" line="191" column="21" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches>

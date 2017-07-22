@@ -48,7 +48,7 @@ namespace OpenSatelliteProject.PacketData {
             (
                 SubProduct.ID == (int)ScannerSubProduct.INFRARED_FULLDISK ||
                 SubProduct.ID == (int)ScannerSubProduct.VISIBLE_FULLDISK ||
-                SubProduct.ID == (int)ScannerSubProduct.WATERVAPOUR_FULLDISK
+                SubProduct.ID == (int)ScannerSubProduct.WATERVAPOUR_FULLDISK 
             );
             } 
         }
@@ -169,6 +169,28 @@ namespace OpenSatelliteProject.PacketData {
                     UnknownHeaders.Add(header);
                     break;
             }
+        }
+
+        public string ToNameString() {
+            if (
+                Product.ID == (int)NOAAProductID.GOES13_ABI || 
+                Product.ID == (int)NOAAProductID.GOES15_ABI || 
+                Product.ID == (int)NOAAProductID.GOES16_ABI ||
+                Product.ID == (int)NOAAProductID.ABI_RELAY  ||
+                Product.ID == (int)NOAAProductID.HIMAWARI8_ABI
+            ) {
+                string baseName = $"{Product.Name} - {SubProduct.Name}";
+
+                if (SegmentIdentificationHeader != null) {
+                    baseName = $"{baseName} (ID: {SegmentIdentificationHeader.ImageID} Seg: {SegmentIdentificationHeader.Sequence}/{SegmentIdentificationHeader.MaxSegments})";
+                }
+
+                return baseName;
+            }
+
+
+            // Fallback
+            return (SubProduct.Name != "Unknown") ? $"{Product.Name} - {SubProduct.Name}" : Product.Name;
         }
 
         #endregion

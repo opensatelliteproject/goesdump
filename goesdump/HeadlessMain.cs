@@ -125,6 +125,10 @@ namespace OpenSatelliteProject {
             ImageManager.GenerateWaterVapour = ProgConfig.GenerateWaterVapourImages;
             ImageManager.MaxRetryCount = ProgConfig.MaxGenerateRetry;
             ImageManager.UseNOAAFileFormat = ProgConfig.UseNOAAFormat;
+            ImageManager.GenerateLabels = ProgConfig.GenerateLabels;
+            ImageManager.GenerateLatLonOverlays = ProgConfig.GenerateLatLonOverlays;
+            ImageManager.GenerateMapOverlays = ProgConfig.GenerateMapOverlays;
+            ImageManager.GenerateLatLonLabel = ProgConfig.GenerateLatLonLabel;
 
             Connector.ChannelDataServerName = ProgConfig.ChannelDataServerName;
             Connector.StatisticsServerName = ProgConfig.StatisticsServerName;
