@@ -175,6 +175,13 @@ namespace OpenSatelliteProject {
             USImageManager = new ImageManager(usFolder);
             FMImageManager = new ImageManager(fmFolder);
 
+            FDImageManager.InitMapDrawer ();
+            XXImageManager.InitMapDrawer ();
+            NHImageManager.InitMapDrawer ();
+            SHImageManager.InitMapDrawer ();
+            USImageManager.InitMapDrawer ();
+            FMImageManager.InitMapDrawer ();
+
             directoryHandler = new DirectoryHandler(FileHandler.FinalFileFolder, "/data");
 
             mtx = new Mutex();
