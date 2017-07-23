@@ -57,6 +57,10 @@ namespace OpenSatelliteProject {
         public const string KeyEnableEMWIN = "EnableEMWIN";
         public const string KeyEnableWeatherData = "EnableWeatherData";
         #endregion
+
+        #region Other Data
+        public const string KeyUsername = "Username";
+        #endregion
         #endregion
 
         #region Properties
@@ -264,6 +268,14 @@ namespace OpenSatelliteProject {
             set { ConfigurationManager.Set(UIConsole.SYSLOGFACILITYDBKEY, value); }
         }
         #endregion
+
+        #region Other Config
+        [ConfigDescription("OSP Username used for Crash Logs", "Not Defined")]
+        public static string Username {
+            get { return ConfigurationManager.Get (KeyUsername); }
+            set { ConfigurationManager.Set (KeyUsername, value); }
+        }
+        #endregion
         #endregion
 
         #region Auxiliary Methods
@@ -369,6 +381,7 @@ namespace OpenSatelliteProject {
 
             SysLogServer = SysLogServer ?? (string) GetDefaultPropertyValue("SysLogServer");
             SysLogFacility = SysLogFacility ?? (string) GetDefaultPropertyValue("SysLogFacility");
+            Username = Username ?? (string) GetDefaultPropertyValue("Username");
 
             MaxGenerateRetry = MaxGenerateRetry == 0 ? 
                 (int) GetDefaultPropertyValue("MaxGenerateRetry") : 

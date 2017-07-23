@@ -52,6 +52,10 @@
     <Reference Include="DotSpatial.Mono">
       <HintPath>..\packages\DotSpatial.Mono.1.9\lib\net40-Client\DotSpatial.Mono.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -138,6 +142,9 @@
     <Compile Include="Tools\Decompress.cs" />
     <Compile Include="Properties\LibInfo.cs" />
     <Compile Include="ShapeFiles\ShapeFiles.cs" />
+    <Compile Include="Tools\CrashReport.cs" />
+    <Compile Include="Models\CrashData.cs" />
+    <Compile Include="Models\StackTraceData.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

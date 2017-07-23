@@ -123,239 +123,251 @@ namespace OpenSatelliteProject {
         }
 
         private void statisticsLoop() {
-            UIConsole.Log("Statistics Thread Started");
-            byte[] buffer = new byte[4165];
+            try {
+                UIConsole.Log("Statistics Thread Started");
+                byte[] buffer = new byte[4165];
 
-            IPHostEntry ipHostInfo = Dns.GetHostEntry(StatisticsServerName);
-            IPAddress ipAddress = new IPAddress(new byte[] { 127, 0, 0, 1 });
-            foreach (IPAddress ip in ipHostInfo.AddressList) {
-              if (ip.AddressFamily != AddressFamily.InterNetworkV6) {
-                ipAddress = ip;
-                break;
-              }
-            }
+                IPHostEntry ipHostInfo = Dns.GetHostEntry(StatisticsServerName);
+                IPAddress ipAddress = new IPAddress(new byte[] { 127, 0, 0, 1 });
+                foreach (IPAddress ip in ipHostInfo.AddressList) {
+                  if (ip.AddressFamily != AddressFamily.InterNetworkV6) {
+                    ipAddress = ip;
+                    break;
+                  }
+                }
 
-            IPEndPoint remoteEP = new IPEndPoint(ipAddress, StatisticsServerPort);
-            Socket sender = null;
-            bool isConnected;
+                IPEndPoint remoteEP = new IPEndPoint(ipAddress, StatisticsServerPort);
+                Socket sender = null;
+                bool isConnected;
 
-            while (statisticsThreadRunning) {
-                try {
-                    UIConsole.Log("Statistics Thread connect");
-                    sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    sender.ReceiveTimeout = 5000;
-                    sender.Connect(remoteEP);
-                    isConnected = true;
+                while (statisticsThreadRunning) {
+                    try {
+                        UIConsole.Log("Statistics Thread connect");
+                        sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        sender.ReceiveTimeout = 5000;
+                        sender.Connect(remoteEP);
+                        isConnected = true;
 
-                    UIConsole.Log(String.Format("Socket connected to {0}", sender.RemoteEndPoint.ToString()));
-                    int nullReceive = 0;
-                    while (isConnected) {
-                        try {
-                            var receivedBytes = sender.Receive(buffer);
-                            if (receivedBytes < buffer.Length && receivedBytes != 0) {
-                                nullReceive = 0;
-                                UIConsole.Error("Received less than Statistics Packet size!");
-                                Thread.Sleep(200);
-                            } else  if (receivedBytes == 0) {
-                                nullReceive++;
-                                if (nullReceive == 5) {
-                                    UIConsole.Error("Cannot reach server. Dropping connection!");
-                                    isConnected = false;
-                                    sender.Shutdown(SocketShutdown.Both);
-                                    sender.Disconnect(false);
-                                    sender.Close();
+                        UIConsole.Log(String.Format("Socket connected to {0}", sender.RemoteEndPoint.ToString()));
+                        int nullReceive = 0;
+                        while (isConnected) {
+                            try {
+                                var receivedBytes = sender.Receive(buffer);
+                                if (receivedBytes < buffer.Length && receivedBytes != 0) {
+                                    nullReceive = 0;
+                                    UIConsole.Error("Received less than Statistics Packet size!");
+                                    Thread.Sleep(200);
+                                } else  if (receivedBytes == 0) {
+                                    nullReceive++;
+                                    if (nullReceive == 5) {
+                                        UIConsole.Error("Cannot reach server. Dropping connection!");
+                                        isConnected = false;
+                                        sender.Shutdown(SocketShutdown.Both);
+                                        sender.Disconnect(false);
+                                        sender.Close();
+                                    }
+                                } else {
+                                    nullReceive = 0;
+                                    Statistics_st sst = Statistics_st.fromByteArray(buffer);
+                                    this.postStatistics(sst);
                                 }
-                            } else {
-                                nullReceive = 0;
-                                Statistics_st sst = Statistics_st.fromByteArray(buffer);
-                                this.postStatistics(sst);
+                            } catch (ArgumentNullException ane) {
+                                UIConsole.Error(String.Format("ArgumentNullException : {0}", ane.ToString()));
+                                isConnected = false;
+                            } catch (SocketException se) {
+                                // That's usually timeout.  I would say that is best to handle and show some message
+                                // But for now, that would make it confusing for the users. So let's keep without a notice.
+                                //UIConsole.GlobalConsole.Error(String.Format("SocketException : {0}", se.ToString()));
+                                isConnected = false;
+                            } catch (Exception e) {
+                                UIConsole.Error(String.Format("Unexpected exception : {0}", e.ToString()));
+                                isConnected = false;
                             }
-                        } catch (ArgumentNullException ane) {
-                            UIConsole.Error(String.Format("ArgumentNullException : {0}", ane.ToString()));
-                            isConnected = false;
-                        } catch (SocketException se) {
-                            // That's usually timeout.  I would say that is best to handle and show some message
-                            // But for now, that would make it confusing for the users. So let's keep without a notice.
-                            //UIConsole.GlobalConsole.Error(String.Format("SocketException : {0}", se.ToString()));
-                            isConnected = false;
-                        } catch (Exception e) {
-                            UIConsole.Error(String.Format("Unexpected exception : {0}", e.ToString()));
-                            isConnected = false;
+
+                            StatisticsConnected = isConnected;
+
+                            if (!statisticsThreadRunning) {
+                                break;
+                            }
+                            Thread.Sleep(1);
                         }
 
-                        StatisticsConnected = isConnected;
+                        sender.Shutdown(SocketShutdown.Both);
+                        sender.Disconnect(false);
+                        sender.Close();
 
-                        if (!statisticsThreadRunning) {
-                            break;
-                        }
-                        Thread.Sleep(1);
+                    } catch (ArgumentNullException ane) {
+                        UIConsole.Error(String.Format("ArgumentNullException : {0}", ane.ToString()));
+                    } catch (SocketException se) {
+                        UIConsole.Error(String.Format("SocketException : {0}", se.ToString()));
+                    } catch (Exception e) {
+                        UIConsole.Error(String.Format("Unexpected exception : {0}", e.ToString()));
                     }
 
-                    sender.Shutdown(SocketShutdown.Both);
-                    sender.Disconnect(false);
-                    sender.Close();
-
-                } catch (ArgumentNullException ane) {
-                    UIConsole.Error(String.Format("ArgumentNullException : {0}", ane.ToString()));
-                } catch (SocketException se) {
-                    UIConsole.Error(String.Format("SocketException : {0}", se.ToString()));
+                    if (statisticsThreadRunning) {
+                        UIConsole.Warn("Socket closed. Waiting 1s before trying again.");
+                        Thread.Sleep(1000);
+                    }
+                }
+                Console.WriteLine("Requested to close Statistics Thread!");
+                try {
+                    if (sender != null) {
+                        sender.Shutdown(SocketShutdown.Both);
+                        sender.Disconnect(false);
+                        sender.Close();
+                    }
                 } catch (Exception e) {
-                    UIConsole.Error(String.Format("Unexpected exception : {0}", e.ToString()));
+                    UIConsole.Debug(String.Format("Exception thrown when closing socket: {0} Ignoring.", e.ToString()));
                 }
-
-                if (statisticsThreadRunning) {
-                    UIConsole.Warn("Socket closed. Waiting 1s before trying again.");
-                    Thread.Sleep(1000);
-                }
-            }
-            Console.WriteLine("Requested to close Statistics Thread!");
-            try {
-                if (sender != null) {
-                    sender.Shutdown(SocketShutdown.Both);
-                    sender.Disconnect(false);
-                    sender.Close();
-                }
+                UIConsole.Log("Statistics Thread closed");
             } catch (Exception e) {
-                UIConsole.Debug(String.Format("Exception thrown when closing socket: {0} Ignoring.", e.ToString()));
+                CrashReport.Report (e);
             }
-            UIConsole.Log("Statistics Thread closed");
         }
 
         private void channelDataLoop() {
-            UIConsole.Log("Channel Data Loop started");
-            byte[] buffer = new byte[892];
-
-            IPHostEntry ipHostInfo = Dns.GetHostEntry(ChannelDataServerName);
-            IPAddress ipAddress = new IPAddress(new byte[] { 127, 0, 0, 1 });
-            foreach (IPAddress ip in ipHostInfo.AddressList) {
-                if (ip.AddressFamily != AddressFamily.InterNetworkV6) {
-                    ipAddress = ip;
-                    break;
-                }
-            }
-            IPEndPoint remoteEP = new IPEndPoint(ipAddress, ChannelDataServerPort);
-            Socket sender = null;
-
-            while (channelDataThreadRunning) {
-
-                bool isConnected = true;
-                UIConsole.Log("Channel Data Thread connect");
-                try {
-                    sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    sender.ReceiveTimeout = 3000;
-                    sender.Connect(remoteEP);
-                    isConnected = true;
-                    UIConsole.Log(String.Format("Socket connected to {0}", sender.RemoteEndPoint.ToString()));
-                    int nullReceive = 0;
-                    while (isConnected) {
-                        try {
-                            var receivedBytes = sender.Receive(buffer);
-                            if (receivedBytes < buffer.Length && receivedBytes != 0) {
-                                UIConsole.Error("Received less bytes than channel data!");
-                                Thread.Sleep(200);
-                                nullReceive = 0;
-                            } else  if (receivedBytes == 0) {
-                                nullReceive++;
-                                if (nullReceive == 5) {
-                                    UIConsole.Error("Cannot reach server. Dropping connection!");
-                                    isConnected = false;
-                                    sender.Shutdown(SocketShutdown.Both);
-                                    sender.Disconnect(false);
-                                    sender.Close();
-                                }
-                            } else {
-                                nullReceive = 0;
-                                this.postChannelData(buffer);
-                            }
-                        } catch (ArgumentNullException ane) {
-                            UIConsole.Error(String.Format("ArgumentNullException : {0}", ane.ToString()));
-                            isConnected = false;
-                        } catch (SocketException se) {
-                            // That's usually timeout.  I would say that is best to handle and show some message
-                            // But for now, that would make it confusing for the users. So let's keep without a notice.
-                            //UIConsole.GlobalConsole.Error(String.Format("SocketException : {0}", se.ToString()));
-                            isConnected = false;
-                        } catch (Exception e) {
-                            UIConsole.Error(String.Format("Unexpected exception : {0}", e.ToString()));
-                            isConnected = false;
-                        }
-
-                        DataConnected = isConnected;
-
-                        if (!channelDataThreadRunning) {
-                            break;
-                        }
-                    }
-
-                    sender.Shutdown(SocketShutdown.Both);
-                    sender.Disconnect(false);
-                    sender.Close();
-
-                } catch (ArgumentNullException ane) {
-                    UIConsole.Error(String.Format("ArgumentNullException : {0}", ane.ToString()));
-                } catch (SocketException se) {
-                    UIConsole.Error(String.Format("SocketException : {0}", se.ToString()));
-                } catch (Exception e) {
-                    UIConsole.Error(String.Format("Unexpected exception : {0}", e.ToString()));
-                }
-                if (channelDataThreadRunning) {
-                    UIConsole.Warn("Socket closed. Waiting 1s before trying again.");
-                    Thread.Sleep(1000);
-                }
-            }
-
-            UIConsole.Debug("Requested to close Channel Data Thread!");
             try {
-                if (sender != null) {
-                    sender.Shutdown(SocketShutdown.Both);
-                    sender.Disconnect(false);
-                    sender.Close();
-                }
-            } catch (Exception e) {
-                UIConsole.Debug(String.Format("Exception thrown when closing socket: {0} Ignoring.", e.ToString()));
-            }
+                UIConsole.Log("Channel Data Loop started");
+                byte[] buffer = new byte[892];
 
-            UIConsole.Log("Channel Data Thread closed.");
+                IPHostEntry ipHostInfo = Dns.GetHostEntry(ChannelDataServerName);
+                IPAddress ipAddress = new IPAddress(new byte[] { 127, 0, 0, 1 });
+                foreach (IPAddress ip in ipHostInfo.AddressList) {
+                    if (ip.AddressFamily != AddressFamily.InterNetworkV6) {
+                        ipAddress = ip;
+                        break;
+                    }
+                }
+                IPEndPoint remoteEP = new IPEndPoint(ipAddress, ChannelDataServerPort);
+                Socket sender = null;
+
+                while (channelDataThreadRunning) {
+
+                    bool isConnected = true;
+                    UIConsole.Log("Channel Data Thread connect");
+                    try {
+                        sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        sender.ReceiveTimeout = 3000;
+                        sender.Connect(remoteEP);
+                        isConnected = true;
+                        UIConsole.Log(String.Format("Socket connected to {0}", sender.RemoteEndPoint.ToString()));
+                        int nullReceive = 0;
+                        while (isConnected) {
+                            try {
+                                var receivedBytes = sender.Receive(buffer);
+                                if (receivedBytes < buffer.Length && receivedBytes != 0) {
+                                    UIConsole.Error("Received less bytes than channel data!");
+                                    Thread.Sleep(200);
+                                    nullReceive = 0;
+                                } else  if (receivedBytes == 0) {
+                                    nullReceive++;
+                                    if (nullReceive == 5) {
+                                        UIConsole.Error("Cannot reach server. Dropping connection!");
+                                        isConnected = false;
+                                        sender.Shutdown(SocketShutdown.Both);
+                                        sender.Disconnect(false);
+                                        sender.Close();
+                                    }
+                                } else {
+                                    nullReceive = 0;
+                                    this.postChannelData(buffer);
+                                }
+                            } catch (ArgumentNullException ane) {
+                                UIConsole.Error(String.Format("ArgumentNullException : {0}", ane.ToString()));
+                                isConnected = false;
+                            } catch (SocketException se) {
+                                // That's usually timeout.  I would say that is best to handle and show some message
+                                // But for now, that would make it confusing for the users. So let's keep without a notice.
+                                //UIConsole.GlobalConsole.Error(String.Format("SocketException : {0}", se.ToString()));
+                                isConnected = false;
+                            } catch (Exception e) {
+                                UIConsole.Error(String.Format("Unexpected exception : {0}", e.ToString()));
+                                isConnected = false;
+                            }
+
+                            DataConnected = isConnected;
+
+                            if (!channelDataThreadRunning) {
+                                break;
+                            }
+                        }
+
+                        sender.Shutdown(SocketShutdown.Both);
+                        sender.Disconnect(false);
+                        sender.Close();
+
+                    } catch (ArgumentNullException ane) {
+                        UIConsole.Error(String.Format("ArgumentNullException : {0}", ane.ToString()));
+                    } catch (SocketException se) {
+                        UIConsole.Error(String.Format("SocketException : {0}", se.ToString()));
+                    } catch (Exception e) {
+                        UIConsole.Error(String.Format("Unexpected exception : {0}", e.ToString()));
+                    }
+                    if (channelDataThreadRunning) {
+                        UIConsole.Warn("Socket closed. Waiting 1s before trying again.");
+                        Thread.Sleep(1000);
+                    }
+                }
+
+                UIConsole.Debug("Requested to close Channel Data Thread!");
+                try {
+                    if (sender != null) {
+                        sender.Shutdown(SocketShutdown.Both);
+                        sender.Disconnect(false);
+                        sender.Close();
+                    }
+                } catch (Exception e) {
+                    UIConsole.Debug(String.Format("Exception thrown when closing socket: {0} Ignoring.", e.ToString()));
+                }
+
+                UIConsole.Log("Channel Data Thread closed.");
+            } catch (Exception e) {
+                CrashReport.Report (e);
+            }
         }
 
         private void constellationDataLoop() {
-            UIConsole.Log("Constellation Data Loop started");
-            byte[] buffer = null;
-            float[] data = new float[1024];
-            for (int i = 0; i < 1024; i++) {
-                data[i] = 0;
-            }
-
-            IPHostEntry ipHostInfo = Dns.GetHostEntry(ConstellationServerName);
-            IPAddress ipAddress = new IPAddress(new byte[] { 127, 0, 0, 1 });
-            foreach (IPAddress ip in ipHostInfo.AddressList) {
-                if (ip.AddressFamily != AddressFamily.InterNetworkV6) {
-                    ipAddress = ip;
-                    break;
+            try {
+                UIConsole.Log("Constellation Data Loop started");
+                byte[] buffer = null;
+                float[] data = new float[1024];
+                for (int i = 0; i < 1024; i++) {
+                    data[i] = 0;
                 }
-            }
 
-            IPEndPoint remoteEP = new IPEndPoint(ipAddress, ConstellationServerPort);
-            UdpClient udpClient = new UdpClient(ConstellationServerPort);
-            udpClient.Client.ReceiveTimeout = 200;
-
-            while (constellationDataThreadRunning) {
-                try {
-                    buffer = udpClient.Receive(ref remoteEP);
-                    if (buffer != null && buffer.Length == 1024) {
-                        for (int i = 0; i < 1024; i++) {
-                            sbyte t = (sbyte)buffer[i];
-                            data[i] = t;
-                            data[i] /= 128f;
-                        }
-                        this.postConstellationData(data);
+                IPHostEntry ipHostInfo = Dns.GetHostEntry(ConstellationServerName);
+                IPAddress ipAddress = new IPAddress(new byte[] { 127, 0, 0, 1 });
+                foreach (IPAddress ip in ipHostInfo.AddressList) {
+                    if (ip.AddressFamily != AddressFamily.InterNetworkV6) {
+                        ipAddress = ip;
+                        break;
                     }
-                } catch (SocketException) {
-                    // Do nothing, timeout on UDP
                 }
+
+                IPEndPoint remoteEP = new IPEndPoint(ipAddress, ConstellationServerPort);
+                UdpClient udpClient = new UdpClient(ConstellationServerPort);
+                udpClient.Client.ReceiveTimeout = 200;
+
+                while (constellationDataThreadRunning) {
+                    try {
+                        buffer = udpClient.Receive(ref remoteEP);
+                        if (buffer != null && buffer.Length == 1024) {
+                            for (int i = 0; i < 1024; i++) {
+                                sbyte t = (sbyte)buffer[i];
+                                data[i] = t;
+                                data[i] /= 128f;
+                            }
+                            this.postConstellationData(data);
+                        }
+                    } catch (SocketException) {
+                        // Do nothing, timeout on UDP
+                    }
+                }
+               
+                UIConsole.Log("Constellation Thread closed.");
+            } catch (Exception e) {
+                CrashReport.Report (e);
             }
-           
-            UIConsole.Log("Constellation Thread closed.");
         }
 
         #endregion

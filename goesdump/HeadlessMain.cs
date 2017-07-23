@@ -150,7 +150,7 @@ namespace OpenSatelliteProject {
         }
 
         public HeadlessMain() {
-
+            AppDomain.CurrentDomain.UnhandledException += CrashReport.DefaultExceptionHandler;
             ManageConfig ();
 
             EventMaster.On(EventTypes.ConfigChangeEvent, d => {
