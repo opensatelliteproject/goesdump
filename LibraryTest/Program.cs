@@ -12,7 +12,7 @@ namespace LibraryTest {
     class MainClass {
 
         public static void Main (string[] args) {
-
+            AppDomain.CurrentDomain.UnhandledException += CrashReport.DefaultExceptionHandler;
             //*
             //Organizer org = new Organizer("./himawari");
             //org.Update();
@@ -149,8 +149,6 @@ namespace LibraryTest {
             ImageManager.GenerateLabels = true;
             ImageManager.GenerateLatLonLabel = true;
             ImageManager.SaveNonOverlay = false;
-            // ImageTools.OSPLABEL = "© USA-Satcom.com";
-            // /*
             im0.Start ();
             im1.Start ();
             im2.Start ();
@@ -161,7 +159,7 @@ namespace LibraryTest {
             // */
             //*/
             // /*
-            /*
+            ///*
             DemuxManager dm = new DemuxManager ();
             FileHandler.SkipDCS = true;
             FileHandler.SkipEMWIN = true;

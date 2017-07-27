@@ -294,241 +294,278 @@ namespace OpenSatelliteProject {
         }
 
         void ThreadLoop() {
-            while (running) {
-                organizer.Update();
-                var data = organizer.GroupData;
-                var clist = data.ToList();
-                foreach (var z in clist) {
-                    var mData = z.Value;
-                    if (!running) {
-                        break;
-                    }
-                    string ImageName = string.Format("{0}-{1}-{2}", z.Key, mData.SatelliteName, mData.RegionName);
-                    if (!mData.IsProcessed) {
-                        try {
-                            if (ImageManager.GenerateVisible && mData.Visible.IsComplete && mData.Visible.MaxSegments != 0 && !mData.IsVisibleProcessed) {
-                                string ofilename = Path.Combine(folder, GenFilename(mData.SatelliteName, mData.RegionName, "VIS", z.Key, mData.Visible.Segments[mData.Visible.FirstSegment]));
-                                if (File.Exists(ofilename)) {
-                                    UIConsole.Debug($"Skipping generating Visible for {Path.GetFileName(ofilename)}. Image already exists.");
-                                    mData.IsVisibleProcessed = true;
-                                } else {
-                                    UIConsole.Debug(string.Format("Starting Generation of Visible for {0}.", Path.GetFileName(ofilename)));
-                                    var bmp = ImageTools.GenerateFullImage(mData.Visible, mData.CropImage);
-                                    if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
-                                        if (SaveNonOverlay) {
-                                            string orgFileName = Path.Combine(folder, $"{Path.GetFileNameWithoutExtension(ofilename)}-original.png");
-                                            bmp.Save(orgFileName, ImageFormat.Png);
-                                        }
-                                        UIConsole.Debug(string.Format("Generating Overlays Visible for {0}.", Path.GetFileName(ofilename)));
-                                        GenerateImageOverlay(ref bmp, mData, mData.Visible);
-                                    }
-                                    bmp.Save(ofilename, ImageFormat.Png);
-                                    bmp.Dispose();
-                                    UIConsole.Log($"New Visible Image: {Path.GetFileName(ofilename)}");
-                                    EventMaster.Post("newFile", new NewFileReceivedEventData() {
-                                        Name = Path.GetFileName(ofilename),
-                                        Path = ofilename,
-                                        Metadata = {
-                                            { "channel", "visible" },
-                                            { "satelliteName", mData.SatelliteName },
-                                            { "regionName", mData.RegionName },
-                                            { "timestamp", z.Key.ToString() }
-                                        }
-                                    });
-                                }
-                                mData.IsVisibleProcessed = true;
-                                mData.Visible.OK = true;
-                            } else if (mData.Visible.MaxSegments == 0) {
-                                mData.IsVisibleProcessed = true;
-                                mData.Visible.OK = true;
-                            }
-
-                            if (ImageManager.GenerateInfrared && mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
-                                string ofilename = Path.Combine(folder, GenFilename(mData.SatelliteName, mData.RegionName, "IR", z.Key, mData.Infrared.Segments[mData.Infrared.FirstSegment]));
-                                if (File.Exists(ofilename)) {
-                                    UIConsole.Debug($"Skipping generating Infrared for {Path.GetFileName(ofilename)}. Image already exists.");
-                                } else {
-                                    UIConsole.Debug($"Starting Generation of Infrared for {Path.GetFileName(ofilename)}.");
-                                    var bmp = ImageTools.GenerateFullImage(mData.Infrared, mData.CropImage);
-                                    if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
-                                        if (SaveNonOverlay) {
-                                            string orgFileName = Path.Combine(folder, $"{Path.GetFileNameWithoutExtension(ofilename)}-original.png");
-                                            bmp.Save(orgFileName, ImageFormat.Png);
-                                        }
-                                        UIConsole.Debug(string.Format("Generating Overlays Infrared for {0}.", Path.GetFileName(ofilename)));
-                                        GenerateImageOverlay(ref bmp, mData, mData.Infrared);
-                                    }
-                                    bmp.Save(ofilename, ImageFormat.Png);
-                                    bmp.Dispose();
-                                    UIConsole.Log($"New Infrared Image: {Path.GetFileName(ofilename)}");
-                                    EventMaster.Post("newFile", new NewFileReceivedEventData() {
-                                        Name = Path.GetFileName(ofilename),
-                                        Path = ofilename,
-                                        Metadata = {
-                                            { "channel", "infrared" },
-                                            { "satelliteName", mData.SatelliteName },
-                                            { "regionName", mData.RegionName },
-                                            { "timestamp", z.Key.ToString() }
-                                        }
-                                    });
-                                }
-                                mData.IsInfraredProcessed = true;
-                                mData.Infrared.OK = true;
-                            } else if (mData.Infrared.MaxSegments == 0) {
-                                mData.IsInfraredProcessed = true;
-                                mData.Infrared.OK = true;
-                            }
-
-                            if (ImageManager.GenerateWaterVapour && mData.WaterVapour.IsComplete && mData.WaterVapour.MaxSegments != 0 && !mData.IsWaterVapourProcessed) {
-                                string ofilename = Path.Combine(folder, GenFilename(mData.SatelliteName, mData.RegionName, "WV", z.Key, mData.WaterVapour.Segments[mData.WaterVapour.FirstSegment]));
-                                if (File.Exists(ofilename)) {
-                                    UIConsole.Debug($"Skipping generating Water Vapour for {Path.GetFileName(ofilename)}. Image already exists.");
-                                } else {
-                                    UIConsole.Debug($"Starting Generation of Water Vapour for {Path.GetFileName(ofilename)}.");
-                                    var bmp = ImageTools.GenerateFullImage(mData.WaterVapour, mData.CropImage);
-                                    if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
-                                        if (SaveNonOverlay) {
-                                            string orgFileName = Path.Combine(folder, $"{Path.GetFileNameWithoutExtension(ofilename)}-original.png");
-                                            bmp.Save(orgFileName, ImageFormat.Png);
-                                        }
-                                        UIConsole.Debug(string.Format("Generating Overlays WaterVapour for {0}.", Path.GetFileName(ofilename)));
-                                        GenerateImageOverlay(ref bmp, mData, mData.WaterVapour);
-                                    }
-                                    bmp.Save(ofilename, ImageFormat.Png);
-                                    bmp.Dispose();
-                                    UIConsole.Log($"New Water Vapour Image: {Path.GetFileName(ofilename)}");
-                                    EventMaster.Post("newFile", new NewFileReceivedEventData() {
-                                        Name = Path.GetFileName(ofilename),
-                                        Path = ofilename,
-                                        Metadata = {
-                                            { "channel", "watervapour" },
-                                            { "satelliteName", mData.SatelliteName },
-                                            { "regionName", mData.RegionName },
-                                            { "timestamp", z.Key.ToString() }
-                                        }
-                                    });
-                                }
-                                mData.IsWaterVapourProcessed = true;
-                                mData.WaterVapour.OK = true;
-                            }
-                            if (GenerateFalseColor && !mData.IsFalseColorProcessed  && ImageTools.CanGenerateFalseColor(mData)) {
-                                string filename = GenFilename(
-                                    mData.SatelliteName, 
-                                    mData.RegionName, 
-                                    "FSCLR", 
-                                    z.Key, 
-                                    mData.Visible.Segments[mData.Visible.FirstSegment]
-                                        .Replace("VS", "FC")
-                                        .Replace("VIS", "FC")
-                                );
-                                filename = Path.Combine(folder, filename);
-
-                                if (File.Exists(filename)) {
-                                    UIConsole.Debug($"Skipping generating FLSCLR for {Path.GetFileName(filename)}. Image already exists.");
-                                } else {
-                                    UIConsole.Debug($"Starting Generation of FSLCR for {Path.GetFileName(filename)}.");
-                                    var bmp = ImageTools.GenerateFalseColor(mData);
-                                    if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
-                                        if (SaveNonOverlay) {
-                                            string orgFileName = Path.Combine(folder, $"{Path.GetFileNameWithoutExtension(filename)}-original.png");
-                                            bmp.Save(orgFileName, ImageFormat.Png);
-                                        }
-                                        UIConsole.Debug(string.Format("Generating Overlays False Colour for {0}.", Path.GetFileName(filename)));
-                                        GenerateImageOverlay(ref bmp, mData, mData.Visible); // Using visible coordinates
-                                    }
-                                    bmp.Save(filename, ImageFormat.Png);
-                                    bmp.Dispose();
-                                    UIConsole.Log($"New False Colour Image: {Path.GetFileName(filename)}");
-                                    EventMaster.Post("newFile", new NewFileReceivedEventData() {
-                                        Name = Path.GetFileName(filename),
-                                        Path = filename,
-                                        Metadata = {
-                                            { "channel", "filename" },
-                                            { "satelliteName", mData.SatelliteName },
-                                            { "regionName", mData.RegionName },
-                                            { "timestamp", z.Key.ToString() }
-                                        }
-                                    });
-                                }
-                                mData.IsFalseColorProcessed = true;
-                            }
-                            if (GenerateOtherImages && !mData.IsOtherDataProcessed && mData.OtherData.Count > 0) {
-                                mData.OtherData.Keys.ToList().ForEach(k => {
-                                    var gd = mData.OtherData[k];
-                                    if (gd.IsComplete && gd.MaxSegments != 0 && !gd.OK) {
-                                        string ofilename = GenFilename(mData.SatelliteName, mData.RegionName, gd.Code, gd.Timestamp, gd.Segments[0]);
-                                        ofilename = Path.Combine(folder, ofilename);
-
-                                        if (File.Exists(ofilename)) {
-                                            UIConsole.Debug($"Skipping generating {Path.GetFileName(ofilename)}. Image already exists.");
-                                        } else {
-                                            UIConsole.Debug($"Starting Generation of {Path.GetFileName(ofilename)}.");
-                                            var bmp = ImageTools.GenerateFullImage(gd, false);
-                                            if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
-                                                if (SaveNonOverlay) {
-                                                    string orgFileName = Path.Combine(folder, $"{Path.GetFileNameWithoutExtension(ofilename)}-original.png");
-                                                    bmp.Save(orgFileName, ImageFormat.Png);
-                                                }
-                                                UIConsole.Debug(string.Format("Generating Overlays for {0}.", Path.GetFileName(ofilename)));
-                                                GenerateImageOverlay(ref bmp, mData, gd);
+            try {
+                while (running) {
+                    organizer.Update ();
+                    var data = organizer.GroupData;
+                    var clist = data.ToList ();
+                    foreach (var z in clist) {
+                        var mData = z.Value;
+                        if (!running) {
+                            break;
+                        }
+                        string ImageName = string.Format ("{0}-{1}-{2}", z.Key, mData.SatelliteName, mData.RegionName);
+                        if (!mData.IsProcessed) {
+                            try {
+                                if (ImageManager.GenerateVisible && mData.Visible.IsComplete && mData.Visible.MaxSegments != 0 && !mData.IsVisibleProcessed) {
+                                    string ofilename = Path.Combine (folder, GenFilename (mData.SatelliteName, mData.RegionName, "VIS", z.Key, mData.Visible.Segments [mData.Visible.FirstSegment]));
+                                    if (File.Exists (ofilename)) {
+                                        UIConsole.Debug ($"Skipping generating Visible for {Path.GetFileName(ofilename)}. Image already exists.");
+                                        mData.IsVisibleProcessed = true;
+                                    } else {
+                                        UIConsole.Debug (string.Format ("Starting Generation of Visible for {0}.", Path.GetFileName (ofilename)));
+                                        var bmp = ImageTools.GenerateFullImage (mData.Visible, mData.CropImage);
+                                        if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
+                                            if (SaveNonOverlay) {
+                                                string orgFileName = Path.Combine (folder, $"{Path.GetFileNameWithoutExtension(ofilename)}-original.png");
+                                                bmp.Save (orgFileName, ImageFormat.Png);
                                             }
-                                            bmp.Save(ofilename, ImageFormat.Png);
-                                            bmp.Dispose();
-                                            UIConsole.Log($"New Image: {Path.GetFileName(ofilename)}");
-                                            EventMaster.Post("newFile", new NewFileReceivedEventData() {
-                                                Name = Path.GetFileName(ofilename),
-                                                Path = ofilename,
-                                                Metadata = {
-                                                    { "channel", "otherimages" },
-                                                    { "satelliteName", mData.SatelliteName },
-                                                    { "regionName", mData.RegionName },
-                                                    { "timestamp", z.Key.ToString() }
-                                                }
-                                            });
+                                            UIConsole.Debug (string.Format ("Generating Overlays Visible for {0}.", Path.GetFileName (ofilename)));
+                                            GenerateImageOverlay (ref bmp, mData, mData.Visible);
                                         }
-                                        gd.OK = true;
+                                        bmp.Save (ofilename, ImageFormat.Png);
+                                        bmp.Dispose ();
+                                        UIConsole.Log ($"New Visible Image: {Path.GetFileName(ofilename)}");
+                                        EventMaster.Post ("newFile", new NewFileReceivedEventData () {
+                                            Name = Path.GetFileName (ofilename),
+                                            Path = ofilename,
+                                            Metadata = {
+                                                { "channel", "visible" }, {
+                                                    "satelliteName",
+                                                    mData.SatelliteName
+                                                }, {
+                                                    "regionName",
+                                                    mData.RegionName
+                                                }, {
+                                                    "timestamp",
+                                                    z.Key.ToString ()
+                                                }
+                                            }
+                                        });
                                     }
-                                });
-                            } else if (mData.OtherData.Count == 0) {
-                                if (mData.ReadyToMark) {
-                                    mData.IsOtherDataProcessed = true;
+                                    mData.IsVisibleProcessed = true;
+                                    mData.Visible.OK = true;
+                                } else if (mData.Visible.MaxSegments == 0) {
+                                    mData.IsVisibleProcessed = true;
+                                    mData.Visible.OK = true;
                                 }
-                            }
 
-                            if (mData.ReadyToMark) {
-                                mData.IsProcessed = 
-                                    (!GenerateFalseColor    || ( GenerateFalseColor && mData.IsFalseColorProcessed) ) &&
-                                    (!GenerateVisible       || ( GenerateVisible && mData.IsVisibleProcessed) ) &&
-                                    (!GenerateInfrared      || ( GenerateInfrared && mData.IsInfraredProcessed) ) &&
-                                    (!GenerateWaterVapour   || ( GenerateWaterVapour && mData.IsWaterVapourProcessed) ) &&
-                                    (!GenerateOtherImages   || ( GenerateOtherImages && mData.IsOtherDataProcessed) );
-                            }
+                                if (ImageManager.GenerateInfrared && mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
+                                    string ofilename = Path.Combine (folder, GenFilename (mData.SatelliteName, mData.RegionName, "IR", z.Key, mData.Infrared.Segments [mData.Infrared.FirstSegment]));
+                                    if (File.Exists (ofilename)) {
+                                        UIConsole.Debug ($"Skipping generating Infrared for {Path.GetFileName(ofilename)}. Image already exists.");
+                                    } else {
+                                        UIConsole.Debug ($"Starting Generation of Infrared for {Path.GetFileName(ofilename)}.");
+                                        var bmp = ImageTools.GenerateFullImage (mData.Infrared, mData.CropImage);
+                                        if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
+                                            if (SaveNonOverlay) {
+                                                string orgFileName = Path.Combine (folder, $"{Path.GetFileNameWithoutExtension(ofilename)}-original.png");
+                                                bmp.Save (orgFileName, ImageFormat.Png);
+                                            }
+                                            UIConsole.Debug (string.Format ("Generating Overlays Infrared for {0}.", Path.GetFileName (ofilename)));
+                                            GenerateImageOverlay (ref bmp, mData, mData.Infrared);
+                                        }
+                                        bmp.Save (ofilename, ImageFormat.Png);
+                                        bmp.Dispose ();
+                                        UIConsole.Log ($"New Infrared Image: {Path.GetFileName(ofilename)}");
+                                        EventMaster.Post ("newFile", new NewFileReceivedEventData () {
+                                            Name = Path.GetFileName (ofilename),
+                                            Path = ofilename,
+                                            Metadata = {
+                                                { "channel", "infrared" }, {
+                                                    "satelliteName",
+                                                    mData.SatelliteName
+                                                }, {
+                                                    "regionName",
+                                                    mData.RegionName
+                                                }, {
+                                                    "timestamp",
+                                                    z.Key.ToString ()
+                                                }
+                                            }
+                                        });
+                                    }
+                                    mData.IsInfraredProcessed = true;
+                                    mData.Infrared.OK = true;
+                                } else if (mData.Infrared.MaxSegments == 0) {
+                                    mData.IsInfraredProcessed = true;
+                                    mData.Infrared.OK = true;
+                                }
 
-                            if (mData.Timeout) {
-                                // Timeout completing, so let's erase the files.
-                                mData.ForceComplete();
-                            }
+                                if (ImageManager.GenerateWaterVapour && mData.WaterVapour.IsComplete && mData.WaterVapour.MaxSegments != 0 && !mData.IsWaterVapourProcessed) {
+                                    string ofilename = Path.Combine (folder, GenFilename (mData.SatelliteName, mData.RegionName, "WV", z.Key, mData.WaterVapour.Segments [mData.WaterVapour.FirstSegment]));
+                                    if (File.Exists (ofilename)) {
+                                        UIConsole.Debug ($"Skipping generating Water Vapour for {Path.GetFileName(ofilename)}. Image already exists.");
+                                    } else {
+                                        UIConsole.Debug ($"Starting Generation of Water Vapour for {Path.GetFileName(ofilename)}.");
+                                        var bmp = ImageTools.GenerateFullImage (mData.WaterVapour, mData.CropImage);
+                                        if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
+                                            if (SaveNonOverlay) {
+                                                string orgFileName = Path.Combine (folder, $"{Path.GetFileNameWithoutExtension(ofilename)}-original.png");
+                                                bmp.Save (orgFileName, ImageFormat.Png);
+                                            }
+                                            UIConsole.Debug (string.Format ("Generating Overlays WaterVapour for {0}.", Path.GetFileName (ofilename)));
+                                            GenerateImageOverlay (ref bmp, mData, mData.WaterVapour);
+                                        }
+                                        bmp.Save (ofilename, ImageFormat.Png);
+                                        bmp.Dispose ();
+                                        UIConsole.Log ($"New Water Vapour Image: {Path.GetFileName(ofilename)}");
+                                        EventMaster.Post ("newFile", new NewFileReceivedEventData () {
+                                            Name = Path.GetFileName (ofilename),
+                                            Path = ofilename,
+                                            Metadata = {
+                                                { "channel", "watervapour" }, {
+                                                    "satelliteName",
+                                                    mData.SatelliteName
+                                                }, {
+                                                    "regionName",
+                                                    mData.RegionName
+                                                }, {
+                                                    "timestamp",
+                                                    z.Key.ToString ()
+                                                }
+                                            }
+                                        });
+                                    }
+                                    mData.IsWaterVapourProcessed = true;
+                                    mData.WaterVapour.OK = true;
+                                }
+                                if (GenerateFalseColor && !mData.IsFalseColorProcessed && ImageTools.CanGenerateFalseColor (mData)) {
+                                    string filename = GenFilename (
+                                                          mData.SatelliteName, 
+                                                          mData.RegionName, 
+                                                          "FSCLR", 
+                                                          z.Key, 
+                                                          mData.Visible.Segments [mData.Visible.FirstSegment]
+                                            .Replace ("VS", "FC")
+                                            .Replace ("VIS", "FC")
+                                                      );
+                                    filename = Path.Combine (folder, filename);
 
-                            if (EraseFiles) {
-                                TryEraseGroupDataFiles(z.Key, mData);
-                            }
-                        } catch (SystemException e) {
-                            UIConsole.Error($"Error processing image (SysExcpt) {ImageName}: {e}");                            
-                            mData.RetryCount++;
-                            if (mData.RetryCount == ImageManager.MaxRetryCount) {
-                                mData.IsProcessed = true;
-                            }
-                        } catch (Exception e) {
-                            UIConsole.Error($"Error processing image {ImageName}: {e}");
-                            mData.RetryCount++;
-                            if (mData.RetryCount == ImageManager.MaxRetryCount) {
-                                mData.IsProcessed = true;
-                            }
-                        } 
+                                    if (File.Exists (filename)) {
+                                        UIConsole.Debug ($"Skipping generating FLSCLR for {Path.GetFileName(filename)}. Image already exists.");
+                                    } else {
+                                        UIConsole.Debug ($"Starting Generation of FSLCR for {Path.GetFileName(filename)}.");
+                                        var bmp = ImageTools.GenerateFalseColor (mData);
+                                        if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
+                                            if (SaveNonOverlay) {
+                                                string orgFileName = Path.Combine (folder, $"{Path.GetFileNameWithoutExtension(filename)}-original.png");
+                                                bmp.Save (orgFileName, ImageFormat.Png);
+                                            }
+                                            UIConsole.Debug (string.Format ("Generating Overlays False Colour for {0}.", Path.GetFileName (filename)));
+                                            GenerateImageOverlay (ref bmp, mData, mData.Visible); // Using visible coordinates
+                                        }
+                                        bmp.Save (filename, ImageFormat.Png);
+                                        bmp.Dispose ();
+                                        UIConsole.Log ($"New False Colour Image: {Path.GetFileName(filename)}");
+                                        EventMaster.Post ("newFile", new NewFileReceivedEventData () {
+                                            Name = Path.GetFileName (filename),
+                                            Path = filename,
+                                            Metadata = {
+                                                { "channel", "filename" }, {
+                                                    "satelliteName",
+                                                    mData.SatelliteName
+                                                }, {
+                                                    "regionName",
+                                                    mData.RegionName
+                                                }, {
+                                                    "timestamp",
+                                                    z.Key.ToString ()
+                                                }
+                                            }
+                                        });
+                                    }
+                                    mData.IsFalseColorProcessed = true;
+                                }
+                                if (GenerateOtherImages && !mData.IsOtherDataProcessed && mData.OtherData.Count > 0) {
+                                    mData.OtherData.Keys.ToList ().ForEach (k => {
+                                        var gd = mData.OtherData [k];
+                                        if (gd.IsComplete && gd.MaxSegments != 0 && !gd.OK) {
+                                            string ofilename = GenFilename (mData.SatelliteName, mData.RegionName, gd.Code, gd.Timestamp, gd.Segments [0]);
+                                            ofilename = Path.Combine (folder, ofilename);
+
+                                            if (File.Exists (ofilename)) {
+                                                UIConsole.Debug ($"Skipping generating {Path.GetFileName(ofilename)}. Image already exists.");
+                                            } else {
+                                                UIConsole.Debug ($"Starting Generation of {Path.GetFileName(ofilename)}.");
+                                                var bmp = ImageTools.GenerateFullImage (gd, false);
+                                                if (GenerateMapOverlays || GenerateLatLonOverlays || GenerateLabels) {
+                                                    if (SaveNonOverlay) {
+                                                        string orgFileName = Path.Combine (folder, $"{Path.GetFileNameWithoutExtension(ofilename)}-original.png");
+                                                        bmp.Save (orgFileName, ImageFormat.Png);
+                                                    }
+                                                    UIConsole.Debug (string.Format ("Generating Overlays for {0}.", Path.GetFileName (ofilename)));
+                                                    GenerateImageOverlay (ref bmp, mData, gd);
+                                                }
+                                                bmp.Save (ofilename, ImageFormat.Png);
+                                                bmp.Dispose ();
+                                                UIConsole.Log ($"New Image: {Path.GetFileName(ofilename)}");
+                                                EventMaster.Post ("newFile", new NewFileReceivedEventData () {
+                                                    Name = Path.GetFileName (ofilename),
+                                                    Path = ofilename,
+                                                    Metadata = { {
+                                                            "channel",
+                                                            "otherimages"
+                                                        }, {
+                                                            "satelliteName",
+                                                            mData.SatelliteName
+                                                        }, {
+                                                            "regionName",
+                                                            mData.RegionName
+                                                        }, {
+                                                            "timestamp",
+                                                            z.Key.ToString ()
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                            gd.OK = true;
+                                        }
+                                    });
+                                } else if (mData.OtherData.Count == 0) {
+                                    if (mData.ReadyToMark) {
+                                        mData.IsOtherDataProcessed = true;
+                                    }
+                                }
+
+                                if (mData.ReadyToMark) {
+                                    mData.IsProcessed = 
+                                        (!GenerateFalseColor || (GenerateFalseColor && mData.IsFalseColorProcessed)) &&
+                                    (!GenerateVisible || (GenerateVisible && mData.IsVisibleProcessed)) &&
+                                    (!GenerateInfrared || (GenerateInfrared && mData.IsInfraredProcessed)) &&
+                                    (!GenerateWaterVapour || (GenerateWaterVapour && mData.IsWaterVapourProcessed)) &&
+                                    (!GenerateOtherImages || (GenerateOtherImages && mData.IsOtherDataProcessed));
+                                }
+
+                                if (mData.Timeout) {
+                                    // Timeout completing, so let's erase the files.
+                                    mData.ForceComplete ();
+                                }
+
+                                if (EraseFiles) {
+                                    TryEraseGroupDataFiles (z.Key, mData);
+                                }
+                            } catch (SystemException e) {
+                                UIConsole.Error ($"Error processing image (SysExcpt) {ImageName}: {e}");
+                                mData.RetryCount++;
+                                if (mData.RetryCount == ImageManager.MaxRetryCount) {
+                                    mData.IsProcessed = true;
+                                }
+                            } catch (Exception e) {
+                                UIConsole.Error ($"Error processing image {ImageName}: {e}");
+                                mData.RetryCount++;
+                                if (mData.RetryCount == ImageManager.MaxRetryCount) {
+                                    mData.IsProcessed = true;
+                                }
+                            } 
+                        }
                     }
-                }
 
-                Thread.Sleep(200);
+                    Thread.Sleep (200);
+                }
+            } catch (Exception e) {
+                CrashReport.Report (e);
+                throw e;
             }
         }
     }
