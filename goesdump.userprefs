@@ -1,15 +1,14 @@
 ﻿<Properties StartupItem="LibraryTest/LibraryTest.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/ShapeFiles/ShapeFiles.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="LibraryTest/Program.cs">
     <Files>
-      <File FileName="LibraryTest/Program.cs" Line="124" Column="69" />
-      <File FileName="XRIT/GOES/ImageManager.cs" Line="281" Column="1" />
-      <File FileName="XRIT/Tools/ImageTools.cs" Line="25" Column="43" />
-      <File FileName="goesdump/HeadlessMain.cs" Line="346" Column="34" />
-      <File FileName="XRIT/GOES/PacketManager.cs" Line="39" Column="38" />
-      <File FileName="XRIT/Tools/Organizer.cs" Line="131" Column="89" />
-      <File FileName="XRIT/Models/GroupData.cs" Line="107" Column="30" />
-      <File FileName="XRIT/ShapeFiles/ShapeFiles.cs" Line="76" Column="10" />
+      <File FileName="LibraryTest/Program.cs" Line="180" Column="26" />
+      <File FileName="XRIT/Models/CrashData.cs" Line="38" Column="65" />
+      <File FileName="XRIT/Models/StackTraceData.cs" Line="8" Column="46" />
+      <File FileName="goesdump/HeadlessMain.cs" Line="296" Column="22" />
+      <File FileName="goesdump/Models/ProgConfig.cs" Line="385" Column="13" />
+      <File FileName="XRIT/GOES/ImageManager.cs" Line="568" Column="17" />
+      <File FileName="XRIT/GOES/DemuxManager.cs" Line="151" Column="26" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

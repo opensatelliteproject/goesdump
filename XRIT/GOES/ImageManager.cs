@@ -221,7 +221,7 @@ namespace OpenSatelliteProject {
                     try {
                         File.Delete(f);
                     } catch (IOException e) {
-                        UIConsole.Error($"Error erasing file {f}: {e}");
+                        UIConsole.Error($"Error erasing file {Path.GetFileName(f)}: {e}");
                     }
                 });
             }
@@ -232,7 +232,7 @@ namespace OpenSatelliteProject {
                         try {
                             File.Delete(f);
                         } catch (IOException e) {
-                            UIConsole.Error($"Error erasing file {f}: {e}");
+                            UIConsole.Error($"Error erasing file {Path.GetFileName(f)}: {e}");
                         }
                     });
                 }
@@ -249,7 +249,7 @@ namespace OpenSatelliteProject {
                     try {
                         File.Delete(f);
                     } catch (IOException e) {
-                        UIConsole.Error($"Error erasing file {f}: {e}");
+                        UIConsole.Error($"Error erasing file {Path.GetFileName(f)}: {e}");
                     }
                 });
             }
@@ -259,7 +259,7 @@ namespace OpenSatelliteProject {
                     try {
                         File.Delete(f);
                     } catch (IOException e) {
-                        UIConsole.Error($"Error erasing file {f}: {e}");
+                        UIConsole.Error($"Error erasing file {Path.GetFileName(f)}: {e}");
                     }
                 });
             }

@@ -75,7 +75,7 @@ namespace OpenSatelliteProject {
                 resetMutex = new Mutex();
                 if (RecordToFile) {
                     fileName = string.Format("demuxdump-{0}.bin", LLTools.Timestamp());
-                    UIConsole.Log(string.Format("Demux Dump filename: {0}", fileName));
+                    UIConsole.Log(string.Format("Demux Dump filename: {0}", Path.GetFileName(fileName)));
                     fStream = File.OpenWrite(fileName);
                 }
             } catch(Exception e) {

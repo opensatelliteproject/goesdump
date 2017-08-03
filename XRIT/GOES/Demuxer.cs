@@ -244,7 +244,7 @@ namespace OpenSatelliteProject {
             replayFlag = (data[5] & 0x80) > 0;
 
             if (replayFlag) {
-                UIConsole.Log("Replay Flag set. Skipping packet.");
+                UIConsole.Debug("Replay Flag set. Skipping packet.");
                 return;
             }
 

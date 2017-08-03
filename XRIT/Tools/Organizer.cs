@@ -87,7 +87,7 @@ namespace OpenSatelliteProject {
                                     datetime = DateTime.Parse(dtstring, null, DateTimeStyles.RoundtripKind);
                                 }
                             } else {
-                                UIConsole.Warn("No Frame Time of Start found! Using capture time.");
+                                UIConsole.Debug("No Frame Time of Start found! Using capture time.");
                             }
                         }
 
@@ -222,7 +222,7 @@ namespace OpenSatelliteProject {
                         }
                         alreadyProcessed.Add(file);
                     } catch (Exception e) {
-                        UIConsole.Error($"Error reading file {file}: {e}");
+                        UIConsole.Error($"Error reading file {Path.GetFileName(file)}: {e}");
                         alreadyProcessed.Add(file);
                     }
                 }

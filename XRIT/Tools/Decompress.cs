@@ -76,7 +76,7 @@ namespace OpenSatelliteProject {
                 try {
                     File.Delete(ifile);
                 } catch (IOException e) {
-                    UIConsole.Warn(String.Format("Cannot delete file {0}: {1}", ifile, e));
+                    UIConsole.Warn(String.Format("Cannot delete file {0}: {1}", Path.GetFileName(ifile), e));
                 }
 
                 f = File.OpenWrite(outputFile);
@@ -103,12 +103,12 @@ namespace OpenSatelliteProject {
                         File.Delete(ifile);
                         AEC.LritRiceDecompress(ref outputData, input, 8, pixelsPerBlock, pixels, mask);
                     } catch (FileNotFoundException) {
-                        UIConsole.Error(String.Format("Decompressor cannot find file {0}", ifile));
+                        UIConsole.Error(String.Format("Decompressor cannot find file {0}", Path.GetFileName(ifile)));
                     } catch (AECException e) {
-                        UIConsole.Error($"AEC Decompress problem decompressing file {ifile}: {e.status.ToString()}");
+                        UIConsole.Error($"AEC Decompress problem decompressing file {Path.GetFileName(ifile)}: {e.status.ToString()}");
                         UIConsole.Debug($"AEC Params: 8 - {pixelsPerBlock} - {pixels} - {mask}");
                     } catch (IOException e) {
-                        UIConsole.Error($"AEC Decompress problem decompressing file {ifile}: {e}");
+                        UIConsole.Error($"AEC Decompress problem decompressing file {Path.GetFileName(ifile)}: {e}");
                     }
 
                     f.Write(outputData, 0, outputData.Length);
@@ -125,12 +125,12 @@ namespace OpenSatelliteProject {
                             File.Delete(ifile);
                             AEC.LritRiceDecompress(ref outputData, input, 8, pixelsPerBlock, pixels, mask);
                         } catch (FileNotFoundException) {
-                            UIConsole.Error(String.Format("Decompressor cannot find file {0}", ifile));
+                            UIConsole.Error(String.Format("Decompressor cannot find file {0}", Path.GetFileName(ifile)));
                         } catch (AECException e) {
-                            UIConsole.Error($"AEC Decompress problem decompressing file {ifile}: {e.status.ToString()}");
+                            UIConsole.Error($"AEC Decompress problem decompressing file {Path.GetFileName(ifile)}: {e.status.ToString()}");
                             UIConsole.Debug($"AEC Params: 8 - {pixelsPerBlock} - {pixels} - {mask}");
                         } catch (IOException e) {
-                            Console.WriteLine("Error deleting file {0}: {1}", ifile, e);
+                            Console.WriteLine("Error deleting file {0}: {1}", Path.GetFileName(ifile), e);
                         }
 
                         f.Write(outputData, 0, outputData.Length);
