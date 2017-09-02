@@ -7,6 +7,12 @@ using System.IO;
 using OpenSatelliteProject.PacketData.Enums;
 using System.Threading;
 using System.Threading.Tasks;
+using DotSpatial.Data;
+using System.Collections.Generic;
+using OpenSatelliteProject.PacketData;
+using OpenSatelliteProject.Tools;
+using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace LibraryTest {
     class MainClass {
@@ -51,8 +57,9 @@ namespace LibraryTest {
 			bmp.Save("unitedstates.jpg", ImageFormat.Jpeg);
 			bmp.Dispose();
 			// */
-            /*
-            string filename = "./OR_ABI-L2-CMIPF-M3C07_G16_s20170861545382_e20170861556160_c20170861556217.lrit";
+            ///*
+            string filename = "./OR_ABI-L2-CMIPF-M3C13_G16_s20170861545382_e20170861556160_c20170861556231.lrit";
+            string visFilename = "./OR_ABI-L2-CMIPF-M3C02_G16_s20170861545382_e20170861556149_c20170861556217.lrit";
             XRITHeader header = FileParser.GetHeaderFromFile(filename);
             Console.WriteLine($"Parsing file {header.Filename}");
             Regex x = new Regex(@".*\((.*)\)", RegexOptions.IgnoreCase);
@@ -63,19 +70,46 @@ namespace LibraryTest {
 
             var od = new OrganizerData();
             od.Segments.Add(0, filename);
+            od.FirstSegment = 0;
             od.Columns = header.ImageStructureHeader.Columns;
             od.Lines = header.ImageStructureHeader.Lines;
             od.ColumnOffset = inh.ColumnOffset;
             od.PixelAspect = 1;
             var bmp = ImageTools.GenerateFullImage(od);
 
-            var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
-            mapDrawer.DrawMap(ref bmp, gc, Color.Aqua);
+            od = new OrganizerData();
+            od.Segments.Add(0, visFilename);
+            od.FirstSegment = 0;
+            od.Columns = header.ImageStructureHeader.Columns;
+            od.Lines = header.ImageStructureHeader.Lines;
+            od.ColumnOffset = inh.ColumnOffset;
+            od.PixelAspect = 1;
+            var vbmp = ImageTools.GenerateFullImage(od);
 
-            ImageTools.DrawLatLonLines(ref bmp, gc, Color.Brown);
+            var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_50m_admin_0_countries.shp");
+            //ImageTools.DrawLatLonLines(ref bmp, gc, Color.Brown);
+            ImageTools.ApplyCurve (OpenSatelliteProject.Presets.NEW_VIS_FALSE_CURVE, ref vbmp);
 
-            bmp.Save(filename + ".jpg", ImageFormat.Jpeg);
+            vbmp = ImageTools.ToFormat (vbmp, PixelFormat.Format32bppArgb, true);
+            bmp = ImageTools.ToFormat (bmp, PixelFormat.Format32bppArgb, true);
+
+            ImageTools.Apply2DLut(OpenSatelliteProject.Presets.FalseColorLUTVal, ref vbmp, bmp);
+
+            var startTime = LLTools.TimestampMS ();
+            mapDrawer.DrawMap(ref vbmp, gc, Color.Yellow, 2, false, true);
+            var delta = LLTools.TimestampMS () - startTime;
+
+            Console.WriteLine ($"Took {delta} ms to generate map.");
+
+            vbmp.Save(visFilename + ".png", ImageFormat.Png);
+
+            Bitmap landMap = mapDrawer.GenerateLandMap (gc, bmp.Width, bmp.Height);
+            landMap.Save(filename + "-landmap.jpg", ImageFormat.Jpeg);
+            landMap.Dispose ();
             bmp.Dispose();
+
+
+            return;
             // */
             /*
 			Bitmap test0 = (Bitmap) Bitmap.FromFile("test0.jpg");
@@ -104,6 +138,53 @@ namespace LibraryTest {
             //string debugFrames = "/media/ELTN/tmp/debug5/demuxdump-1492732814.bin";
             //string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
             //string debugFrames = "/media/ELTN/tmp/debug3/raw_data.bin";
+            /*
+            var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_50m_admin_0_countries.shp");
+            var fList = mapDrawer.ShapeFile.Features.ToList ();
+            var bmp = new Bitmap (1280, 720, PixelFormat.Format24bppRgb);
+            using (var graphics = Graphics.FromImage (bmp)) {
+                Brush bgBrush = new SolidBrush (Color.Black);
+                Brush polyBrush = new SolidBrush (Color.White);
+                graphics.FillRectangle (bgBrush, 0, 0, 1280, 720);
+                int o = 0;
+                foreach (var fo in fList) {
+                    Console.WriteLine ($"Writting Geometry {o}");
+                    Pen pen = new Pen(Color.FromArgb((int)((255.0 * o) / fList.Count), 127, 127), 3);
+                    o++;
+                    for (var n = 0; n < fo.NumGeometries; n++) {
+                        //Console.WriteLine ($"Writting Geometry {n}");
+                        var fg = fo.GetBasicGeometryN (n);
+                        var k = fg.Coordinates;
+
+                        float lastX = float.NaN;
+                        float lastY = float.NaN;
+
+                        List<PointF> points = new List<PointF> ();
+                        foreach (var z in k) {
+                            float lon = (float)z.X;
+                            float lat = (float)z.Y;
+
+                            float X = bmp.Width / 2 + bmp.Width * (lon / 360);
+                            float Y = bmp.Height / 2 - bmp.Height * (lat / 180);
+
+                            if (!float.IsNaN (lastX) && !float.IsNaN (lastY)) {
+                                //graphics.DrawLine (pen, lastX, lastY, X, Y);
+                            }
+                            lastX = X;
+                            lastY = Y;
+
+                            points.Add (new PointF (X, Y));
+                        }
+                        graphics.FillPolygon(polyBrush, points.ToArray());
+                    }
+                }
+            }
+            Console.WriteLine ("Saving");
+            bmp.Save ("/home/lucas/test.png", ImageFormat.Png);
+            bmp.Dispose ();
+            Console.WriteLine ("Done");
+            return;
+            */
 
             EventMaster.On ("newFile", d => {
                 var ed = (NewFileReceivedEventData) d.Data;
@@ -139,7 +220,7 @@ namespace LibraryTest {
 
             ImageManager.GenerateVisible = true;
             ImageManager.GenerateInfrared = true;
-            ImageManager.GenerateFalseColor = false;
+            ImageManager.GenerateFalseColor = true;
             ImageManager.GenerateWaterVapour = true;
             ImageManager.GenerateOtherImages = true;
             ImageManager.EraseFiles = false;
@@ -149,17 +230,17 @@ namespace LibraryTest {
             ImageManager.GenerateLabels = true;
             ImageManager.GenerateLatLonLabel = true;
             ImageManager.SaveNonOverlay = false;
-            im0.Start ();
-            im1.Start ();
-            im2.Start ();
-            im3.Start ();
-            im4.Start ();
+            //im0.Start ();
+            //im1.Start ();
+            //im2.Start ();
+            //im3.Start ();
+            //im4.Start ();
             im5.Start ();
-            im6.Start ();
+            //im6.Start ();
             // */
             //*/
             // /*
-            ///*
+            /*
             DemuxManager dm = new DemuxManager ();
             FileHandler.SkipDCS = true;
             FileHandler.SkipEMWIN = true;
