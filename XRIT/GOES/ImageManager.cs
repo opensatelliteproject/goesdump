@@ -142,13 +142,14 @@ namespace OpenSatelliteProject {
         /// </summary>
         public void InitMapDrawer() {
             try {
+                UIConsole.Debug($"ImageManager -- Initializing MapDrawer with {defaultShapeFile}");
                 mapDrawer = new MapDrawer(defaultShapeFile);
                 if (mapDrawer.ShapeFile == null) {
                     mapDrawer = null;
                     throw new ArgumentException("Error loading ShapeFile");
                 }
             } catch (Exception e) {
-                UIConsole.Error ($"There was an error initializing MapDrawer: {e}");
+                UIConsole.Error ($"ImageManager -- There was an error initializing MapDrawer: {e}");
             }
         }
 
@@ -158,13 +159,14 @@ namespace OpenSatelliteProject {
         /// <param name="filename">Filename.</param>
         public void InitMapDrawer(string filename) {
             try {
+                UIConsole.Debug($"ImageManager -- Initializing MapDrawer with {filename}");
                 mapDrawer = new MapDrawer(filename);
                 if (mapDrawer.ShapeFile == null) {
                     mapDrawer = null;
                     throw new ArgumentException("Error loading ShapeFile");
                 }
             } catch (Exception e) {
-                UIConsole.Error ($"There was an error initializing MapDrawer: {e}");
+                UIConsole.Error ($"ImageManager -- There was an error initializing MapDrawer: {e}");
             }
         }
 

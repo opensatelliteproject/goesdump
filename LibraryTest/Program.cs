@@ -86,7 +86,10 @@ namespace LibraryTest {
             od.PixelAspect = 1;
             var vbmp = ImageTools.GenerateFullImage(od);
 
-            var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_50m_admin_0_countries.shp");
+            UIConsole.GlobalEnableDebug = true;
+            var shapeFile = ShapeFiles.InitShapeFiles ();
+
+            var mapDrawer = new MapDrawer(shapeFile);
             //ImageTools.DrawLatLonLines(ref bmp, gc, Color.Brown);
             ImageTools.ApplyCurve (OpenSatelliteProject.Presets.NEW_VIS_FALSE_CURVE, ref vbmp);
 

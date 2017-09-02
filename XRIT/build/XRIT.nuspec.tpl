@@ -11,7 +11,7 @@
     <iconUrl>https://github.com/opensatelliteproject/goesdump/raw/master/goesdump/icon.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>xRIT File / Packet Processing Library</description>
-    <releaseNotes>Experimental Auto-Overlay</releaseNotes>
+    <releaseNotes>Testing Features Release Candidate</releaseNotes>
     <copyright>Copyright 2017</copyright>
     <tags>GOES XRIT NOAA Satellite OpenSatelliteProject OSP SDR Ingestor</tags>
     <dependencies>

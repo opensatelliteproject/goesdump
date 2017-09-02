@@ -18,7 +18,7 @@ namespace OpenSatelliteProject {
                     }
                 }
             } catch (Exception) {
-                UIConsole.Warn ($"Cannot load {filename} from library.");
+                UIConsole.Warn ($"ShapeFiles -- Cannot load {filename} from library.");
             }
 
             return data;
@@ -42,7 +42,7 @@ namespace OpenSatelliteProject {
 
         private static string ExtractFile(string filename) {
             string output = Path.Combine (Path.GetTempPath (), filename);
-            UIConsole.Debug ($"Extracting {filename} to {output}");
+            UIConsole.Debug ($"ShapeFiles -- Extracting {filename} to {output}");
             byte[] data = ReadFileFromAssembly (filename);
             File.WriteAllBytes (output, data);
             return output;
@@ -51,26 +51,31 @@ namespace OpenSatelliteProject {
         // Need to do better, but since DotSpatial doesn't support loading from memory, thats what we have for now.
 
         public static string ExtractSHX() {
+            UIConsole.Debug ("ShapeFiles -- Extracting SHX File ne_50m_admin_0_countries.shx");
             return ExtractFile ("ne_50m_admin_0_countries.shx");
         }
         public static string ExtractDBF() {
+            UIConsole.Debug ("ShapeFiles -- Extracting DBF File ne_50m_admin_0_countries.dbf");
             return ExtractFile ("ne_50m_admin_0_countries.dbf");
         }
         public static string ExtractPRJ() {
+            UIConsole.Debug ("ShapeFiles -- Extracting PRJ File ne_50m_admin_0_countries.prj");
             return ExtractFile ("ne_50m_admin_0_countries.prj");
         }
         public static string ExtractSHP() {
+            UIConsole.Debug ("ShapeFiles -- Extracting SHP File ne_50m_admin_0_countries.shp");
             return ExtractFile ("ne_50m_admin_0_countries.shp");
         }
 
         public static string InitShapeFiles() {
             try {
+                UIConsole.Debug("ShapeFiles -- Initializing ShapeFiles");
                 ExtractDBF ();
                 ExtractPRJ ();
                 ExtractSHX ();
                 return ExtractSHP ();
             } catch (Exception e) {
-                UIConsole.Error ($"There was an error extracting ShapeFiles: {e}");
+                UIConsole.Error ($"ShapeFiles -- There was an error extracting ShapeFiles: {e}");
             }
             return null;
         }

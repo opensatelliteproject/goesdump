@@ -21,10 +21,12 @@ namespace OpenSatelliteProject.Geo {
 
         public MapDrawer(string shapeFile) {
             this.shapeFile = null;
+            UIConsole.Debug ($"MapDrawer -- Loading ShapeFile {shapeFile}");
             try {
                 this.shapeFile = Shapefile.OpenFile(shapeFile);
+                UIConsole.Debug("MapDrawer -- ShapeFile Loaded at MapDrawer");
             } catch (Exception e) {
-                UIConsole.Error ($"Cannot load ShapeFile at {shapeFile}: {e}");
+                UIConsole.Error ($"MapDrawer -- Cannot load ShapeFile at {shapeFile}: {e}");
             }
         }
 
