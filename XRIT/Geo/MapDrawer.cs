@@ -20,11 +20,18 @@ namespace OpenSatelliteProject.Geo {
         }
 
         public MapDrawer(string shapeFile) {
-            this.shapeFile = Shapefile.OpenFile(shapeFile);
+            this.shapeFile = null;
+            try {
+                this.shapeFile = Shapefile.OpenFile(shapeFile);
+            } catch (Exception e) {
+                UIConsole.Error ($"Cannot load ShapeFile at {shapeFile}: {e}");
+            }
         }
 
         ~MapDrawer() {
-            shapeFile.Close();
+            if (shapeFile != null) {
+                shapeFile.Close ();
+            }
         }
 
         /// <summary>
@@ -36,6 +43,10 @@ namespace OpenSatelliteProject.Geo {
         /// <param name="height">Height.</param>
         /// <param name="fixCrop">If set to <c>true</c> fix crop.</param>
         public Bitmap GenerateLandMap(GeoConverter gc, int width, int height, bool fixCrop = false) {
+            if (shapeFile == null) {
+                UIConsole.Error ("Trying to draw a LandMap without a loaded shapefile!");
+                return null;
+            }
             var bmp = new Bitmap (width, height, PixelFormat.Format24bppRgb);
             Brush bgBrush = new SolidBrush (Color.Black);
             Brush polyBrush = new SolidBrush (Color.White);
@@ -170,6 +181,10 @@ namespace OpenSatelliteProject.Geo {
         /// <param name="color">Color of the lines</param>
         /// <param name="lineWidth">Thickness of the Lines</param>
         public void DrawMap(ref Bitmap bmp, GeoConverter gc, Color color, int lineWidth = 5, bool fixCrop = false, bool useOldDrawMap = false) {
+            if (shapeFile == null) {
+                UIConsole.Error ("Trying to draw a Map without a loaded shapefile!");
+                return;
+            }
             if (useOldDrawMap) {
                 OldDrawMap (ref bmp, gc, color, lineWidth, fixCrop);
             } else {

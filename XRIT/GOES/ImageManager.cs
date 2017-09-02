@@ -141,7 +141,15 @@ namespace OpenSatelliteProject {
         /// Loads default map drawer
         /// </summary>
         public void InitMapDrawer() {
-            mapDrawer = new MapDrawer(defaultShapeFile);
+            try {
+                mapDrawer = new MapDrawer(defaultShapeFile);
+                if (mapDrawer.ShapeFile == null) {
+                    mapDrawer = null;
+                    throw new ArgumentException("Error loading ShapeFile");
+                }
+            } catch (Exception e) {
+                UIConsole.Error ($"There was an error initializing MapDrawer: {e}");
+            }
         }
 
         /// <summary>
@@ -149,7 +157,15 @@ namespace OpenSatelliteProject {
         /// </summary>
         /// <param name="filename">Filename.</param>
         public void InitMapDrawer(string filename) {
-            mapDrawer = new MapDrawer(filename);
+            try {
+                mapDrawer = new MapDrawer(filename);
+                if (mapDrawer.ShapeFile == null) {
+                    mapDrawer = null;
+                    throw new ArgumentException("Error loading ShapeFile");
+                }
+            } catch (Exception e) {
+                UIConsole.Error ($"There was an error initializing MapDrawer: {e}");
+            }
         }
 
         private static string GenFilename(string satelliteName, string regionName, string imageName, int timestamp, string origName = null) {
