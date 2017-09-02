@@ -1,20 +1,17 @@
 ﻿<Properties StartupItem="LibraryTest/LibraryTest.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/GOES/ImageManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/Console/UIConsole.cs">
     <Files>
-      <File FileName="LibraryTest/Program.cs" Line="129" Column="30" />
-      <File FileName="XRIT/Models/CrashData.cs" Line="1" Column="1" />
-      <File FileName="XRIT/Models/StackTraceData.cs" Line="1" Column="1" />
-      <File FileName="goesdump/HeadlessMain.cs" Line="296" Column="22" />
-      <File FileName="goesdump/Models/ProgConfig.cs" Line="385" Column="13" />
-      <File FileName="XRIT/GOES/ImageManager.cs" Line="421" Column="66" />
-      <File FileName="XRIT/GOES/DemuxManager.cs" Line="1" Column="1" />
+      <File FileName="LibraryTest/Program.cs" Line="1" Column="1" />
+      <File FileName="XRIT/Geo/MapDrawer.cs" Line="1" Column="1" />
+      <File FileName="XRIT/GOES/ImageManager.cs" Line="1" Column="1" />
+      <File FileName="XRIT/ShapeFiles/ShapeFiles.cs" Line="1" Column="1" />
+      <File FileName="XRIT/Console/UIConsole.cs" Line="53" Column="18" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
       <Catchpoint exceptionName="System.ArgumentException" includeSubclasses="True" />
-      <Breakpoint file="/home/lucas/Works/OpenSatelliteProject/split/goesdump/XRIT/GOES/ImageManager.cs" line="433" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches>

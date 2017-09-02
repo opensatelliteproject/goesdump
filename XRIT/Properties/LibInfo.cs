@@ -41,10 +41,11 @@ namespace OpenSatelliteProject {
 
         public static string Version {
             get {
-                return string.Format("{0}.{1}.{2}", 
+                return string.Format("{0}.{1}.{2}.{3}", 
                     typeof(LibInfo).Assembly.GetName().Version.Major,
                     typeof(LibInfo).Assembly.GetName().Version.Minor,
-                    typeof(LibInfo).Assembly.GetName().Version.Build
+                    typeof(LibInfo).Assembly.GetName().Version.Build,
+                    typeof(LibInfo).Assembly.GetName().Version.Revision
                 );
             }
         }

@@ -18,6 +18,7 @@ namespace LibraryTest {
     class MainClass {
 
         public static void Main (string[] args) {
+            Console.WriteLine($"XRIT Version: {LibInfo.Version}");
             AppDomain.CurrentDomain.UnhandledException += CrashReport.DefaultExceptionHandler;
             //*
             //Organizer org = new Organizer("./himawari");
