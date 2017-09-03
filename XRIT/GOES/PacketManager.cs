@@ -245,7 +245,8 @@ namespace OpenSatelliteProject {
                                 }
                                 count++;
                             }
-                            UIConsole.Debug($"Saving file {fileName}");
+
+                            UIConsole.Debug($"Saving file {Path.GetFileName(fileName)}");
 
                             using (FileStream streamWriter = File.Create(fileName)) {
 
@@ -276,7 +277,7 @@ namespace OpenSatelliteProject {
                     }
                 }
             } catch (Exception e) {
-                UIConsole.Error(String.Format("Error extracting file {0}: {1}", zipfile, e));
+                UIConsole.Error(String.Format("Error extracting file {0}: {1}", Path.GetFileName(zipfile), e));
             }
 
             try {
@@ -339,7 +340,7 @@ namespace OpenSatelliteProject {
                     ImageHandler.Handler.HandleFile(filename, basedir);
                     File.Delete(filename);
                 } catch (Exception e) {
-                    UIConsole.Warn($"Failed to parse Weather Data Image at {filename}: {e}");
+                    UIConsole.Warn($"Failed to parse Weather Data Image at {Path.GetFileName(filename)}: {e}");
                 }
             } else if (header.PrimaryHeader.FileType == FileTypeCode.TEXT) {
                 string fz = DumpFile(filename, header, "txt");
@@ -369,7 +370,7 @@ namespace OpenSatelliteProject {
                     TextHandler.Handler.HandleFile(filename, basedir);
                     File.Delete(filename);
                 } catch (Exception e) {
-                    UIConsole.Warn($"Failed to parse Weather Data Image at {filename}: {e}");
+                    UIConsole.Warn($"Failed to parse Weather Data Image at {Path.GetFileName(filename)}: {e}");
                 }
             } else {
                 FileHandler.DefaultHandler(filename, header);
@@ -424,7 +425,7 @@ namespace OpenSatelliteProject {
             os.Close();
 
             if (f.Contains (".zip")) {
-                UIConsole.Log (String.Format ("Extracting Zip File {0}", f));
+                UIConsole.Log (String.Format ("Extracting Zip File {0}", Path.GetFileName(f)));
                 ExtractZipFile (f);
             } else {
                 EventMaster.Post (EventTypes.NewFileEvent, new NewFileReceivedEventData {

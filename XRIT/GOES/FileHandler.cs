@@ -79,7 +79,7 @@ namespace OpenSatelliteProject {
                 try {
                     File.Delete(filename);
                 } catch (IOException e) {
-                    UIConsole.Error(String.Format("Error deleting file {0}: {1}", filename, e));
+                    UIConsole.Error(String.Format("Error deleting file {0}: {1}", Path.GetFileName(filename), e));
                 }
                 return;
             }

@@ -20,6 +20,16 @@ namespace OpenSatelliteProject {
         public delegate void ConsoleEvent(ConsoleMessage data);
         public static event ConsoleEvent MessageAvailable;
 
+        public static Boolean GlobalEnableInfo { get { return GlobalConsole.EnableInfo; } set { GlobalConsole.EnableInfo = value; } }
+        public static Boolean GlobalEnableWarn { get { return GlobalConsole.EnableWarn; } set { GlobalConsole.EnableWarn = value; } }
+        public static Boolean GlobalEnableError { get { return GlobalConsole.EnableError; } set { GlobalConsole.EnableError = value; } }
+        public static Boolean GlobalEnableDebug { get { return GlobalConsole.EnableDebug; } set { GlobalConsole.EnableDebug = value; } }
+
+        public Boolean EnableInfo { get; set; }
+        public Boolean EnableWarn { get; set; }
+        public Boolean EnableError { get; set; }
+        public Boolean EnableDebug { get; set; }
+
         static string RemoveDiacritics(string text) {
           var normalizedString = text.Normalize(NormalizationForm.FormD);
           var stringBuilder = new StringBuilder();
@@ -45,6 +55,10 @@ namespace OpenSatelliteProject {
         }
 
         UIConsole() {
+            EnableInfo = true;
+            EnableError = true;
+            EnableWarn = true;
+            EnableDebug = false;
             LogConsole = true;
             messageMutex = new Mutex();
             if (LLTools.IsLinux) {
@@ -66,87 +80,95 @@ namespace OpenSatelliteProject {
         }
             
         public void _Log(string message) {
-            messageMutex.WaitOne();
-            ConsoleMessage cm = new ConsoleMessage(ConsoleMessagePriority.INFO, message);
-            if (LogConsole) {
-                ConsoleColor oldColor = Console.ForegroundColor;
-                Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine(cm);
-                Console.ForegroundColor = oldColor;
-            }
-
-            if (syslog != null) {
-                try {
-                    SyslogClient.Send(new Message(ConfigurationManager.Get(SYSLOGFACILITYDBKEY, "LOG_USER"), Level.Information, cm.Message));
-                } catch (SocketException) {
-                    // Syslog not configured, ignore.
+            if (EnableInfo) {
+                messageMutex.WaitOne();
+                ConsoleMessage cm = new ConsoleMessage (ConsoleMessagePriority.INFO, message);
+                if (LogConsole) {
+                    ConsoleColor oldColor = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.WriteLine (cm);
+                    Console.ForegroundColor = oldColor;
                 }
+
+                if (syslog != null) {
+                    try {
+                        SyslogClient.Send (new Message (ConfigurationManager.Get (SYSLOGFACILITYDBKEY, "LOG_USER"), Level.Information, cm.Message));
+                    } catch (SocketException) {
+                        // Syslog not configured, ignore.
+                    }
+                }
+                messageMutex.ReleaseMutex();
+                MessageAvailable?.Invoke(cm);
             }
-            messageMutex.ReleaseMutex();
-            MessageAvailable?.Invoke(cm);
         }
 
         public void _Warn(string message) {
-            messageMutex.WaitOne();
-            ConsoleMessage cm = new ConsoleMessage(ConsoleMessagePriority.WARN, message);
-            if (LogConsole) {
-                ConsoleColor oldColor = Console.ForegroundColor;
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine(cm);
-                Console.ForegroundColor = oldColor;
-            }
-
-            if (syslog != null) {
-                try {
-                    SyslogClient.Send(new Message(ConfigurationManager.Get(SYSLOGFACILITYDBKEY, "LOG_USER"), Level.Warning, cm.Message));
-                } catch (SocketException) {
-                    // Syslog not configured, ignore.
+            if (EnableWarn) {
+                messageMutex.WaitOne ();
+                ConsoleMessage cm = new ConsoleMessage (ConsoleMessagePriority.WARN, message);
+                if (LogConsole) {
+                    ConsoleColor oldColor = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine (cm);
+                    Console.ForegroundColor = oldColor;
                 }
+
+                if (syslog != null) {
+                    try {
+                        SyslogClient.Send (new Message (ConfigurationManager.Get (SYSLOGFACILITYDBKEY, "LOG_USER"), Level.Warning, cm.Message));
+                    } catch (SocketException) {
+                        // Syslog not configured, ignore.
+                    }
+                }
+                messageMutex.ReleaseMutex ();
+                MessageAvailable?.Invoke (cm);
             }
-            messageMutex.ReleaseMutex();
-            MessageAvailable?.Invoke(cm);
         }
 
         public void _Error(string message) {
-            messageMutex.WaitOne();
-            ConsoleMessage cm = new ConsoleMessage(ConsoleMessagePriority.ERROR, message);
-            if (LogConsole) {
-                ConsoleColor oldColor = Console.ForegroundColor;
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(cm);
-                Console.ForegroundColor = oldColor;
-            }
-
-            if (syslog != null) {
-                try {
-                    SyslogClient.Send(new Message(ConfigurationManager.Get(SYSLOGFACILITYDBKEY, "LOG_USER"), Level.Error, cm.Message));
-                } catch (SocketException) {
-                    // Syslog not configured, ignore.
+            if (EnableError) {
+                messageMutex.WaitOne ();
+                ConsoleMessage cm = new ConsoleMessage (ConsoleMessagePriority.ERROR, message);
+                if (LogConsole) {
+                    ConsoleColor oldColor = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine (cm);
+                    Console.ForegroundColor = oldColor;
                 }
+
+                if (syslog != null) {
+                    try {
+                        SyslogClient.Send (new Message (ConfigurationManager.Get (SYSLOGFACILITYDBKEY, "LOG_USER"), Level.Error, cm.Message));
+                    } catch (SocketException) {
+                        // Syslog not configured, ignore.
+                    }
+                }
+                messageMutex.ReleaseMutex ();
+                MessageAvailable?.Invoke (cm);
             }
-            messageMutex.ReleaseMutex();
-            MessageAvailable?.Invoke(cm);
         }
 
         public void _Debug(string message) {
-            messageMutex.WaitOne();
-            ConsoleMessage cm = new ConsoleMessage(ConsoleMessagePriority.DEBUG, message);
-            if (LogConsole) {
-                ConsoleColor oldColor = Console.ForegroundColor;
-                Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine(cm);
-                Console.ForegroundColor = oldColor;
-            }
-
-            if (syslog != null) {
-                try {
-                    SyslogClient.Send(new Message(ConfigurationManager.Get(SYSLOGFACILITYDBKEY, "LOG_USER"), Level.Debug, cm.Message));
-                } catch (SocketException) {
-                    // Syslog not configured, ignore.
+            if (EnableDebug) {
+                messageMutex.WaitOne ();
+                ConsoleMessage cm = new ConsoleMessage (ConsoleMessagePriority.DEBUG, message);
+                if (LogConsole) {
+                    ConsoleColor oldColor = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.WriteLine (cm);
+                    Console.ForegroundColor = oldColor;
                 }
+
+                if (syslog != null) {
+                    try {
+                        SyslogClient.Send (new Message (ConfigurationManager.Get (SYSLOGFACILITYDBKEY, "LOG_USER"), Level.Debug, cm.Message));
+                    } catch (SocketException) {
+                        // Syslog not configured, ignore.
+                    }
+                }
+                messageMutex.ReleaseMutex ();
+                MessageAvailable?.Invoke (cm);
             }
-            messageMutex.ReleaseMutex();
-            MessageAvailable?.Invoke(cm);
         }
     }
 }

@@ -1,9 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.IO;
+using System.Drawing;
 
 namespace OpenSatelliteProject {
     public static class Presets {
 
+        /// <summary>
+        /// Gets or sets the Thermal Offset
+        /// This value should be between -127 and +127, it is added to the Thermal Channel value.
+        /// </summary>
+        /// <value>The thermal offset.</value>
+        public static int ThermalOffset { get; set; }
+
+        /// <summary>
+        /// Gets or sets the radiance offset.
+        /// This value should be between -127 and +127, it is added to the Visible Channel value.
+        /// </summary>
+        /// <value>The radiance offset.</value>
+        public static int RadianceOffset { get; set; }
+
+        #region Intensity Curves
         /// <summary>
         /// Value Curve for False Color Visible
         /// </summary>
@@ -28,6 +46,45 @@ namespace OpenSatelliteProject {
             1.000000f
         };
 
+        public static readonly float[] NEW_VIS_FALSE_CURVE = {
+            0.000000f, 0.008996f, 0.017990f, 0.026980f, 0.035964f, 0.044941f, 0.053908f, 0.062864f, 0.071806f, 0.080733f, 0.089642f, 0.098533f, 0.107402f, 0.116248f, 0.125069f, 0.133864f,
+            0.142629f, 0.151364f, 0.160067f, 0.168734f, 0.177366f, 0.185958f, 0.194511f, 0.203021f, 0.211488f, 0.219908f, 0.228280f, 0.236602f, 0.244873f, 0.253090f, 0.261251f, 0.269354f,
+            0.277398f, 0.285381f, 0.293300f, 0.301154f, 0.308941f, 0.316659f, 0.324306f, 0.331880f, 0.339379f, 0.346801f, 0.354145f, 0.361408f, 0.368588f, 0.375684f, 0.382694f, 0.389615f,
+            0.396446f, 0.403185f, 0.409830f, 0.416380f, 0.422831f, 0.429182f, 0.435432f, 0.441578f, 0.448669f, 0.454624f, 0.460553f, 0.466455f, 0.472329f, 0.478176f, 0.483995f, 0.489786f,
+            0.495549f, 0.501282f, 0.506986f, 0.512661f, 0.518306f, 0.523920f, 0.529504f, 0.535057f, 0.540579f, 0.546069f, 0.551527f, 0.556952f, 0.562345f, 0.567705f, 0.573032f, 0.578325f,
+            0.583584f, 0.588809f, 0.593999f, 0.599153f, 0.604273f, 0.609357f, 0.614404f, 0.619416f, 0.624390f, 0.629328f, 0.634228f, 0.639090f, 0.643914f, 0.648699f, 0.653446f, 0.658154f,
+            0.662822f, 0.667450f, 0.672038f, 0.676586f, 0.681093f, 0.685558f, 0.689982f, 0.694364f, 0.698704f, 0.703002f, 0.707256f, 0.711467f, 0.715635f, 0.719758f, 0.723838f, 0.727873f,
+            0.731862f, 0.735807f, 0.739706f, 0.743559f, 0.747365f, 0.751125f, 0.754838f, 0.758503f, 0.762121f, 0.765691f, 0.769212f, 0.772685f, 0.776109f, 0.779483f, 0.782808f, 0.786082f,
+            0.789306f, 0.792479f, 0.795601f, 0.798672f, 0.801691f, 0.804657f, 0.807572f, 0.810433f, 0.813688f, 0.816446f, 0.819174f, 0.821871f, 0.824539f, 0.827178f, 0.829788f, 0.832368f,
+            0.834921f, 0.837444f, 0.839940f, 0.842408f, 0.844848f, 0.847261f, 0.849647f, 0.852006f, 0.854338f, 0.856644f, 0.858924f, 0.861178f, 0.863407f, 0.865610f, 0.867789f, 0.869942f,
+            0.872071f, 0.874176f, 0.876257f, 0.878314f, 0.880348f, 0.882358f, 0.884345f, 0.886310f, 0.888252f, 0.890172f, 0.892070f, 0.893947f, 0.895801f, 0.897635f, 0.899448f, 0.901240f,
+            0.903012f, 0.904763f, 0.906495f, 0.908207f, 0.909899f, 0.911573f, 0.913227f, 0.914863f, 0.916481f, 0.918080f, 0.919662f, 0.921226f, 0.922773f, 0.924302f, 0.925815f, 0.927311f,
+            0.928791f, 0.930255f, 0.931703f, 0.933135f, 0.934553f, 0.935955f, 0.937342f, 0.938715f, 0.940074f, 0.941418f, 0.942749f, 0.944066f, 0.945370f, 0.946662f, 0.947940f, 0.949206f,
+            0.950459f, 0.951701f, 0.952931f, 0.954150f, 0.955357f, 0.956554f, 0.957739f, 0.958915f, 0.960080f, 0.961235f, 0.962381f, 0.963517f, 0.964644f, 0.965762f, 0.966872f, 0.967973f,
+            0.969066f, 0.970152f, 0.971229f, 0.972300f, 0.973363f, 0.974419f, 0.975469f, 0.976512f, 0.977550f, 0.978581f, 0.979608f, 0.980628f, 0.981644f, 0.982655f, 0.983661f, 0.984664f,
+            0.985662f, 0.986656f, 0.987647f, 0.988634f, 0.989619f, 0.990601f, 0.991580f, 0.992558f, 0.993533f, 0.994506f, 0.995478f, 0.996449f, 0.997419f, 0.998389f, 0.999357f, 1.000000f,
+        };
+
+        public static readonly float[] IR_FALSE_CURVE = {
+            0.000000f, 0.000351f, 0.000705f, 0.001066f, 0.001437f, 0.001822f, 0.002223f, 0.002645f, 0.003091f, 0.003564f, 0.004067f, 0.004604f, 0.005178f, 0.005793f, 0.006452f, 0.007158f,
+            0.007915f, 0.008726f, 0.009595f, 0.010525f, 0.011519f, 0.012580f, 0.013713f, 0.014920f, 0.016206f, 0.017572f, 0.019023f, 0.020562f, 0.022192f, 0.023918f, 0.025741f, 0.027666f,
+            0.029696f, 0.031834f, 0.034084f, 0.036449f, 0.038933f, 0.041538f, 0.044269f, 0.047128f, 0.050119f, 0.053246f, 0.056511f, 0.059919f, 0.063472f, 0.067175f, 0.071029f, 0.075039f,
+            0.079209f, 0.083540f, 0.088038f, 0.092705f, 0.097545f, 0.102662f, 0.107822f, 0.113085f, 0.118448f, 0.123909f, 0.129467f, 0.135119f, 0.140862f, 0.146696f, 0.152617f, 0.158623f,
+            0.164713f, 0.170885f, 0.177135f, 0.183463f, 0.189866f, 0.196341f, 0.202887f, 0.209502f, 0.216183f, 0.222929f, 0.229737f, 0.236605f, 0.243531f, 0.250513f, 0.257549f, 0.264636f,
+            0.271773f, 0.278958f, 0.286188f, 0.293460f, 0.300774f, 0.308127f, 0.315517f, 0.322942f, 0.330399f, 0.337886f, 0.345402f, 0.352945f, 0.360511f, 0.368099f, 0.375707f, 0.383333f,
+            0.390975f, 0.398630f, 0.406297f, 0.413973f, 0.421656f, 0.429344f, 0.437035f, 0.444727f, 0.452418f, 0.460105f, 0.467786f, 0.475461f, 0.483125f, 0.490777f, 0.498416f, 0.506038f,
+            0.513642f, 0.521225f, 0.528787f, 0.536323f, 0.543833f, 0.551314f, 0.558764f, 0.566181f, 0.573563f, 0.580908f, 0.588213f, 0.595476f, 0.602696f, 0.609870f, 0.616997f, 0.624073f,
+            0.631097f, 0.638067f, 0.644980f, 0.651835f, 0.658629f, 0.665361f, 0.672028f, 0.678628f, 0.685158f, 0.691618f, 0.698004f, 0.704315f, 0.710548f, 0.716702f, 0.722774f, 0.728762f,
+            0.734663f, 0.740477f, 0.746201f, 0.751832f, 0.757368f, 0.762808f, 0.768149f, 0.773390f, 0.778527f, 0.783559f, 0.788485f, 0.793300f, 0.798005f, 0.802595f, 0.806084f, 0.810489f,
+            0.814819f, 0.819075f, 0.823258f, 0.827369f, 0.831408f, 0.835376f, 0.839274f, 0.843103f, 0.846863f, 0.850555f, 0.854181f, 0.857740f, 0.861234f, 0.864663f, 0.868028f, 0.871330f,
+            0.874569f, 0.877748f, 0.880865f, 0.883922f, 0.886920f, 0.889860f, 0.892742f, 0.895567f, 0.898336f, 0.901050f, 0.903709f, 0.906314f, 0.908867f, 0.911367f, 0.913816f, 0.916213f,
+            0.918562f, 0.920861f, 0.923111f, 0.925314f, 0.927470f, 0.929581f, 0.931646f, 0.933666f, 0.935643f, 0.937577f, 0.939469f, 0.941319f, 0.943129f, 0.944899f, 0.946631f, 0.948323f,
+            0.949979f, 0.951597f, 0.953180f, 0.954728f, 0.956241f, 0.957721f, 0.959168f, 0.960583f, 0.961967f, 0.963320f, 0.964643f, 0.965938f, 0.967204f, 0.968444f, 0.969656f, 0.970843f,
+            0.972004f, 0.973142f, 0.974256f, 0.975347f, 0.976416f, 0.977465f, 0.978493f, 0.979501f, 0.980490f, 0.981462f, 0.982416f, 0.983354f, 0.984275f, 0.985183f, 0.986075f, 0.986955f,
+            0.987822f, 0.988677f, 0.989521f, 0.990355f, 0.991179f, 0.991995f, 0.992803f, 0.993603f, 0.994397f, 0.995186f, 0.995970f, 0.996750f, 0.997526f, 0.998300f, 0.999072f, 1.000000f,
+        };
+        #endregion
+
         /// <summary>
         /// Packed 24bpp RGB LUT for Thermal False Color
         /// Based on GeoSatSignal LUT
@@ -51,6 +108,56 @@ namespace OpenSatelliteProject {
             0xF0, 0xEE, 0xEF, 0xF1, 0xEF, 0xF0, 0xF2, 0xF0, 0xF1, 0xF3, 0xF1, 0xF2, 0xF4, 0xF2, 0xF3, 0xF5, 0xF3, 0xF4, 0xF6, 0xF4, 0xF5, 0xF7, 0xF5, 0xF6, 0xF7, 0xF7, 0xF7, 0xF8, 0xF8, 0xF8, 0xF9, 0xF9, 0xF9, 0xFA, 0xFA, 0xFA, 0xFB, 0xFB, 0xFB, 0xFC, 0xFC, 0xFC, 0xFD, 0xFD, 0xFD, 0xFE, 0xFE, 0xFE,
         };
 
+        private static int[] FalseColorLUT = new int[256*256]; // 256x256 LUT
+
+        private static byte[] ReadFileFromAssembly(string filename) {
+            byte[] data = null;
+            var assembly = Assembly.GetExecutingAssembly();
+            try {
+                using (Stream stream = assembly.GetManifestResourceStream($"OpenSatelliteProject.LUT.{filename}")) {
+                    data = new byte[stream.Length];
+                    int position = 0;
+                    while (position < stream.Length) {
+                        int chunkSize = stream.Length - position > 4096 ? 4096 : (int) (stream.Length - position);
+                        stream.Read(data, position, chunkSize);
+                        position += chunkSize;
+                    }
+                }
+            } catch (Exception) {
+                UIConsole.Warn ($"Cannot load {filename} from library.");
+            }
+
+            return data;
+        }
+
+        static Presets() {
+            byte[] falsecolor = ReadFileFromAssembly ("falsecolor.png");
+            if (falsecolor != null) {
+                using (var ms = new MemoryStream (falsecolor)) {
+                    Bitmap bmp = new Bitmap (ms);
+                    if (bmp.Width != 256 || bmp.Height != 256) {
+                        UIConsole.Error ("False Color LUT is not 256x256 pixels");
+                    } else {
+                        for (int y = 0; y < 256; y++) {
+                            for (int x = 0; x < 256; x++) {
+                                FalseColorLUT [y * 256 + x] = bmp.GetPixel (x, y).ToArgb ();
+                            }
+                        }
+                    }
+                    bmp.Dispose ();
+                }
+            } else {
+                UIConsole.Error ("Cannot load file falsecolor.png from resources");
+            }
+            RadianceOffset = 0;
+            ThermalOffset = 0;
+        }
+
+        public static int FalseColorLUTVal(byte thermal, byte visible) {
+            byte thermalFix = (byte) Math.Max(Math.Min (thermal + ThermalOffset, 255), 0);
+            byte radianceFix = (byte)Math.Max (Math.Min (visible + RadianceOffset, 255), 0);
+            return FalseColorLUT [radianceFix * 256 + thermalFix];
+        }
 
         private static readonly IDictionary<string, string> _mappings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase) {
 

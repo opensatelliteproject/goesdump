@@ -99,11 +99,16 @@ namespace OpenSatelliteProject {
             if (data.Visible.IsComplete && data.Visible.MaxSegments != 0 && data.Infrared.IsComplete && data.Infrared.MaxSegments != 0) {
                 var visible = GenerateFullImage(data.Visible, data.CropImage);
                 var infrared = GenerateFullImage(data.Infrared, data.CropImage);
+                /*
+                // Old False Color System
                 ImageTools.ApplyCurve(Presets.VIS_FALSE_CURVE, ref visible);
                 ImageTools.ApplyLUT(Presets.THERMAL_FALSE_LUT, ref infrared, 3);
                 ImageTools.CombineHStoV(ref infrared, visible);
-                visible.Dispose();
-                return infrared;
+                */
+                ImageTools.ApplyCurve (Presets.NEW_VIS_FALSE_CURVE, ref visible);
+                ImageTools.Apply2DLut (Presets.FalseColorLUTVal, ref visible, infrared);
+                infrared.Dispose ();
+                return visible;
             } else {
                 return null;
             }
@@ -315,6 +320,68 @@ namespace OpenSatelliteProject {
             }
 
             ApplyLUT(cLut, ref bitmap, 1);
+        }
+
+        /// <summary>
+        /// Applies a LUT using Lookup function using visible and infrared bitmaps. Output to visible.
+        /// visible bitmap needs to be 24bpp RGB or 32bpp ARGB
+        /// This also assumes Grayscale images as RGB
+        /// </summary>
+        /// <param name="lookup">Lookup function(int visible, int infrared)</param>
+        /// <param name="visible">Visible.</param>
+        /// <param name="infrared">Infrared.</param>
+        public static void Apply2DLut(Func<byte, byte, int> lookup, ref Bitmap visible, Bitmap infrared) {
+            // FalseColorLUTVal(int thermal, int visible)
+            if (visible.PixelFormat != PixelFormat.Format24bppRgb && visible.PixelFormat != PixelFormat.Format32bppArgb) {
+                throw new ArgumentException ("Visible bitmap needs to be RGB24 or ARGB32");
+            }
+
+            if (infrared.PixelFormat != visible.PixelFormat) {
+                infrared = ToFormat (infrared, visible.PixelFormat);
+            }
+
+            var vdata = visible.LockBits(new Rectangle(0, 0, visible.Width, visible.Height), ImageLockMode.ReadWrite, visible.PixelFormat);
+            var idata = infrared.LockBits(new Rectangle(0, 0, infrared.Width, infrared.Height), ImageLockMode.ReadOnly, visible.PixelFormat);
+            int totalPoints = vdata.Stride * visible.Height;
+
+            if (visible.PixelFormat == PixelFormat.Format24bppRgb) {
+                unsafe {
+                    byte* vPtr = (byte*)vdata.Scan0.ToPointer();
+                    byte* iPtr = (byte*)idata.Scan0.ToPointer();
+                    for (int y = 0; y < visible.Height; y++) {
+                        for (int x = 0; x < visible.Width; x++) {
+                            int stridePos = y * vdata.Stride + x * 3; // Packed RGB
+                            // Assume Grayscale in RGB
+                            byte visVal = vPtr[stridePos];
+                            byte irVal = iPtr[stridePos];
+                            int color = lookup (irVal, visVal);
+                            vPtr [stridePos + 0] = (byte) ((color >> 0) & 0xFF);
+                            vPtr [stridePos + 1] = (byte) ((color >> 8) & 0xFF);
+                            vPtr [stridePos + 2] = (byte) ((color >> 16) & 0xFF);
+                        }
+                    }
+                }
+            } else if (visible.PixelFormat == PixelFormat.Format32bppArgb) {
+                unsafe {
+                    byte* vPtr = (byte*)vdata.Scan0.ToPointer();
+                    byte* iPtr = (byte*)idata.Scan0.ToPointer();
+                    for (int y = 0; y < visible.Height; y++) {
+                        for (int x = 0; x < visible.Width; x++) {
+                            int stridePos = y * vdata.Stride + x * 4; // Packed ARGB
+                            // Assume Grayscale in ARGB
+                            byte visVal = vPtr[stridePos];
+                            byte irVal = iPtr [stridePos];
+                            int color = lookup (irVal, visVal);
+                            vPtr [stridePos + 0] = (byte) ((color >> 0) & 0xFF);
+                            vPtr [stridePos + 1] = (byte) ((color >> 8) & 0xFF);
+                            vPtr [stridePos + 2] = (byte) ((color >> 16) & 0xFF);
+                            vPtr [stridePos + 3] = (byte) ((color >> 24) & 0xFF);
+                        }
+                    }
+                }
+            }
+            visible.UnlockBits(vdata);
+            infrared.UnlockBits(idata);
         }
 
         /// <summary>

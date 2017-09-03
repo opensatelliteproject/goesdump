@@ -174,5 +174,6 @@
     <EmbeddedResource Include="ShapeFiles\ne_50m_admin_0_countries.shp" />
     <EmbeddedResource Include="ShapeFiles\ne_50m_admin_0_countries.prj" />
     <EmbeddedResource Include="ShapeFiles\ne_50m_admin_0_countries.dbf" />
+    <EmbeddedResource Include="LUT\falsecolor.png" />
   </ItemGroup>
 </Project>
