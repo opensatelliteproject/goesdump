@@ -90,6 +90,9 @@ namespace LibraryTest {
             UIConsole.GlobalEnableDebug = true;
             var shapeFile = ShapeFiles.InitShapeFiles ();
 
+            //bmp.Save(filename + "-orig.png", ImageFormat.Png);
+            //vbmp.Save(visFilename + "-orig.png", ImageFormat.Png);
+
             var mapDrawer = new MapDrawer(shapeFile);
             //ImageTools.DrawLatLonLines(ref bmp, gc, Color.Brown);
             ImageTools.ApplyCurve (OpenSatelliteProject.Presets.NEW_VIS_FALSE_CURVE, ref vbmp);
@@ -105,7 +108,7 @@ namespace LibraryTest {
 
             Console.WriteLine ($"Took {delta} ms to generate map.");
 
-            vbmp.Save(visFilename + ".png", ImageFormat.Png);
+            vbmp.Save(visFilename + ".jpg", ImageFormat.Jpeg);
 
             Bitmap landMap = mapDrawer.GenerateLandMap (gc, bmp.Width, bmp.Height);
             landMap.Save(filename + "-landmap.jpg", ImageFormat.Jpeg);

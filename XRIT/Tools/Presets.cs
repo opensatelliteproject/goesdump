@@ -7,6 +7,20 @@ using System.Drawing;
 namespace OpenSatelliteProject {
     public static class Presets {
 
+        /// <summary>
+        /// Gets or sets the Thermal Offset
+        /// This value should be between -127 and +127, it is added to the Thermal Channel value.
+        /// </summary>
+        /// <value>The thermal offset.</value>
+        public static int ThermalOffset { get; set; }
+
+        /// <summary>
+        /// Gets or sets the radiance offset.
+        /// This value should be between -127 and +127, it is added to the Visible Channel value.
+        /// </summary>
+        /// <value>The radiance offset.</value>
+        public static int RadianceOffset { get; set; }
+
         #region Intensity Curves
         /// <summary>
         /// Value Curve for False Color Visible
@@ -135,10 +149,14 @@ namespace OpenSatelliteProject {
             } else {
                 UIConsole.Error ("Cannot load file falsecolor.png from resources");
             }
+            RadianceOffset = 0;
+            ThermalOffset = 0;
         }
 
         public static int FalseColorLUTVal(byte thermal, byte visible) {
-            return FalseColorLUT [visible * 256 + thermal];
+            byte thermalFix = (byte) Math.Max(Math.Min (thermal + ThermalOffset, 255), 0);
+            byte radianceFix = (byte)Math.Max (Math.Min (visible + RadianceOffset, 255), 0);
+            return FalseColorLUT [radianceFix * 256 + thermalFix];
         }
 
         private static readonly IDictionary<string, string> _mappings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase) {

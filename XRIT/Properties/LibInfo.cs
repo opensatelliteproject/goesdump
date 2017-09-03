@@ -39,6 +39,30 @@ namespace OpenSatelliteProject {
         public static string[] ArrayLogLines { get { return _gitlog.Split ('\n'); } }
         public static string LogLines { get { return _gitlog; } } 
 
+        public static int VersionMajor {
+            get {
+                return typeof(LibInfo).Assembly.GetName ().Version.Major;
+            }
+        }
+
+        public static int VersionMinor {
+            get {
+                return typeof(LibInfo).Assembly.GetName ().Version.Minor;
+            }
+        }
+
+        public static int VersionBuild {
+            get {
+                return typeof(LibInfo).Assembly.GetName ().Version.Build;
+            }
+        }
+
+        public static int VersionRevision {
+            get {
+                return typeof(LibInfo).Assembly.GetName ().Version.Revision;
+            }
+        }
+
         public static string Version {
             get {
                 return string.Format("{0}.{1}.{2}.{3}", 
