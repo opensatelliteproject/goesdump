@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>OpenSatelliteProject.XRIT</id>
-    <version>1.2</version>
+    <version>1.3</version>
     <title>XRIT Library</title>
     <authors>Lucas Teske</authors>
     <owners>Lucas Teske</owners>
@@ -11,7 +11,14 @@
     <iconUrl>https://github.com/opensatelliteproject/goesdump/raw/master/goesdump/icon.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>xRIT File / Packet Processing Library</description>
-    <releaseNotes>Experimental Auto-Overlay</releaseNotes>
+    <releaseNotes>
+        Added LogLevel Enable Control and reduced some log messages to contain only filename and not the full path
+        Added new False Color LUT system
+        Added better error handling when loading ShapeFiles / MapDrawer Verified
+        Added Debug Message Prefix and some more Debug Messages Regarding ShapeFiles
+        Added Revsion to LibInfo.Version
+        Changed False Color LUT to be less yellow-ish and added Thermal / Radiance Offset Tunning
+    </releaseNotes>
     <copyright>Copyright 2017</copyright>
     <tags>GOES XRIT NOAA Satellite OpenSatelliteProject OSP SDR Ingestor</tags>
     <dependencies>
