@@ -341,8 +341,8 @@ namespace OpenSatelliteProject {
             }
 
             if (visible.Height != infrared.Height || visible.Width != infrared.Width) {
-                UIConsole.Warn ("The Infrared and Visible channels size doesn't match, the false color might look weird.\n" +
-                $"Visible({visible.Width}, {visible.Height}) vs Infrared({infrared.Width, infrared.Height})");
+                UIConsole.Warn ("The Infrared and Visible channels size doesn't match, the false might look weird.\n" +
+                    $"Visible({visible.Width}, {visible.Height}) vs Infrared({infrared.Width}, {infrared.Height})");
             }
 
             var vdata = visible.LockBits(new Rectangle(0, 0, visible.Width, visible.Height), ImageLockMode.ReadWrite, visible.PixelFormat);
