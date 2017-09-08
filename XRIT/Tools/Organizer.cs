@@ -82,7 +82,7 @@ namespace OpenSatelliteProject {
                                     var seconds = dtstring.Substring(15, 2);
                                     //Console.WriteLine("Year: {0}\nDay Of Year: {1}\nHours: {2}\nMinutes: {3}\nSeconds: {4}", year, dayOfYear, hours, minutes, seconds);
                                     datetime = new DateTime(int.Parse(year), 1, 1, int.Parse(hours), int.Parse(minutes), int.Parse(seconds));
-                                    datetime = datetime.AddDays(int.Parse(dayOfYear));
+                                    datetime = datetime.AddDays(int.Parse(dayOfYear) - 1);
                                 } else {
                                     datetime = DateTime.Parse(dtstring, null, DateTimeStyles.RoundtripKind);
                                 }
