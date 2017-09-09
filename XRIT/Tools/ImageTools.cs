@@ -340,43 +340,42 @@ namespace OpenSatelliteProject {
                 infrared = ToFormat (infrared, visible.PixelFormat);
             }
 
+            if (visible.Height != infrared.Height || visible.Width != infrared.Width) {
+                UIConsole.Warn ("The Infrared and Visible channels size doesn't match, the false might look weird.\n" +
+                    $"Visible({visible.Width}, {visible.Height}) vs Infrared({infrared.Width}, {infrared.Height})");
+            }
+
             var vdata = visible.LockBits(new Rectangle(0, 0, visible.Width, visible.Height), ImageLockMode.ReadWrite, visible.PixelFormat);
             var idata = infrared.LockBits(new Rectangle(0, 0, infrared.Width, infrared.Height), ImageLockMode.ReadOnly, visible.PixelFormat);
-            int totalPoints = vdata.Stride * visible.Height;
+            int totalPoints = Math.Min(vdata.Stride * visible.Height, idata.Stride * infrared.Height); // Avoids crash on corrupted images
 
             if (visible.PixelFormat == PixelFormat.Format24bppRgb) {
                 unsafe {
                     byte* vPtr = (byte*)vdata.Scan0.ToPointer();
                     byte* iPtr = (byte*)idata.Scan0.ToPointer();
-                    for (int y = 0; y < visible.Height; y++) {
-                        for (int x = 0; x < visible.Width; x++) {
-                            int stridePos = y * vdata.Stride + x * 3; // Packed RGB
-                            // Assume Grayscale in RGB
-                            byte visVal = vPtr[stridePos];
-                            byte irVal = iPtr[stridePos];
-                            int color = lookup (irVal, visVal);
-                            vPtr [stridePos + 0] = (byte) ((color >> 0) & 0xFF);
-                            vPtr [stridePos + 1] = (byte) ((color >> 8) & 0xFF);
-                            vPtr [stridePos + 2] = (byte) ((color >> 16) & 0xFF);
-                        }
+                    for (int stridePos = 0; stridePos < totalPoints; stridePos+=3) {
+                        // Assume Grayscale in RGB
+                        byte visVal = vPtr[stridePos];
+                        byte irVal = iPtr[stridePos];
+                        int color = lookup (irVal, visVal);
+                        vPtr [stridePos + 0] = (byte) ((color >> 0) & 0xFF);
+                        vPtr [stridePos + 1] = (byte) ((color >> 8) & 0xFF);
+                        vPtr [stridePos + 2] = (byte) ((color >> 16) & 0xFF);
                     }
                 }
             } else if (visible.PixelFormat == PixelFormat.Format32bppArgb) {
                 unsafe {
                     byte* vPtr = (byte*)vdata.Scan0.ToPointer();
                     byte* iPtr = (byte*)idata.Scan0.ToPointer();
-                    for (int y = 0; y < visible.Height; y++) {
-                        for (int x = 0; x < visible.Width; x++) {
-                            int stridePos = y * vdata.Stride + x * 4; // Packed ARGB
-                            // Assume Grayscale in ARGB
-                            byte visVal = vPtr[stridePos];
-                            byte irVal = iPtr [stridePos];
-                            int color = lookup (irVal, visVal);
-                            vPtr [stridePos + 0] = (byte) ((color >> 0) & 0xFF);
-                            vPtr [stridePos + 1] = (byte) ((color >> 8) & 0xFF);
-                            vPtr [stridePos + 2] = (byte) ((color >> 16) & 0xFF);
-                            vPtr [stridePos + 3] = (byte) ((color >> 24) & 0xFF);
-                        }
+                    for (int stridePos = 0; stridePos < totalPoints; stridePos+=4) {
+                        // Assume Grayscale in ARGB
+                        byte visVal = vPtr[stridePos];
+                        byte irVal = iPtr [stridePos];
+                        int color = lookup (irVal, visVal);
+                        vPtr [stridePos + 0] = (byte) ((color >> 0) & 0xFF);
+                        vPtr [stridePos + 1] = (byte) ((color >> 8) & 0xFF);
+                        vPtr [stridePos + 2] = (byte) ((color >> 16) & 0xFF);
+                        vPtr [stridePos + 3] = (byte) ((color >> 24) & 0xFF);
                     }
                 }
             }
@@ -619,15 +618,15 @@ namespace OpenSatelliteProject {
             float lastY;
             using (var graphics = Graphics.FromImage(bmp)) {
                 for (float lat = gc.MinLatitude; lat < gc.MaxLatitude; lat += 10f) {
-                    lastX = -1f;
-                    lastY = -1f;
+                    lastX = float.NaN;
+                    lastY = float.NaN;
                     for (float lon = gc.MinLongitude; lon < gc.MaxLongitude; lon += 0.1f) {
                         var xy = gc.latlon2xy(lat, lon);
 
                         if (fixCrop) {
                             xy = new Tuple<int, int>(xy.Item1 - gc.CropLeft, xy.Item2);
                         }
-                        if (lastX != -1 && lastY != -1) {
+                        if (!float.IsNaN(lastX) && !float.IsNaN(lastY)) {
                             graphics.DrawLine(pen, lastX, lastY, xy.Item1, xy.Item2);
                         }
                         lastX = xy.Item1;
@@ -636,15 +635,15 @@ namespace OpenSatelliteProject {
 
                 }
                 for (float lon = gc.MinLongitude; lon < gc.MaxLongitude; lon += 10f) {
-                    lastX = -1f;
-                    lastY = -1f;
+                    lastX = float.NaN;
+                    lastY = float.NaN;
                     for (float lat = gc.MinLatitude; lat < gc.MaxLatitude; lat += 0.1f) {
                         var xy = gc.latlon2xy(lat, lon);
 
                         if (fixCrop) {
                             xy = new Tuple<int, int>(xy.Item1 - gc.CropLeft, xy.Item2);
                         }
-                        if (lastX != -1 && lastY != -1) {
+                        if (!float.IsNaN(lastX) && !float.IsNaN(lastY)) {
                             graphics.DrawLine(pen, lastX, lastY, xy.Item1, xy.Item2);
                         }
                         lastX = xy.Item1;
