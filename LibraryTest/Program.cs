@@ -92,12 +92,13 @@ namespace LibraryTest {
             //bmp.Save(filename + "-orig.png", ImageFormat.Png);
             //vbmp.Save(visFilename + "-orig.png", ImageFormat.Png);
 
-            Bitmap reproj = ImageTools.ReprojectLinear (vbmp, gc);
+            //Bitmap reproj = ImageTools.ReprojectLinear (vbmp, gc);
 
-            reproj.Save("test.png", ImageFormat.Png);
+            //reproj.Save("test.png", ImageFormat.Png);
 
-            /*
-            var mapDrawer = new MapDrawer(shapeFile);
+            ///*
+            var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_50m_admin_1_states_provinces_lakes.shp");
+            //var mapDrawer = new MapDrawer(shapeFile);
             //ImageTools.DrawLatLonLines(ref bmp, gc, Color.Brown);
             ImageTools.ApplyCurve (OpenSatelliteProject.Presets.NEW_VIS_FALSE_CURVE, ref vbmp);
 
@@ -118,6 +119,11 @@ namespace LibraryTest {
             landMap.Save(filename + "-landmap.jpg", ImageFormat.Jpeg);
             landMap.Dispose ();
             bmp.Dispose();
+
+            //Console.WriteLine ("Starting Reprojection");
+            //Bitmap reproj = ImageTools.ReprojectLinear (vbmp, gc);
+            //Console.WriteLine ("Reprojection end");
+            //reproj.Save("test-falsecolor-reproject.jpg", ImageFormat.Jpeg);
 
 
             //return;

@@ -19,16 +19,9 @@ namespace OpenSatelliteProject {
         public static string OSPLABEL = $"OpenSatelliteProject {LibInfo.Version}";
 
         public static Bitmap ReprojectLinear(Bitmap bmp, GeoConverter gc, bool fixCrop = false) {
-            Bitmap output = new Bitmap (bmp.Width, bmp.Height, PixelFormat.Format8bppIndexed);
-            ColorPalette pal = output.Palette;
-            // Standard grayscale palette
-            for(int i=0;i<=255;i++) {
-                pal.Entries[i] = Color.FromArgb(i, i, i);
-            }
-            output.Palette = pal;
-
+            Bitmap output = new Bitmap (bmp.Width, bmp.Height, PixelFormat.Format32bppArgb);
             var pdata = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-            var odata = output.LockBits(new Rectangle(0, 0, output.Width, output.Height), ImageLockMode.ReadWrite, PixelFormat.Format8bppIndexed);
+            var odata = output.LockBits(new Rectangle(0, 0, output.Width, output.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
             unsafe {
                 byte* dPtr = (byte*)odata.Scan0.ToPointer();
                 byte* pPtr = (byte*)pdata.Scan0.ToPointer ();
@@ -46,7 +39,10 @@ namespace OpenSatelliteProject {
                             if (fixCrop) {
                                 newx -= gc.CropLeft; 
                             }
-                            dPtr [y * stride + x] = bilinear (pPtr, newx, newy, pdata.Stride);
+                            dPtr [y * stride + x * 4 + 0] = BilinearInterp(pPtr, newx, newy, pdata.Stride, 0);
+                            dPtr [y * stride + x * 4 + 1] = BilinearInterp(pPtr, newx, newy, pdata.Stride, 1);
+                            dPtr [y * stride + x * 4 + 2] = BilinearInterp(pPtr, newx, newy, pdata.Stride, 2);
+                            dPtr [y * stride + x * 4 + 3] = BilinearInterp(pPtr, newx, newy, pdata.Stride, 3);
                         }
                     }
                 }
@@ -61,8 +57,11 @@ namespace OpenSatelliteProject {
             return data[y * mw + x * 4 + 1];
         }
 
+        private unsafe static byte ValueAtImage(byte *data, int x, int y, int mw, int colorChannel) {
+            return data[y * mw + x * 4 + colorChannel];
+        }
 
-        private unsafe static byte bilinear(byte *data, double x, double y, int mw)   {
+        private unsafe static byte BilinearInterp(byte *data, double x, double y, int mw, int colorChannel)   {
             int rx = (int)(x);
             int ry = (int)(y);
             float fracX = (float) (x - rx);
@@ -70,10 +69,10 @@ namespace OpenSatelliteProject {
             float invfracX = 1f - fracX;
             float invfracY = 1f - fracY;
 
-            byte a = val(data,rx,ry,mw);
-            byte b = val(data,rx+1,ry,mw);
-            byte c = val(data,rx,ry+1,mw);
-            byte d = val(data,rx+1,ry+1,mw);
+            byte a = ValueAtImage(data, rx,     ry,     mw, colorChannel);
+            byte b = ValueAtImage(data, rx + 1, ry,     mw, colorChannel);
+            byte c = ValueAtImage(data, rx    , ry + 1, mw, colorChannel);
+            byte d = ValueAtImage(data, rx + 1, ry + 1, mw, colorChannel);
 
             return (byte) (( a * invfracX + b * fracX) * invfracY + ( c * invfracX + d * fracX) * fracY);
         }
