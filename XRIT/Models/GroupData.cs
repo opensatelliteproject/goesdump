@@ -9,7 +9,7 @@ namespace OpenSatelliteProject {
         /// Timeout to remove lrit files if not processed.
         /// Default: 2h
         /// </summary>
-        private const int DATA_TIMEOUT = 2 * 3600; // 2h
+        private const int DATA_TIMEOUT = 20 * 60; // 20 minutes
         private const int MIN_DATA_MARK = 15 * 60; // 15 minutes
 
         public string SatelliteName { get; set; }
@@ -77,6 +77,7 @@ namespace OpenSatelliteProject {
             IsInfraredProcessed = true;
             IsWaterVapourProcessed = true;
             IsOtherDataProcessed = true;
+            OtherData.Select (x => x.Value).ToList ().ForEach (k => { k.OK = true; });
         }
 
         private int Created;
