@@ -16,7 +16,6 @@ using System.Globalization;
 
 namespace LibraryTest {
     class MainClass {
-
         public static void Main (string[] args) {
             Console.WriteLine($"XRIT Version: {LibInfo.Version}");
             AppDomain.CurrentDomain.UnhandledException += CrashReport.DefaultExceptionHandler;
@@ -93,6 +92,11 @@ namespace LibraryTest {
             //bmp.Save(filename + "-orig.png", ImageFormat.Png);
             //vbmp.Save(visFilename + "-orig.png", ImageFormat.Png);
 
+            Bitmap reproj = ImageTools.ReprojectLinear (vbmp, gc);
+
+            reproj.Save("test.png", ImageFormat.Png);
+
+            /*
             var mapDrawer = new MapDrawer(shapeFile);
             //ImageTools.DrawLatLonLines(ref bmp, gc, Color.Brown);
             ImageTools.ApplyCurve (OpenSatelliteProject.Presets.NEW_VIS_FALSE_CURVE, ref vbmp);
@@ -116,7 +120,7 @@ namespace LibraryTest {
             bmp.Dispose();
 
 
-            return;
+            //return;
             // */
             /*
 			Bitmap test0 = (Bitmap) Bitmap.FromFile("test0.jpg");
@@ -140,7 +144,7 @@ namespace LibraryTest {
             //*
             //string dcsFile = "/home/lucas/Works/OpenSatelliteProject/split/goesdump/XRITLibraryTest/bin/Debug/channels/DCS/pM-17085003239-A.dcs";
             //List<DCSHeader> d = DCSParser.parseDCS(dcsFile);
-            //*
+            /*
             //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
             //string debugFrames = "/media/ELTN/tmp/debug5/demuxdump-1492732814.bin";
             //string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
@@ -191,8 +195,8 @@ namespace LibraryTest {
             bmp.Dispose ();
             Console.WriteLine ("Done");
             return;
-            */
-
+            //*/
+            /*
             EventMaster.On ("newFile", d => {
                 var ed = (NewFileReceivedEventData) d.Data;
                 //Console.WriteLine($"Received event for new file {ed.Name} at {ed.Path}");
@@ -206,7 +210,7 @@ namespace LibraryTest {
             //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1496790733.bin";
             //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1500179126.bin";
             //string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";
-            string debugFrames = "/media/ELTN/tmp/trango/demuxdump-1500736657.bin";
+            string debugFrames = "/media/ELTN/tmp/debug16/demuxdump-1504736974.bin";
             //var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
 
             var im0 = new ImageManager ("output/Images/Full Disk/");
@@ -229,10 +233,10 @@ namespace LibraryTest {
             ImageManager.GenerateInfrared = true;
             ImageManager.GenerateFalseColor = true;
             ImageManager.GenerateWaterVapour = true;
-            ImageManager.GenerateOtherImages = true;
-            ImageManager.EraseFiles = false;
+            ImageManager.GenerateOtherImages = false;
+            ImageManager.EraseFiles = true;
             ImageManager.UseNOAAFileFormat = true;
-            ImageManager.GenerateLatLonOverlays = true;
+            ImageManager.GenerateLatLonOverlays = false;
             ImageManager.GenerateMapOverlays = true;
             ImageManager.GenerateLabels = true;
             ImageManager.GenerateLatLonLabel = true;
@@ -251,6 +255,7 @@ namespace LibraryTest {
             DemuxManager dm = new DemuxManager ();
             FileHandler.SkipDCS = true;
             FileHandler.SkipEMWIN = true;
+            FileHandler.SkipWeatherData = true;
             //const int startFrame = 956000;
             const int startFrame = 0;
             FileStream file = File.OpenRead (debugFrames);

@@ -60,6 +60,32 @@ namespace OpenSatelliteProject.Geo {
             return new Tuple<int, int>(c, l);
         }
 
+        public static Tuple<float, float> lonlat2xyf(float satLongitude, float lon, float lat, int coff, float cfac, int loff, float lfac) {
+            var sub_lon = deg2rad(satLongitude);
+            var rep = (radiusPoles * radiusPoles) / (radiusEquator * radiusEquator);
+            lon -= sub_lon;
+
+            lon = Math.Min(Math.Max(lon, MINLON), MAXLON);
+            lat = Math.Min(Math.Max(lat, MINLAT), MAXLAT);
+
+            var psi = Math.Atan(rep * Math.Tan(lat));
+            var re  = radiusPoles / (Math.Sqrt( 1 - ( 1 - rep) * Math.Cos(psi) * Math.Cos(psi)));
+            var r1 = vehicleDistance - re * Math.Cos(psi) * Math.Cos(lon);
+            var r2 = -1 * re * Math.Cos(psi) * Math.Sin(lon);
+            var r3 = re * Math.Sin(psi);
+
+            var rn = Math.Sqrt ( r1 * r1 + r2 * r2 + r3 * r3 );
+            var x = Math.Atan(-1 * r2 / r1);
+            var y = Math.Asin(-1 * r3 / rn);
+            x = rad2deg((float)x);
+            y = rad2deg((float)y);
+
+            var c = coff + (x * (float)(cfac) / 0x10000);
+            var l = loff + (y * (float)(lfac) / 0x10000);
+
+            return new Tuple<float, float>((float)c, (float)l);
+        }
+
         /// <summary>
         /// Converts Pixel X/Y to Latitude / Longitude
         /// </summary>

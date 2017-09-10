@@ -1,16 +1,13 @@
 ﻿<Properties StartupItem="LibraryTest/LibraryTest.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/Tools/ImageTools.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/Geo/GeoConverter.cs">
     <Files>
-      <File FileName="LibraryTest/Program.cs" Line="1" Column="1" />
-      <File FileName="XRIT/Geo/MapDrawer.cs" Line="1" Column="1" />
-      <File FileName="XRIT/ShapeFiles/ShapeFiles.cs" Line="1" Column="1" />
+      <File FileName="LibraryTest/Program.cs" Line="84" Column="58" />
       <File FileName="XRIT/Tools/Presets.cs" Line="1" Column="1" />
-      <File FileName="XRIT/GOES/ImageManager.cs" Line="553" Column="76" />
-      <File FileName="XRIT/Tools/ImageTools.cs" Line="565" Column="50" />
-      <File FileName="XRIT/Tools/LLTools.cs" Line="1" Column="1" />
       <File FileName="XRIT/Properties/LibInfo.cs" Line="1" Column="1" />
-      <File FileName="XRIT/Properties/AssemblyInfo.cs" Line="18" Column="56" />
+      <File FileName="XRIT/Geo/GeoConverter.cs" Line="93" Column="22" />
+      <File FileName="XRIT/Geo/GeoTools.cs" Line="86" Column="61" />
+      <File FileName="XRIT/Tools/ImageTools.cs" Line="43" Column="62" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

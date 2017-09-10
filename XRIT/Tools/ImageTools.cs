@@ -18,6 +18,66 @@ namespace OpenSatelliteProject {
         private const int PADDING = 10; // px
         public static string OSPLABEL = $"OpenSatelliteProject {LibInfo.Version}";
 
+        public static Bitmap ReprojectLinear(Bitmap bmp, GeoConverter gc, bool fixCrop = false) {
+            Bitmap output = new Bitmap (bmp.Width, bmp.Height, PixelFormat.Format8bppIndexed);
+            ColorPalette pal = output.Palette;
+            // Standard grayscale palette
+            for(int i=0;i<=255;i++) {
+                pal.Entries[i] = Color.FromArgb(i, i, i);
+            }
+            output.Palette = pal;
+
+            var pdata = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            var odata = output.LockBits(new Rectangle(0, 0, output.Width, output.Height), ImageLockMode.ReadWrite, PixelFormat.Format8bppIndexed);
+            unsafe {
+                byte* dPtr = (byte*)odata.Scan0.ToPointer();
+                byte* pPtr = (byte*)pdata.Scan0.ToPointer ();
+                int stride = odata.Stride;
+                for (int y = 0; y < output.Height; y++) {
+                    for (int x = 0; x < output.Width; x++) {
+                        var lat = (gc.MaxLatitude - gc.TrimLatitude) - ((y * (gc.LatitudeCoverage - gc.TrimLatitude * 2)) / output.Height);
+                        var lon = ((x * (gc.LongitudeCoverage - gc.TrimLongitude * 2)) / output.Width) + (gc.MinLongitude + gc.TrimLongitude);
+                        if (lat > gc.MaxLatitude || lat < gc.MinLatitude || lon > gc.MaxLongitude || lon < gc.MinLongitude) {
+                            dPtr [y * stride + x] = 0;
+                        } else {
+                            var xy = gc.latlon2xyf(lat, lon);
+                            var newx = xy.Item1;
+                            var newy = xy.Item2;
+                            if (fixCrop) {
+                                newx -= gc.CropLeft; 
+                            }
+                            dPtr [y * stride + x] = bilinear (pPtr, newx, newy, pdata.Stride);
+                        }
+                    }
+                }
+            }
+            bmp.UnlockBits(pdata);
+            output.UnlockBits (odata);
+
+            return output;
+        }
+
+        private unsafe static byte val(byte *data, int x, int y, int mw)   {
+            return data[y * mw + x * 4 + 1];
+        }
+
+
+        private unsafe static byte bilinear(byte *data, double x, double y, int mw)   {
+            int rx = (int)(x);
+            int ry = (int)(y);
+            float fracX = (float) (x - rx);
+            float fracY = (float) (y - ry);
+            float invfracX = 1f - fracX;
+            float invfracY = 1f - fracY;
+
+            byte a = val(data,rx,ry,mw);
+            byte b = val(data,rx+1,ry,mw);
+            byte c = val(data,rx,ry+1,mw);
+            byte d = val(data,rx+1,ry+1,mw);
+
+            return (byte) (( a * invfracX + b * fracX) * invfracY + ( c * invfracX + d * fracX) * fracY);
+        }
+
         public static void ImageLabel(ref Bitmap inbmp, GroupData gd, OrganizerData od, GeoConverter gc, bool genLatLonLabel) {
             var usedFontSize = FONT_SIZES [0];
             if (inbmp.Width >= 4000) {
