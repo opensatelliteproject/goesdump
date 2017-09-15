@@ -8,12 +8,11 @@ namespace OpenSatelliteProject {
         #region Web Server
         public const string KeyHTTPPort = "HTTPPort";
         #endregion
-
         #region Folders
         public const string KeyTemporaryFileFolder = "TemporaryFileFolder";
         public const string KeyFinalFileFolder = "FinalFileFolder";
+        public const string KeyArchiveFolder = "ArchiveFolder";
         #endregion
-
         #region Decoder Data
         public const string KeyRecordIntermediateFile = "RecordIntermediateFile";
 
@@ -28,7 +27,6 @@ namespace OpenSatelliteProject {
 
         public const string KeySaveStatistics = "SaveStatistics";
         #endregion
-
         #region Image Processing
         public const string KeyGenerateVisibleImages = "GenerateVisibleImages";
         public const string KeyGenerateInfraredImages = "GenerateInfraredImages";
@@ -51,18 +49,17 @@ namespace OpenSatelliteProject {
 
         public const string KeyUseNOAAFormat = "UseNOAAFormat";
         #endregion
-
         #region Packet Processing
         public const string KeyEnableDCS = "EnableDCS";
         public const string KeyEnableEMWIN = "EnableEMWIN";
         public const string KeyEnableWeatherData = "EnableWeatherData";
         #endregion
-
         #region Other Data
         public const string KeyUsername = "Username";
+        public const string KeyDaysToArchive = "DaysToArchive";
+        public const string KeyEnableArchive = "EnableArchive";
         #endregion
         #endregion
-
         #region Properties
         #region Web Server
         [ConfigDescription("HTTP Listening Port (requires restart)", 8090)]
@@ -71,7 +68,6 @@ namespace OpenSatelliteProject {
             set { ConfigurationManager.Set (KeyHTTPPort, value); }
         }
         #endregion
-
         #region Folders
         [ConfigDescription("Folder where temporary files will go (requires restart)", "tmp")]
         public static string TemporaryFileFolder {
@@ -83,8 +79,12 @@ namespace OpenSatelliteProject {
             get { return ConfigurationManager.Get (KeyFinalFileFolder); }
             set { ConfigurationManager.Set(KeyFinalFileFolder, value); }
         }
+        [ConfigDescription("Folder where archived files will go (requires restart)", "archive")]
+        public static string ArchiveFolder {
+            get { return ConfigurationManager.Get (KeyArchiveFolder); }
+            set { ConfigurationManager.Set(KeyArchiveFolder, value); }
+        }
         #endregion
-
         #region Decoder Data
         [ConfigDescription("Record an intermediate file that can be replay aftewards (used for debugging)", false)]
         public static bool RecordIntermediateFile {
@@ -134,7 +134,6 @@ namespace OpenSatelliteProject {
             set { ConfigurationManager.Set(KeySaveStatistics, value); }
         } 
         #endregion
-
         #region Image Processing
 
         [ConfigDescription("Generate Images for Visible Channel", false)]
@@ -234,7 +233,6 @@ namespace OpenSatelliteProject {
         }
 
         #endregion
-
         #region Packet Processing
         [ConfigDescription("If DCS files should be saved.", false)]
         public static bool EnableDCS {
@@ -254,7 +252,6 @@ namespace OpenSatelliteProject {
             set { ConfigurationManager.Set(KeyEnableWeatherData, value); }
         }
         #endregion
-
         #region Syslog Configuration
         [ConfigDescription("Syslog Server Hostname", "localhost")]
         public static string SysLogServer {
@@ -268,16 +265,26 @@ namespace OpenSatelliteProject {
             set { ConfigurationManager.Set(UIConsole.SYSLOGFACILITYDBKEY, value); }
         }
         #endregion
-
         #region Other Config
         [ConfigDescription("OSP Username used for Crash Logs", "Not Defined")]
         public static string Username {
             get { return ConfigurationManager.Get (KeyUsername); }
             set { ConfigurationManager.Set (KeyUsername, value); }
         }
-        #endregion
-        #endregion
 
+        [ConfigDescription("Number of days before archiving a file", 1)]
+        public static int DaysToArchive {
+            get { return ConfigurationManager.GetInt (KeyDaysToArchive); }
+            set { ConfigurationManager.Set (KeyDaysToArchive, value); }
+        }
+
+        [ConfigDescription("If Archiving will be enabled in this system", true)]
+        public static bool EnableArchive {
+            get { return ConfigurationManager.GetBool (KeyEnableArchive); }
+            set { ConfigurationManager.Set (KeyEnableArchive, value); }
+        }
+        #endregion
+        #endregion
         #region Auxiliary Methods
         /// <summary>
         /// Sets the configuration defaults.
@@ -300,6 +307,7 @@ namespace OpenSatelliteProject {
 
             TemporaryFileFolder = TemporaryFileFolder ?? (string) GetDefaultPropertyValue("TemporaryFileFolder");
             FinalFileFolder = FinalFileFolder ?? (string) GetDefaultPropertyValue("FinalFileFolder");
+            ArchiveFolder = ArchiveFolder ?? (string) GetDefaultPropertyValue("ArchiveFolder");
 
             RecordIntermediateFile = ConfigurationManager.Get (KeyRecordIntermediateFile) == null ? 
                 (bool) GetDefaultPropertyValue("RecordIntermediateFile") : 
@@ -390,6 +398,14 @@ namespace OpenSatelliteProject {
             SaveStatistics = ConfigurationManager.Get (KeySaveStatistics) == null ?
                 (bool) GetDefaultPropertyValue("SaveStatistics") : 
                 SaveStatistics;
+
+            EnableArchive = ConfigurationManager.Get (KeyEnableArchive) == null ?
+                (bool) GetDefaultPropertyValue("EnableArchive") : 
+                EnableArchive;
+
+            DaysToArchive = DaysToArchive == 0 ? 
+                (int) GetDefaultPropertyValue("DaysToArchive") : 
+                DaysToArchive;
         }
 
         public static void UpdateProperty(string name, string value) {

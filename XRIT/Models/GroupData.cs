@@ -5,12 +5,9 @@ using OpenSatelliteProject.Tools;
 
 namespace OpenSatelliteProject {
     public class GroupData {
-        /// <summary>
-        /// Timeout to remove lrit files if not processed.
-        /// Default: 2h
-        /// </summary>
-        private const int DATA_TIMEOUT = 20 * 60; // 20 minutes
-        private const int MIN_DATA_MARK = 15 * 60; // 15 minutes
+        private const int GROUP_DATA_TIMEOUT = 3600; // 1h 
+        private const int DATA_TIMEOUT = 15 * 60; // 15 minutes
+        private const int MIN_DATA_MARK = 13 * 60; // 13 minutes
 
         public string SatelliteName { get; set; }
         public string RegionName { get; set; }
@@ -30,7 +27,6 @@ namespace OpenSatelliteProject {
         public bool IsVisibleProcessed { get; set; }
         public bool IsInfraredProcessed { get; set; }
         public bool IsWaterVapourProcessed { get; set; }
-        public bool IsOtherDataProcessed { get; set; }
         public bool CropImage { get; set; }
         public bool HasNavigationData { get; set; }
 
@@ -46,15 +42,17 @@ namespace OpenSatelliteProject {
                 return Visible.IsComplete && 
                     Infrared.IsComplete && 
                     WaterVapour.IsComplete && 
-                    OtherDataIsComplete; 
+                    IsOtherDataProcessed; 
             } 
         }
 
-        private bool OtherDataIsComplete { 
+        public bool IsOtherDataProcessed { 
             get { 
-                return OtherData.Count == 0 || OtherData
+                return OtherData.Count == 0 || (OtherData
                     .Select(x => x.Value.IsComplete)
-                    .Aggregate((x, y) => x & y); 
+                    .Aggregate((x, y) => x & y) && OtherData
+                    .Select(x => x.Value.OK)
+                    .Aggregate((x, y) => x & y)); 
             } 
         }
 
@@ -70,13 +68,18 @@ namespace OpenSatelliteProject {
             }
         }
 
+        public bool GroupTimeout {
+            get {
+                return (LLTools.Timestamp () - Created) > GROUP_DATA_TIMEOUT;
+            }
+        }
+
         public void ForceComplete() {
             IsProcessed = true;
             IsFalseColorProcessed = true;
             IsVisibleProcessed= true;
             IsInfraredProcessed = true;
             IsWaterVapourProcessed = true;
-            IsOtherDataProcessed = true;
             OtherData.Select (x => x.Value).ToList ().ForEach (k => { k.OK = true; });
         }
 
@@ -128,7 +131,7 @@ namespace OpenSatelliteProject {
                 WaterVapour.Segments.Count,
                 WaterVapour.IsComplete ? "Complete" : "Incomplete",
                 OtherData.Count,
-                OtherDataIsComplete ? "Complete" : "Incomplete"
+                IsOtherDataProcessed ? "Complete" : "Incomplete"
             );
         }
     }

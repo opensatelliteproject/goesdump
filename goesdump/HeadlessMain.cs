@@ -120,6 +120,14 @@ namespace OpenSatelliteProject {
                 FileHandler.FinalFileFolder = ProgConfig.FinalFileFolder;
             }
 
+            if (ProgConfig.ArchiveFolder != null) {
+                if (!LLTools.TestFolderAccess(ProgConfig.ArchiveFolder)) {
+                    UIConsole.Error($"Cannot write file to Archive Folder {ProgConfig.ArchiveFolder}");
+                    throw new ApplicationException($"Cannot write file to Archive Folder {ProgConfig.ArchiveFolder}");
+                }
+                FileHandler.ArchiveFolder = ProgConfig.ArchiveFolder;
+            }
+
             ImageManager.EraseFiles = ProgConfig.EraseFilesAfterGeneratingFalseColor;
             ImageManager.GenerateInfrared = ProgConfig.GenerateInfraredImages;
             ImageManager.GenerateVisible = ProgConfig.GenerateVisibleImages;
@@ -130,6 +138,7 @@ namespace OpenSatelliteProject {
             ImageManager.GenerateLatLonOverlays = ProgConfig.GenerateLatLonOverlays;
             ImageManager.GenerateMapOverlays = ProgConfig.GenerateMapOverlays;
             ImageManager.GenerateLatLonLabel = ProgConfig.GenerateLatLonLabel;
+            ImageManager.EnableArchive = ProgConfig.EnableArchive;
 
             Connector.ChannelDataServerName = ProgConfig.ChannelDataServerName;
             Connector.StatisticsServerName = ProgConfig.StatisticsServerName;
@@ -170,13 +179,13 @@ namespace OpenSatelliteProject {
             string fmFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES16_ABI, (int)ScannerSubProduct.NONE);
             string unkFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.NONE); // Same for any unknown ABI
 
-            FDImageManager = new ImageManager(fdFolder);
-            XXImageManager = new ImageManager(xxFolder);
-            NHImageManager = new ImageManager(nhFolder);
-            SHImageManager = new ImageManager(shFolder);
-            USImageManager = new ImageManager(usFolder);
-            FMImageManager = new ImageManager(fmFolder);
-            UNKImageManager = new ImageManager (unkFolder);
+            FDImageManager = new ImageManager(fdFolder, "Full Disk");
+            XXImageManager = new ImageManager(xxFolder, "Area of Interest");
+            NHImageManager = new ImageManager(nhFolder, "Northern Hemisphere");
+            SHImageManager = new ImageManager(shFolder, "Southern Hemisphere");
+            USImageManager = new ImageManager(usFolder, "United States");
+            FMImageManager = new ImageManager(fmFolder, "FM1");
+            UNKImageManager = new ImageManager (unkFolder, "Unknown");
 
             FDImageManager.InitMapDrawer ();
             XXImageManager.InitMapDrawer ();

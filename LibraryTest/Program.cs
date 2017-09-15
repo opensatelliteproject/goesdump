@@ -19,11 +19,7 @@ namespace LibraryTest {
         public static void Main (string[] args) {
             Console.WriteLine($"XRIT Version: {LibInfo.Version}");
             AppDomain.CurrentDomain.UnhandledException += CrashReport.DefaultExceptionHandler;
-            //*
-            //Organizer org = new Organizer("./himawari");
-            //org.Update();
-            //var gd = org.GroupData[1490489400];
-            //var od = gd.Infrared;
+            #region GeoConverter Tests
             /*
 			Console.WriteLine("Initializing organizer");
 			Organizer org = new Organizer("/home/lucas/Works/OpenSatelliteProject/split/goesdump/XRITLibraryTest/bin/Debug/channels/Images/Full Disk/");
@@ -57,7 +53,9 @@ namespace LibraryTest {
 			bmp.Save("unitedstates.jpg", ImageFormat.Jpeg);
 			bmp.Dispose();
 			// */
-            ///*
+            #endregion
+            #region Reprojection / Map Test
+            /*
             string filename = "./OR_ABI-L2-CMIPF-M3C13_G16_s20170861545382_e20170861556160_c20170861556231.lrit";
             string visFilename = "./OR_ABI-L2-CMIPF-M3C02_G16_s20170861545382_e20170861556149_c20170861556217.lrit";
             XRITHeader header = FileParser.GetHeaderFromFile(filename);
@@ -96,7 +94,7 @@ namespace LibraryTest {
 
             //reproj.Save("test.png", ImageFormat.Png);
 
-            ///*
+            // /*
             var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_50m_admin_1_states_provinces_lakes.shp");
             //var mapDrawer = new MapDrawer(shapeFile);
             //ImageTools.DrawLatLonLines(ref bmp, gc, Color.Brown);
@@ -128,80 +126,8 @@ namespace LibraryTest {
 
             //return;
             // */
-            /*
-			Bitmap test0 = (Bitmap) Bitmap.FromFile("test0.jpg");
-			Bitmap test1 = (Bitmap) Bitmap.FromFile("test1.jpg");
-			Bitmap overlay = (Bitmap) Bitmap.FromFile("goes13-fulldisk.jpg");
-
-			test0 = test0.ToFormat(PixelFormat.Format24bppRgb, true);
-
-			overlay.Save("hue.jpg", ImageFormat.Jpeg);
-
-			ImageTools.ApplyOverlay(ref test0, overlay);
-			test0.Save("test0-ovl.jpg", ImageFormat.Jpeg);
-
-			ImageTools.ApplyOverlay(ref test1, overlay);
-			test1.Save("test1-ovl.jpg", ImageFormat.Jpeg);
-
-			test0.Dispose();
-			test1.Dispose();
-			overlay.Dispose();
-			*/
-            //*
-            //string dcsFile = "/home/lucas/Works/OpenSatelliteProject/split/goesdump/XRITLibraryTest/bin/Debug/channels/DCS/pM-17085003239-A.dcs";
-            //List<DCSHeader> d = DCSParser.parseDCS(dcsFile);
-            /*
-            //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
-            //string debugFrames = "/media/ELTN/tmp/debug5/demuxdump-1492732814.bin";
-            //string debugFrames = "/home/lucas/Works/OpenSatelliteProject/split/issues/trango/3/debug_frames.bin";
-            //string debugFrames = "/media/ELTN/tmp/debug3/raw_data.bin";
-            /*
-            var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_50m_admin_0_countries.shp");
-            var fList = mapDrawer.ShapeFile.Features.ToList ();
-            var bmp = new Bitmap (1280, 720, PixelFormat.Format24bppRgb);
-            using (var graphics = Graphics.FromImage (bmp)) {
-                Brush bgBrush = new SolidBrush (Color.Black);
-                Brush polyBrush = new SolidBrush (Color.White);
-                graphics.FillRectangle (bgBrush, 0, 0, 1280, 720);
-                int o = 0;
-                foreach (var fo in fList) {
-                    Console.WriteLine ($"Writting Geometry {o}");
-                    Pen pen = new Pen(Color.FromArgb((int)((255.0 * o) / fList.Count), 127, 127), 3);
-                    o++;
-                    for (var n = 0; n < fo.NumGeometries; n++) {
-                        //Console.WriteLine ($"Writting Geometry {n}");
-                        var fg = fo.GetBasicGeometryN (n);
-                        var k = fg.Coordinates;
-
-                        float lastX = float.NaN;
-                        float lastY = float.NaN;
-
-                        List<PointF> points = new List<PointF> ();
-                        foreach (var z in k) {
-                            float lon = (float)z.X;
-                            float lat = (float)z.Y;
-
-                            float X = bmp.Width / 2 + bmp.Width * (lon / 360);
-                            float Y = bmp.Height / 2 - bmp.Height * (lat / 180);
-
-                            if (!float.IsNaN (lastX) && !float.IsNaN (lastY)) {
-                                //graphics.DrawLine (pen, lastX, lastY, X, Y);
-                            }
-                            lastX = X;
-                            lastY = Y;
-
-                            points.Add (new PointF (X, Y));
-                        }
-                        graphics.FillPolygon(polyBrush, points.ToArray());
-                    }
-                }
-            }
-            Console.WriteLine ("Saving");
-            bmp.Save ("/home/lucas/test.png", ImageFormat.Png);
-            bmp.Dispose ();
-            Console.WriteLine ("Done");
-            return;
-            //*/
+            #endregion
+            #region Ingestor Test
             /*
             EventMaster.On ("newFile", d => {
                 var ed = (NewFileReceivedEventData) d.Data;
@@ -216,7 +142,8 @@ namespace LibraryTest {
             //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1496790733.bin";
             //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1500179126.bin";
             //string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";
-            string debugFrames = "/media/ELTN/tmp/debug16/demuxdump-1504736974.bin";
+            //string debugFrames = "/media/ELTN/tmp/debug16/demuxdump-1504736974.bin";
+            string debugFrames = "/media/ELTN/tmp/debug17/demuxdump-1505145094.bin";
             //var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
 
             var im0 = new ImageManager ("output/Images/Full Disk/");
@@ -235,6 +162,7 @@ namespace LibraryTest {
             im5.InitMapDrawer ();
             im6.InitMapDrawer ();
 
+            UIConsole.GlobalEnableDebug = true;
             ImageManager.GenerateVisible = true;
             ImageManager.GenerateInfrared = true;
             ImageManager.GenerateFalseColor = true;
@@ -247,13 +175,13 @@ namespace LibraryTest {
             ImageManager.GenerateLabels = true;
             ImageManager.GenerateLatLonLabel = true;
             ImageManager.SaveNonOverlay = false;
-            //im0.Start ();
-            //im1.Start ();
-            //im2.Start ();
-            //im3.Start ();
-            //im4.Start ();
+            im0.Start ();
+            im1.Start ();
+            im2.Start ();
+            im3.Start ();
+            im4.Start ();
             im5.Start ();
-            //im6.Start ();
+            im6.Start ();
             // */
             //*/
             // /*
@@ -290,65 +218,14 @@ namespace LibraryTest {
                 Console.WriteLine ("\t{0}: {1}", ((NOAAProductID)pID).ToString (), dm.ProductsReceived [pID]);
             }
             //*/
-            //im.Stop();
-            //*/
-            //ProcessFile("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Text/NWSTEXTdat043204159214.lrit");
+            #endregion
+            #region Archive Test
             /*
-            Organizer organizer = new Organizer("/home/lucas/Works/OpenSatelliteProject/split/goesdump/goesdump/bin/Debug/channels/Images/Full Disk");
-            organizer.Update();
-
-            var data = organizer.GroupData;
-
-            foreach (var z in data) {
-                var mData = z.Value;
-                var bmp = ImageTools.GenerateFalseColor(mData);
-
-                if (bmp != null) {
-                    bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "FLSCLR", z.Key), ImageFormat.Jpeg);
-                    bmp.Dispose();
-                    mData.IsProcessed = true;
-                } else {
-                    if (mData.Visible.IsComplete && mData.Visible.MaxSegments != 0) {
-                        bmp = ImageTools.GenerateFullImage(mData.Visible);
-                        bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "VIS", z.Key), ImageFormat.Jpeg);
-                        bmp.Dispose();
-                    }
-                    if (mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0) {
-                        bmp = ImageTools.GenerateFullImage(mData.Infrared);
-                        bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "IR", z.Key), ImageFormat.Jpeg);
-                        bmp.Dispose();
-                    }
-                    if (mData.WaterVapour.IsComplete && mData.WaterVapour.MaxSegments != 0) {
-                        bmp = ImageTools.GenerateFullImage(mData.WaterVapour);
-                        bmp.Save(string.Format("{0}-{1}-{2}-{3}.jpg", mData.SatelliteName, mData.RegionName, "WV", z.Key), ImageFormat.Jpeg);
-                        bmp.Dispose();
-                    }
-                    Console.WriteLine("Not all segments available!");
-                }
-            }
-
-
-            //*/
-
-            /*
-			string visFile = "/home/lucas/Works/OpenSatelliteProject/split/samples/FD 26-02-17 2106 G13VI.jpg";
-			string irFile = "/home/lucas/Works/OpenSatelliteProject/split/samples/FD 26-02-17 2106 G13IR.jpg";
-
-			Bitmap vis = new Bitmap(visFile);
-			ImageTools.ApplyCurve(Presets.VIS_FALSE_CURVE, ref vis);
-			vis.Save("test.jpg", ImageFormat.Jpeg);
-			//vis = vis.ToFormat(PixelFormat.Format32bppArgb, true);
-
-			Bitmap ir = new Bitmap(irFile);
-			ir = ir.ToFormat(PixelFormat.Format32bppArgb, true);
-			ImageTools.ApplyLUT(Presets.THERMAL_FALSE_LUT, ref ir, 3);
-			ir.Save("test2.jpg", ImageFormat.Jpeg);
-
-			ir = ir.ToFormat(PixelFormat.Format32bppArgb);
-			ImageTools.CombineHStoV(ref ir, vis);
-
-			ir.Save("final.jpg", ImageFormat.Jpeg);
-			//*/
+            UIConsole.GlobalEnableDebug = true;
+            FileHandler.ArchiveFolder = "/media/ELTN/tmp/archiveTest/archive";
+            FileHandler.ArchieveHandler("/media/ELTN/tmp/archiveTest/output", "Images");
+            */
+            #endregion
             do {
                 while (! Console.KeyAvailable) {
                     Thread.Sleep(1000);

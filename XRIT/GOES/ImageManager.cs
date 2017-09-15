@@ -109,11 +109,19 @@ namespace OpenSatelliteProject {
         /// </summary>
         public static Color MapOverlayPenColor;
 
+        /// <summary>
+        /// If file archiving is enabled. Set the interval in FileHandler.DaysToArchive
+        /// </summary>
+        /// <value><c>true</c> if enable archive; otherwise, <c>false</c>.</value>
+        /// <see cref="FileHandler.DaysToArchive"/>
+        public static bool EnableArchive { get; set; }
+
         Thread imageThread;
         bool running;
         readonly Organizer organizer;
         readonly string folder;
         readonly static string defaultShapeFile;
+        readonly string archiveGroup;
         MapDrawer mapDrawer;
 
         static ImageManager() {
@@ -135,6 +143,26 @@ namespace OpenSatelliteProject {
             GenerateLatLonLabel = true;
             SaveNonOverlay = false;
             defaultShapeFile = ShapeFiles.InitShapeFiles ();
+            EnableArchive = true;
+        }
+        #region ImageManager Base Methods
+        public ImageManager(string folder) {
+            this.organizer = new Organizer(folder);
+            this.folder = folder;
+            this.imageThread = null;
+
+            if (!Directory.Exists(folder)) {
+                Directory.CreateDirectory(folder);
+            }
+
+            string aFolder = folder [folder.Count() - 1] == '/' ? folder.Substring (0, folder.Count() - 1) : folder;
+
+            this.archiveGroup = Path.GetFileName (aFolder);
+            UIConsole.Debug($"Creating ImageManager on folder {folder}");
+        }
+
+        public ImageManager(string folder, string archiveGroup) : this(folder) {
+            this.archiveGroup = archiveGroup;
         }
 
         /// <summary>
@@ -170,6 +198,116 @@ namespace OpenSatelliteProject {
             }
         }
 
+        public void Start() {
+            if (!running) {
+                running = true;
+                imageThread = new Thread(new ThreadStart(ThreadLoop));
+                imageThread.IsBackground = true;
+                imageThread.Priority = ThreadPriority.BelowNormal;
+                imageThread.Start();
+            }
+        }
+
+        public void Stop() {
+            if (running) {
+                running = false;
+                if (imageThread != null) {
+                    imageThread.Join();
+                }
+                imageThread = null;
+            }
+        }
+        #endregion
+        #region File Erase
+        private void TryEraseGroupDataFiles(int idx, GroupData mData) {
+            // Water Vapour and Other files can be erased without FalseColor
+            // Erase Water Vapour LRIT
+            if ((GenerateWaterVapour && mData.IsWaterVapourProcessed || !GenerateWaterVapour)) {
+                mData.WaterVapour.Segments.Select(x => x.Value).ToList().ForEach(f => {
+                    try {
+                        UIConsole.Debug($"Erasing file {f}");
+                        File.Delete(f);
+                    } catch (IOException e) {
+                        UIConsole.Error($"Error erasing file {Path.GetFileName(f)}: {e}");
+                    }
+                });
+                mData.WaterVapour.Segments.Clear ();
+            }
+            // Erase Other Images LRIT
+            mData.OtherData.Select(x => x.Value).ToList().ForEach(k => {
+                if (k.OK) {
+                    k.Segments.Select(x => x.Value).ToList().ForEach(f => {
+                        try {
+                            UIConsole.Debug($"Erasing file {f}");
+                            File.Delete(f);
+                        } catch (IOException e) {
+                            UIConsole.Error($"Error erasing file {Path.GetFileName(f)}: {e}");
+                        }
+                    });
+                    k.Segments.Clear();
+                }
+            });
+
+            // Do not erase files until false color is processed if required.
+            if (GenerateFalseColor && !mData.IsFalseColorProcessed) {
+                return;
+            }
+
+            // Erase Infrared LRIT
+            if ((GenerateInfrared && mData.IsInfraredProcessed || !GenerateInfrared)) {
+                mData.Infrared.Segments.Select(x => x.Value).ToList().ForEach(f => {
+                    try {
+                        UIConsole.Debug($"Erasing file {f}");
+                        File.Delete(f);
+                    } catch (IOException e) {
+                        UIConsole.Error($"Error erasing file {Path.GetFileName(f)}: {e}");
+                    }
+                });
+                mData.Infrared.Segments.Clear ();
+            }
+            // Erase Visible LRIT
+            if ((GenerateVisible && mData.IsVisibleProcessed || !GenerateVisible)) {
+                mData.Visible.Segments.Select(x => x.Value).ToList().ForEach(f => {
+                    try {
+                        UIConsole.Debug($"Erasing file {f}");
+                        File.Delete(f);
+                    } catch (IOException e) {
+                        UIConsole.Error($"Error erasing file {Path.GetFileName(f)}: {e}");
+                    }
+                });
+                mData.Visible.Segments.Clear ();
+            }
+
+            if (
+                (GenerateFalseColor && mData.IsFalseColorProcessed || !GenerateFalseColor) && 
+                (GenerateVisible && mData.IsVisibleProcessed || !GenerateVisible) && 
+                (GenerateInfrared && mData.IsInfraredProcessed || !GenerateInfrared) && 
+                (GenerateWaterVapour && mData.IsWaterVapourProcessed || !GenerateWaterVapour) && 
+                (GenerateOtherImages && mData.IsOtherDataProcessed || !GenerateOtherImages) &&
+                mData.GroupTimeout
+            ) {
+                UIConsole.Debug($"Group Data {idx} is done. Removing it from Organizer.");
+                organizer.RemoveGroupData(idx);   
+            }
+        }
+        #endregion
+        #region Image Functions and Tools
+        private void GenerateImageOverlay(ref Bitmap bmp, GroupData gd, OrganizerData od) {
+            if (gd.HasNavigationData) {
+                var gc = new GeoConverter (gd.SatelliteLongitude, gd.ColumnOffset, gd.LineOffset, gd.ColumnScalingFactor, gd.LineScalingFactor, true, od.Columns);
+                if (mapDrawer != null && GenerateMapOverlays) {
+                    mapDrawer.DrawMap (ref bmp, gc, MapOverlayPenColor, MapOverlayPenThickness, gd.CropImage);
+                }
+                if (GenerateLatLonOverlays) {
+                    ImageTools.DrawLatLonLines (ref bmp, gc, LatLonOverlayPenColor, LatLonOverlayPenThickness, gd.CropImage);
+                }
+                if (GenerateLabels) {
+                    ImageTools.ImageLabel (ref bmp, gd, od, gc, GenerateLatLonLabel);
+                }
+            } else if (GenerateLabels) {
+                ImageTools.ImageLabel (ref bmp, gd, od, null, false);
+            }
+        }
         private static string GenFilename(string satelliteName, string regionName, string imageName, int timestamp, string origName = null) {
             if (UseNOAAFileFormat) {
                 //gos15chnIR04rgnFDseg001res04dat130 18 06 19 190.lrit
@@ -198,119 +336,8 @@ namespace OpenSatelliteProject {
                 return string.Format("{0}-{1}-{2}-{3}.png", satelliteName, regionName, imageName, timestamp);
             }
         }
-
-        public ImageManager(string folder) {
-            this.organizer = new Organizer(folder);
-            this.folder = folder;
-            this.imageThread = null;
-
-            if (!Directory.Exists(folder)) {
-                Directory.CreateDirectory(folder);
-            }
-
-            UIConsole.Debug($"Creating ImageManager on folder {folder}");
-        }
-
-        public void Start() {
-            if (!running) {
-                running = true;
-                imageThread = new Thread(new ThreadStart(ThreadLoop));
-                imageThread.IsBackground = true;
-                imageThread.Priority = ThreadPriority.BelowNormal;
-                imageThread.Start();
-            }
-        }
-
-        public void Stop() {
-            if (running) {
-                running = false;
-                if (imageThread != null) {
-                    imageThread.Join();
-                }
-                imageThread = null;
-            }
-        }
-
-        private void TryEraseGroupDataFiles(int idx, GroupData mData) {
-            // Water Vapour and Other files can be erased without FalseColor
-            // Erase Water Vapour LRIT
-            if ((GenerateWaterVapour && mData.IsWaterVapourProcessed || !GenerateWaterVapour)) {
-                mData.WaterVapour.Segments.Select(x => x.Value).ToList().ForEach(f => {
-                    try {
-                        File.Delete(f);
-                    } catch (IOException e) {
-                        UIConsole.Error($"Error erasing file {Path.GetFileName(f)}: {e}");
-                    }
-                });
-            }
-            // Erase Other Images LRIT
-            mData.OtherData.Select(x => x.Value).ToList().ForEach(k => {
-                if (k.OK) {
-                    k.Segments.Select(x => x.Value).ToList().ForEach(f => {
-                        try {
-                            File.Delete(f);
-                        } catch (IOException e) {
-                            UIConsole.Error($"Error erasing file {Path.GetFileName(f)}: {e}");
-                        }
-                    });
-                }
-            });
-
-            // Do not erase files until false color is processed if required.
-            if (GenerateFalseColor && !mData.IsFalseColorProcessed) {
-                return;
-            }
-
-            // Erase Infrared LRIT
-            if ((GenerateInfrared && mData.IsInfraredProcessed || !GenerateInfrared)) {
-                mData.Infrared.Segments.Select(x => x.Value).ToList().ForEach(f => {
-                    try {
-                        File.Delete(f);
-                    } catch (IOException e) {
-                        UIConsole.Error($"Error erasing file {Path.GetFileName(f)}: {e}");
-                    }
-                });
-            }
-            // Erase Visible LRIT
-            if ((GenerateVisible && mData.IsVisibleProcessed || !GenerateVisible)) {
-                mData.Visible.Segments.Select(x => x.Value).ToList().ForEach(f => {
-                    try {
-                        File.Delete(f);
-                    } catch (IOException e) {
-                        UIConsole.Error($"Error erasing file {Path.GetFileName(f)}: {e}");
-                    }
-                });
-            }
-
-            if (
-                (GenerateFalseColor && mData.IsFalseColorProcessed || !GenerateFalseColor) && 
-                (GenerateVisible && mData.IsVisibleProcessed || !GenerateVisible) && 
-                (GenerateInfrared && mData.IsInfraredProcessed || !GenerateInfrared) && 
-                (GenerateWaterVapour && mData.IsWaterVapourProcessed || !GenerateWaterVapour) && 
-                (GenerateOtherImages && mData.IsOtherDataProcessed || !GenerateOtherImages)
-            ) {
-                UIConsole.Debug($"Group Data {idx} is done. Removing it from Organizer.");
-                organizer.RemoveGroupData(idx);   
-            }
-        }
-
-        private void GenerateImageOverlay(ref Bitmap bmp, GroupData gd, OrganizerData od) {
-            if (gd.HasNavigationData) {
-                var gc = new GeoConverter (gd.SatelliteLongitude, gd.ColumnOffset, gd.LineOffset, gd.ColumnScalingFactor, gd.LineScalingFactor, true, od.Columns);
-                if (mapDrawer != null && GenerateMapOverlays) {
-                    mapDrawer.DrawMap (ref bmp, gc, MapOverlayPenColor, MapOverlayPenThickness, gd.CropImage);
-                }
-                if (GenerateLatLonOverlays) {
-                    ImageTools.DrawLatLonLines (ref bmp, gc, LatLonOverlayPenColor, LatLonOverlayPenThickness, gd.CropImage);
-                }
-                if (GenerateLabels) {
-                    ImageTools.ImageLabel (ref bmp, gd, od, gc, GenerateLatLonLabel);
-                }
-            } else if (GenerateLabels) {
-                ImageTools.ImageLabel (ref bmp, gd, od, null, false);
-            }
-        }
-
+        #endregion
+        #region Thread Main Function
         void ThreadLoop() {
             try {
                 while (running) {
@@ -325,6 +352,30 @@ namespace OpenSatelliteProject {
                         string ImageName = string.Format ("{0}-{1}-{2}", z.Key, mData.SatelliteName, mData.RegionName);
                         if (!mData.IsProcessed) {
                             try {
+
+                                if (!GenerateVisible) {
+                                    mData.Visible.OK = true;
+                                    mData.IsVisibleProcessed = true;
+                                }
+
+                                if (!GenerateInfrared) {
+                                    mData.Infrared.OK = true;
+                                    mData.IsInfraredProcessed = true;
+                                }
+
+                                if (!GenerateWaterVapour) {
+                                    mData.WaterVapour.OK = true;
+                                    mData.IsWaterVapourProcessed = true;
+                                }
+
+                                if (!GenerateFalseColor) {
+                                    mData.IsFalseColorProcessed = true;
+                                }
+
+                                if (!GenerateOtherImages) {
+                                    mData.OtherData.Select( x => x.Value ).ToList().ForEach(k => { k.OK = true; });
+                                }
+
                                 if (ImageManager.GenerateVisible && mData.Visible.IsComplete && mData.Visible.MaxSegments != 0 && !mData.IsVisibleProcessed) {
                                     string ofilename = Path.Combine (folder, GenFilename (mData.SatelliteName, mData.RegionName, "VIS", z.Key, mData.Visible.Segments [mData.Visible.FirstSegment]));
                                     if (File.Exists (ofilename)) {
@@ -542,7 +593,7 @@ namespace OpenSatelliteProject {
                                     });
                                 } else if (mData.OtherData.Count == 0) {
                                     if (mData.ReadyToMark) {
-                                        mData.IsOtherDataProcessed = true;
+                                        mData.OtherData.Select (x => x.Value).ToList ().ForEach (k => { k.OK = true; });
                                     }
                                 }
 
@@ -579,6 +630,10 @@ namespace OpenSatelliteProject {
                         }
                     }
 
+                    if (EnableArchive) {
+                        FileHandler.ArchieveHandler(folder, Path.GetFileName(folder));
+                    }
+
                     Thread.Sleep (200);
                 }
             } catch (Exception e) {
@@ -586,6 +641,7 @@ namespace OpenSatelliteProject {
                 throw e;
             }
         }
+        #endregion
     }
 }
 
