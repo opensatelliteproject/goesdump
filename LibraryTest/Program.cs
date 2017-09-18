@@ -13,9 +13,16 @@ using OpenSatelliteProject.PacketData;
 using OpenSatelliteProject.Tools;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using System.Linq;
 
 namespace LibraryTest {
     class MainClass {
+
+        public static async Task<string> AHUE(string s) {
+            await Task.Delay (5000);
+            return s + "HUEBR";
+        }
+
         public static void Main (string[] args) {
             Console.WriteLine($"XRIT Version: {LibInfo.Version}");
             AppDomain.CurrentDomain.UnhandledException += CrashReport.DefaultExceptionHandler;
@@ -225,6 +232,19 @@ namespace LibraryTest {
             FileHandler.ArchiveFolder = "/media/ELTN/tmp/archiveTest/archive";
             FileHandler.ArchieveHandler("/media/ELTN/tmp/archiveTest/output", "Images");
             */
+            #endregion
+            #region New Arch Tests
+            var t = Task.Run(async () => {
+                var promises = (new [] { "a", "b", "c" }).Select(s => AHUE(s)).ToArray();
+                var result = await Task.WhenAll(promises);
+                result.ToList().ForEach(res => {
+                    UIConsole.Log($"Received: {res}");
+                });
+            });
+
+            UIConsole.Log("Waiting");
+            t.Wait();
+            UIConsole.Log("Done");
             #endregion
             do {
                 while (! Console.KeyAvailable) {

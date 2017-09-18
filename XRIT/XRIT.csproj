@@ -145,6 +145,13 @@
     <Compile Include="Tools\CrashReport.cs" />
     <Compile Include="Models\CrashData.cs" />
     <Compile Include="Models\StackTraceData.cs" />
+    <Compile Include="Flow\FileFlow.cs" />
+    <Compile Include="Flow\MSDUFlow.cs" />
+    <Compile Include="OSPFlows\FlowMSDU.cs" />
+    <Compile Include="Flow\GlobalStatManager.cs" />
+    <Compile Include="FlowData\TransportFileData.cs" />
+    <Compile Include="OSPFlows\FlowMSDUState.cs" />
+    <Compile Include="Flow\TransportFlow.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -159,6 +166,9 @@
     <Folder Include="EventMaster\Events\" />
     <Folder Include="Console\" />
     <Folder Include="GOES\" />
+    <Folder Include="Flow\" />
+    <Folder Include="OSPFlows\" />
+    <Folder Include="FlowData\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -176,4 +186,13 @@
     <EmbeddedResource Include="ShapeFiles\ne_50m_admin_0_countries.dbf" />
     <EmbeddedResource Include="LUT\falsecolor.png" />
   </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <DotNetNamingPolicy DirectoryNamespaceAssociation="PrefixedFlat" ResourceNamePolicy="MSBuild" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>

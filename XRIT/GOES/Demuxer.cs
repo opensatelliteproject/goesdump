@@ -110,9 +110,9 @@ namespace OpenSatelliteProject {
                     }
                 }
 
-                if (manager != null) {
+                if (!msdu.Full) {
                     LengthFails++;
-                    if (!msdu.Full) {
+                    if (manager != null) {
                         manager.LengthFails++;
                     }
                 }
