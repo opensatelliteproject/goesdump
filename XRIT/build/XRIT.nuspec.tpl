@@ -28,7 +28,6 @@
       <dependency id="DotSpatial.Serialization" version="[1.9]"/>
       <dependency id="DotSpatial.Topology" version="[1.9]"/>
       <dependency id="SharpZipLib" version="[0.86.0]"/>
-      <dependency id="sqlite-net" version="[1.0.8]"/>
     </dependencies>
   </metadata>
   <files>
