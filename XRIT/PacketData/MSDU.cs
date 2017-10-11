@@ -28,6 +28,8 @@ namespace OpenSatelliteProject.PacketData {
 
         public bool FrameLost { get; set; }
 
+        public string TemporaryFilename { get; set; }
+
         public bool Full { 
             get {
                 return Data.Length == PacketLength + 2;
@@ -107,6 +109,7 @@ namespace OpenSatelliteProject.PacketData {
             msdu.SecondHeader = ((o & 0x800) >> 11) > 0;
             msdu.APID = o & 0x7FF;
 
+            msdu.TemporaryFilename = $"{msdu.APID}.lrittmp";
 
             ob = data.Skip(2).Take(2).ToArray();
             if (BitConverter.IsLittleEndian) {

@@ -6,16 +6,15 @@ using System.Runtime.InteropServices;
 using System.IO;
 using System.Drawing.Drawing2D;
 using OpenSatelliteProject.Geo;
-using OpenSatelliteProject.PacketData;
 using System.Globalization;
 
 namespace OpenSatelliteProject {
     public static class ImageTools {
 
-        private const int OVERLAY_THRESHOLD = 10;
-        private const float OVERLAY_ALPHA_HOLD = 100f;
-        private static readonly int[] FONT_SIZES = { 12, 24, 48, 96 };
-        private const int PADDING = 10; // px
+        const int OVERLAY_THRESHOLD = 10;
+        const float OVERLAY_ALPHA_HOLD = 100f;
+        static readonly int[] FONT_SIZES = { 12, 24, 48, 96 };
+        const int PADDING = 10; // px
         public static string OSPLABEL = $"OpenSatelliteProject {LibInfo.Version}";
 
         public static Bitmap ReprojectLinear(Bitmap bmp, GeoConverter gc, bool fixCrop = false) {

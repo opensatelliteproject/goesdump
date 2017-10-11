@@ -9,24 +9,19 @@ using OpenSatelliteProject.Tools;
 
 namespace OpenSatelliteProject {
     public class Demuxer {
-        private readonly int FRAMESIZE = 892;
+        readonly int FRAMESIZE = 892;
         /// <summary>
         /// More than that, we will not count as loss, but as a corrupted frame.
         /// </summary>
-        private readonly int MAX_ACCOUTABLE_LOSSES = 1000;
+        readonly int MAX_ACCOUTABLE_LOSSES = 1000;
+        readonly Dictionary<int, MSDU> temporaryStorage;
 
-        private Dictionary<int, MSDU> temporaryStorage;
-
-        private int lastAPID;
-        private int lastFrame;
-        private int startnum = -1;
-        private int endnum = -1;
-        private string filename;
-        private int channelId;
-        private XRITHeader fileHeader;
-        private byte[] buffer;
-        private DemuxManager manager;
-        private MSDU lastMSDU;
+        int lastAPID;
+        int lastFrame;
+        int channelId;
+        byte[] buffer;
+        readonly DemuxManager manager;
+        readonly Dictionary<int, MSDUInfo> msduCache = new Dictionary<int, MSDUInfo>();
 
 
         public int CRCFails { get; set; }
@@ -126,33 +121,32 @@ namespace OpenSatelliteProject {
                 }
 
                 if (msdu.Sequence == SequenceType.FIRST_SEGMENT || msdu.Sequence == SequenceType.SINGLE_DATA) {
-                    if (startnum != -1) {
-                        UIConsole.Warn("Received First Segment but last data wasn't finished! Forcing dump.");
-                        // This can only happen for multi-segment file.
-                        filename = Path.Combine(FileHandler.TemporaryFileFolder, channelId.ToString());
-                        filename = Path.Combine(filename, $"{lastMSDU.APID}_{lastMSDU.Version}.lrit");
-                        FileHandler.HandleFile(filename, fileHeader, manager);
-                        startnum = -1;
-                        endnum = -1;
+                    if (msduCache.ContainsKey(msdu.APID)) {
+                        var minfo = msduCache[msdu.APID];
+                        UIConsole.Warn($"Received First Segment for {msdu.APID:X3} but last data wasn't saved to disk yet! Forcing dump.");
+                        string ofilename = Path.Combine(FileHandler.TemporaryFileFolder, channelId.ToString());
+                        ofilename = Path.Combine(ofilename, minfo.FileName);
+                        FileHandler.HandleFile(ofilename, minfo.Header, manager);
+                        msduCache.Remove(msdu.APID);
                     }
 
-                    fileHeader = FileParser.GetHeader(msdu.Data.Skip(10).ToArray());
+                    var msInfo = new MSDUInfo() {
+                        APID = msdu.APID,
+                        FileName = msdu.TemporaryFilename,
+                        Header = FileParser.GetHeader(msdu.Data.Skip(10).ToArray()),
+                        LastPacketNumber = msdu.PacketNumber,
+                    };
 
-                    if (msdu.Sequence == SequenceType.FIRST_SEGMENT) {
-                        startnum = msdu.PacketNumber;
-                    }
-                } else if (msdu.Sequence == SequenceType.LAST_SEGMENT) {
-                    endnum = msdu.PacketNumber;
-
-                    if (startnum == -1) {
-                        // Orphan Packet
-                        endnum = -1;
+                    msduCache.Add(msdu.APID, msInfo);
+                } else if (msdu.Sequence == SequenceType.LAST_SEGMENT || msdu.Sequence == SequenceType.CONTINUED_SEGMENT) {
+                    if (!msduCache.ContainsKey(msdu.APID)) {
+                        UIConsole.Debug($"Orphan Packet for APID {msdu.APID}!");
                         return;
                     }
-                } else if (msdu.Sequence != SequenceType.SINGLE_DATA && startnum == -1) {
-                    // Orphan Packet
-                    return;
                 }
+
+                var msduInfo = msduCache[msdu.APID];
+                msduInfo.Refresh();
 
                 // LRIT EMWIN
                 /* Uncomment to enable EMWIN Ingestor 
@@ -170,20 +164,20 @@ namespace OpenSatelliteProject {
                     Directory.CreateDirectory(path);
                 }
 
-                filename = Path.Combine(path, $"{msdu.APID}_{msdu.Version}.lrit");
+                string filename = Path.Combine(path, msduInfo.FileName);
 
                 byte[] dataToSave = msdu.Data.Skip(firstOrSinglePacket ? 10 : 0).Take(firstOrSinglePacket ? msdu.PacketLength - 10 : msdu.PacketLength).ToArray(); 
 
-                if (fileHeader.Compression == CompressionType.LRIT_RICE && !firstOrSinglePacket) {
-                    int missedPackets = lastMSDU.PacketNumber - msdu.PacketNumber - 1;
+                if (msduInfo.Header.Compression == CompressionType.LRIT_RICE && !firstOrSinglePacket) {
+                    int missedPackets = msduInfo.LastPacketNumber - msdu.PacketNumber - 1;
 
-                    if (lastMSDU.PacketNumber == 16383 && msdu.PacketNumber == 0) {
+                    if (msduInfo.LastPacketNumber == 16383 && msdu.PacketNumber == 0) {
                         missedPackets = 0;
                     }
 
                     if (missedPackets > 0)  {
-                        UIConsole.Warn(String.Format("Missed {0} packets on image. Filling with null bytes. Last Packet Number: {1} Current: {2}", missedPackets, lastMSDU.PacketNumber, msdu.PacketNumber));
-                        byte[] fill = Decompress.GenerateFillData(fileHeader.ImageStructureHeader.Columns);
+                        UIConsole.Warn(String.Format("Missed {0} packets on image. Filling with null bytes. Last Packet Number: {1} Current: {2}", missedPackets, msduInfo.LastPacketNumber, msdu.PacketNumber));
+                        byte[] fill = Decompress.GenerateFillData(msduInfo.Header.ImageStructureHeader.Columns);
                         using (FileStream fs = new FileStream(filename, FileMode.Append, FileAccess.Write)) {
                             using (BinaryWriter sw = new BinaryWriter(fs)) {
                                 while (missedPackets > 0) {
@@ -194,10 +188,9 @@ namespace OpenSatelliteProject {
                             }
                         }
                     }
-                    dataToSave = Decompress.InMemoryDecompress(dataToSave, fileHeader.ImageStructureHeader.Columns, fileHeader.RiceCompressionHeader.Pixel, fileHeader.RiceCompressionHeader.Flags);
+                    dataToSave = Decompress.InMemoryDecompress(dataToSave, msduInfo.Header.ImageStructureHeader.Columns, msduInfo.Header.RiceCompressionHeader.Pixel, msduInfo.Header.RiceCompressionHeader.Flags);
                 }
-
-                lastMSDU = msdu;
+                msduInfo.LastPacketNumber = msdu.PacketNumber;
 
                 using (FileStream fs = new FileStream(filename, firstOrSinglePacket ? FileMode.Create : FileMode.Append, FileAccess.Write)) {
                     using (BinaryWriter sw = new BinaryWriter(fs)) {
@@ -207,9 +200,8 @@ namespace OpenSatelliteProject {
                 }
 
                 if (msdu.Sequence == SequenceType.LAST_SEGMENT || msdu.Sequence == SequenceType.SINGLE_DATA) {
-                    FileHandler.HandleFile(filename, fileHeader, manager);
-                    startnum = -1;
-                    endnum = -1;
+                    FileHandler.HandleFile(filename, msduInfo.Header, manager);
+                    msduCache.Remove(msdu.APID);
                 }
             } catch (Exception e) {
                 UIConsole.Error(String.Format("Exception on FinishMSDU: {0}", e));

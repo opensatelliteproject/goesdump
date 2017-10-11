@@ -1,16 +1,14 @@
-﻿<Properties StartupItem="LibraryTest/LibraryTest.csproj" RefactoringSettings.EnableRefactorings="True">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/Models/GroupData.cs">
+﻿<Properties RefactoringSettings.EnableRefactorings="True" StartupConfiguration="{7692605F-AC81-4688-A7D2-F8B5C4E0C397}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/PacketData/MSDUInfo.cs">
     <Files>
-      <File FileName="goesdump/HeadlessMain.cs" Line="189" Column="13" />
-      <File FileName="XRIT/GOES/FileHandler.cs" Line="38" Column="9" />
-      <File FileName="XRIT/GOES/ImageManager.cs" Line="158" Column="102" />
-      <File FileName="XRIT/Tools/Organizer.cs" Line="32" Column="18" />
-      <File FileName="LibraryTest/Program.cs" Line="230" Column="49" />
-      <File FileName="goesdump/Models/ProgConfig.cs" Line="405" Column="1" />
+      <File FileName="LibraryTest/Program.cs" Line="134" Column="33" />
       <File FileName="XRIT/Models/GroupData.cs" Line="20" Column="51" />
+      <File FileName="XRIT/Tools/AEC.cs" Line="19" Column="21" />
+      <File FileName="XRIT/GOES/Demuxer.cs" Line="170" Column="29" />
+      <File FileName="XRIT/PacketData/MSDUInfo.cs" Line="13" Column="14" />
     </Files>
   </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
       <Catchpoint enabled="false" exceptionName="System.ArgumentException" includeSubclasses="True" />
@@ -21,5 +19,7 @@
     <Watch file="XRIT/Tools/ImageTools.cs" line="56" offsetX="608" offsetY="880" expression="filename" liveUpdate="False" />
     <Watch file="goesdump/GoesDecoder/FileHandler.cs" line="81" offsetX="360" offsetY="1280" expression="e" liveUpdate="False" />
   </MonoDevelop.Ide.DebuggingService.PinnedWatches>
+  <MonoDevelop.Ide.ItemProperties.LibraryTest PreferredExecutionTarget="MonoDevelop.Default" />
   <AuthorInfo Name="Lucas Teske" Email="lucas@teske.com.br" Copyright="OpenSatelliteProject @ 2016" Company="OpenSatelliteProject" Trademark="" />
+  <MultiItemStartupConfigurations />
 </Properties>

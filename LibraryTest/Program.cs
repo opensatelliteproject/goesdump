@@ -128,7 +128,7 @@ namespace LibraryTest {
             // */
             #endregion
             #region Ingestor Test
-            /*
+            ///*
             EventMaster.On ("newFile", d => {
                 var ed = (NewFileReceivedEventData) d.Data;
                 //Console.WriteLine($"Received event for new file {ed.Name} at {ed.Path}");
@@ -142,8 +142,8 @@ namespace LibraryTest {
             //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1496790733.bin";
             //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1500179126.bin";
             //string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";
-            //string debugFrames = "/media/ELTN/tmp/debug16/demuxdump-1504736974.bin";
-            string debugFrames = "/media/ELTN/tmp/debug17/demuxdump-1505145094.bin";
+            string debugFrames = "/media/ELTN/tmp/debug16/demuxdump-1504736974.bin";
+            //string debugFrames = "/media/ELTN/tmp/debug17/demuxdump-1505145094.bin";
             //var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
 
             var im0 = new ImageManager ("output/Images/Full Disk/");
@@ -175,6 +175,7 @@ namespace LibraryTest {
             ImageManager.GenerateLabels = true;
             ImageManager.GenerateLatLonLabel = true;
             ImageManager.SaveNonOverlay = false;
+            // ImageManager.EnableReproject = true;
             im0.Start ();
             im1.Start ();
             im2.Start ();
@@ -185,7 +186,7 @@ namespace LibraryTest {
             // */
             //*/
             // /*
-            /*
+            ///*
             DemuxManager dm = new DemuxManager ();
             FileHandler.SkipDCS = true;
             FileHandler.SkipEMWIN = true;
