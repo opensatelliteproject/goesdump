@@ -1,11 +1,9 @@
 ﻿<Properties RefactoringSettings.EnableRefactorings="True" StartupConfiguration="{7692605F-AC81-4688-A7D2-F8B5C4E0C397}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/PacketData/MSDUInfo.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="LibraryTest/Program.cs">
     <Files>
-      <File FileName="LibraryTest/Program.cs" Line="134" Column="33" />
+      <File FileName="LibraryTest/Program.cs" Line="141" Column="15" />
       <File FileName="XRIT/Models/GroupData.cs" Line="20" Column="51" />
       <File FileName="XRIT/Tools/AEC.cs" Line="19" Column="21" />
-      <File FileName="XRIT/GOES/Demuxer.cs" Line="170" Column="29" />
-      <File FileName="XRIT/PacketData/MSDUInfo.cs" Line="13" Column="14" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
