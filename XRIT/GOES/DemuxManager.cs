@@ -129,8 +129,11 @@ namespace OpenSatelliteProject {
 
         public void parseBytes(byte[] data) {
             try {
+                int scid = ((data[0] & 0x3F) << 2) | ((data[1] & 0xC0) >> 6);
                 int vcid = (data[1] & 0x3F);
                 int vcnt = (data[2] << 16 | data[3] << 8 | data[4]);
+
+                // UIConsole.Log($"Satellite ID: {scid}");
 
                 EventMaster.Post(EventTypes.FrameEvent, new FrameEventData { ChannelID = vcid, PacketNumber = vcnt });
 

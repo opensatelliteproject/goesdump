@@ -128,7 +128,7 @@ namespace LibraryTest {
             // */
             #endregion
             #region Ingestor Test
-            /*
+            ///*
             EventMaster.On ("newFile", d => {
                 var ed = (NewFileReceivedEventData) d.Data;
                 //Console.WriteLine($"Received event for new file {ed.Name} at {ed.Path}");
@@ -144,6 +144,10 @@ namespace LibraryTest {
             //string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";
             //string debugFrames = "/media/ELTN/tmp/debug16/demuxdump-1504736974.bin";
             //string debugFrames = "/media/ELTN/tmp/debug17/demuxdump-1505145094.bin";
+            string debugFrames = "/media/ELTN/tmp/debug19/demuxdump-1514848855.bin";
+            //string debugFrames = "/media/ELTN/tmp/debug18/demuxdump-1508511311.bin";
+            //string debugFrames = "/media/ELTN/Satellite/GOES 13/Demux Records/demuxdump-1492970581.bin";
+            //string debugFrames = "/media/ELTN/tmp/msg3/demuxdump-1511384476.bin";
             //var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
 
             var im0 = new ImageManager ("output/Images/Full Disk/");
@@ -163,11 +167,15 @@ namespace LibraryTest {
             im6.InitMapDrawer ();
 
             UIConsole.GlobalEnableDebug = true;
+
+            FileHandler.SkipWeatherData = true;
+            FileHandler.SkipEMWIN = true;
+            FileHandler.SkipDCS = true;
             ImageManager.GenerateVisible = true;
             ImageManager.GenerateInfrared = true;
-            ImageManager.GenerateFalseColor = true;
+            ImageManager.GenerateFalseColor = false;
             ImageManager.GenerateWaterVapour = true;
-            ImageManager.GenerateOtherImages = false;
+            ImageManager.GenerateOtherImages = true;
             ImageManager.EraseFiles = true;
             ImageManager.UseNOAAFileFormat = true;
             ImageManager.GenerateLatLonOverlays = false;
@@ -186,7 +194,7 @@ namespace LibraryTest {
             // */
             //*/
             // /*
-            /*
+            ///*
             DemuxManager dm = new DemuxManager ();
             FileHandler.SkipDCS = true;
             FileHandler.SkipEMWIN = true;
@@ -199,6 +207,7 @@ namespace LibraryTest {
             long bytesToRead = file.Length;
             int frameN = startFrame;
             file.Position = bytesRead;
+
             while (bytesRead < bytesToRead) {
                 if (frameN % 1000 == 0) {
                     //Console.WriteLine("Injecting Frame {0}", frameN);
@@ -222,7 +231,7 @@ namespace LibraryTest {
             #endregion
             #region Archive Test
             /*
-            UIConsole.GlobalEnableDebug = true;
+
             FileHandler.ArchiveFolder = "/media/ELTN/tmp/archiveTest/archive";
             FileHandler.ArchieveHandler("/media/ELTN/tmp/archiveTest/output", "Images");
             */

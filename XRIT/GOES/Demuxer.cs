@@ -188,7 +188,11 @@ namespace OpenSatelliteProject {
                             }
                         }
                     }
-                    dataToSave = Decompress.InMemoryDecompress(dataToSave, msduInfo.Header.ImageStructureHeader.Columns, msduInfo.Header.RiceCompressionHeader.Pixel, msduInfo.Header.RiceCompressionHeader.Flags);
+                    if (msduInfo.Header.RiceCompressionHeader == null) { // Fix bug for GOES-15 TX after GOES-16 switch. Weird, but let's try defaults
+                        dataToSave = Decompress.InMemoryDecompress(dataToSave, msduInfo.Header.ImageStructureHeader.Columns, 16, AEC.ALLOW_K13_OPTION_MASK | AEC.MSB_OPTION_MASK | AEC.NN_OPTION_MASK); // 49
+                    } else {
+                        dataToSave = Decompress.InMemoryDecompress(dataToSave, msduInfo.Header.ImageStructureHeader.Columns, msduInfo.Header.RiceCompressionHeader.Pixel, msduInfo.Header.RiceCompressionHeader.Flags);
+                    }
                 }
                 msduInfo.LastPacketNumber = msdu.PacketNumber;
 

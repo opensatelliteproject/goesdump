@@ -146,6 +146,7 @@
     <Compile Include="Models\CrashData.cs" />
     <Compile Include="Models\StackTraceData.cs" />
     <Compile Include="PacketData\MSDUInfo.cs" />
+    <Compile Include="PacketData\Enums\SatelliteID.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
