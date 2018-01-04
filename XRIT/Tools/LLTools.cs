@@ -47,7 +47,7 @@ namespace OpenSatelliteProject.Tools {
                     ),
                     Encoding.UTF8.GetBytes(nonPrintable)
                 )
-            );
+            ).Replace("\x05", string.Empty);
         }
 
         public static String BytesToString(long byteCount) {
@@ -147,6 +147,32 @@ namespace OpenSatelliteProject.Tools {
             }
 
             return (T)d;
+        }
+
+        static bool Equals(byte[] source, byte[] separator, int index) {
+            for (int i = 0; i < separator.Length; ++i)
+                if (index + i >= source.Length || source[index + i] != separator[i])
+                    return false;
+            return true;
+        }
+
+        public static byte[][] Separate(this byte[] source, byte[] separator) {
+            var Parts = new List<byte[]>();
+            var Index = 0;
+            byte[] Part;
+            for (var i = 0; i < source.Length; ++i) {
+                if (Equals(source, separator, i)) {
+                    Part = new byte[i - Index];
+                    Array.Copy(source, Index, Part, 0, Part.Length);
+                    Parts.Add(Part);
+                    Index = i + separator.Length;
+                    i += separator.Length - 1;
+                }
+            }
+            Part = new byte[source.Length - Index];
+            Array.Copy(source, Index, Part, 0, Part.Length);
+            Parts.Add(Part);
+            return Parts.ToArray();
         }
     }
 }

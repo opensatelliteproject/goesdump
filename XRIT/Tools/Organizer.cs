@@ -41,7 +41,10 @@ namespace OpenSatelliteProject {
                         var satellite = "Unknown";
                         var region = "Unknown";
                         var satLon = 0f;
-                        var datetime = header.TimestampHeader.DateTime; // Defaults to capture time
+                        var datetime = header.TimestampHeader == null ? DateTime.Now : header.TimestampHeader.DateTime; // Defaults to capture time
+                        if (header.TimestampHeader == null) {
+                            UIConsole.Warn("Image didn't come with Capture Time. Using Local Time");
+                        }
                         var channel = 99;
                         var segmentId = header.SegmentIdentificationHeader != null ? header.SegmentIdentificationHeader.Sequence : 0;
                         var imageKey = header.SegmentIdentificationHeader != null ? header.SegmentIdentificationHeader.ImageID : -1;

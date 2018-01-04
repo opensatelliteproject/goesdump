@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using OpenSatelliteProject.PacketData.Enums;
 
 namespace OpenSatelliteProject.PacketData {
@@ -31,6 +32,8 @@ namespace OpenSatelliteProject.PacketData {
 
         public TimestampHeader TimestampHeader { get; set; }
 
+        public Head9Header Head9Header { get; set; }
+
         public List<XRITBaseHeader> UnknownHeaders { get; set; }
 
         /// <summary>
@@ -59,13 +62,20 @@ namespace OpenSatelliteProject.PacketData {
 
         public string Filename {
             get {
+                string fname = null;
                 if (DCSFilenameHeader != null) {
-                    return DCSFilenameHeader.Filename;
+                    fname = DCSFilenameHeader.Filename;
                 } else if (AnnotationHeader != null) {
-                    return AnnotationHeader.Filename;
-                } else {
-                    return null;
+                    fname = AnnotationHeader.Filename;
+                } else if (Head9Header != null) {
+                    fname = Head9Header.FileName;  
                 }
+
+                if (fname != null && fname.Split('.').ToList().Count() == 1) {
+                    fname = fname + ".lrit";
+                }
+
+                return fname;
             }
         }
 
@@ -164,6 +174,9 @@ namespace OpenSatelliteProject.PacketData {
                     break;
                 case HeaderType.TimestampRecord:
                     TimestampHeader = (TimestampHeader)header;
+                    break;
+                case HeaderType.Head9:
+                    Head9Header = (Head9Header)header;
                     break;
                 default:
                     UnknownHeaders.Add(header);

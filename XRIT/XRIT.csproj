@@ -147,6 +147,8 @@
     <Compile Include="Models\StackTraceData.cs" />
     <Compile Include="PacketData\MSDUInfo.cs" />
     <Compile Include="PacketData\Enums\SatelliteID.cs" />
+    <Compile Include="PacketData\Structs\UnknownHeaders.cs" />
+    <Compile Include="PacketData\Head9Header.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

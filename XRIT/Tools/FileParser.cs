@@ -5,6 +5,7 @@ using OpenSatelliteProject.PacketData;
 using OpenSatelliteProject.PacketData.Enums;
 using OpenSatelliteProject.PacketData.Structs;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace OpenSatelliteProject.Tools {
     public static class FileParser {
@@ -49,26 +50,59 @@ namespace OpenSatelliteProject.Tools {
             int maxLength = data.Length; // Initial Guess
             int c = 0;
 
+            // Parse Primary Header for size
+            int type = data[0];
+
+            if (type != (int)HeaderType.PrimaryHeader) {
+                UIConsole.Error($"Expected PrimaryHeader({(int)HeaderType.PrimaryHeader} got {type}. File is corrupt.");
+                return headers;
+            }
+
+            byte[] tmp = data.Skip(1).Take(2).ToArray();
+
+            if (BitConverter.IsLittleEndian) {
+                Array.Reverse(tmp);
+            }
+
+            int size = BitConverter.ToUInt16(tmp, 0);
+            tmp = data.Take(size).ToArray();
+
+            PrimaryRecord fh = LLTools.ByteArrayToStruct<PrimaryRecord>(tmp);
+            fh = LLTools.StructToSystemEndian(fh);
+            maxLength = (int)fh.HeaderLength; // Set the correct size
+
+            byte[] headerData = data.Take(maxLength).ToArray();
+            data = data.Skip(maxLength).ToArray();
+
+            // Parse Secondary Headers
             while (c < maxLength) {
-                int type = data[0];
-                byte[] tmp = data.Skip(1).Take(2).ToArray();
+                type = headerData[0];
+                tmp = headerData.Skip(1).Take(2).ToArray();
 
                 if (BitConverter.IsLittleEndian) {
                     Array.Reverse(tmp);
                 }
 
-                int size = BitConverter.ToUInt16(tmp, 0);
-                tmp = data.Take(size).ToArray();
+                size = BitConverter.ToUInt16(tmp, 0);
+                tmp = headerData.Take(size).ToArray();
 
                 if (tmp.Length < size) {
-                    Console.WriteLine("Not enough data for unpack header: Expected {0} got {1}", size, tmp.Length);
-                    break;
+                    UIConsole.Warn($"Not enough data for unpack header: Expected {size} got {tmp.Length} - Header Type: {type} - File might be corrupted.");
+                    if (c + size > maxLength) {
+                        UIConsole.Debug($"c + size > maxLength: {c} + {size} > {maxLength}");
+                        size = maxLength - c - 1;
+                        c = maxLength;
+                    }
+                } else {
+                    c += size;
                 }
+
+                headerData = headerData.Skip(size).ToArray();
 
                 XRITBaseHeader h;
                 switch (type) {
                     case (int)HeaderType.PrimaryHeader:
-                        PrimaryRecord fh = LLTools.ByteArrayToStruct<PrimaryRecord>(tmp);
+                        fh = LLTools.ByteArrayToStruct<PrimaryRecord>(tmp);
                         fh = LLTools.StructToSystemEndian(fh);
                         h = new PrimaryHeader(fh);
                         maxLength = (int)fh.HeaderLength; // Set the correct size
@@ -146,6 +180,19 @@ namespace OpenSatelliteProject.Tools {
                         dfr.Filename = System.Text.Encoding.UTF8.GetString(tmp.Skip(3).ToArray());
                         h = new DCSFilenameHeader(dfr);
                         break;
+                    case (int)HeaderType.Head9:
+                        Head9 h9 = new Head9();
+                        h9.Data = tmp.Skip(3).ToArray();
+                        h = new Head9Header(h9);
+                        ((Head9Header)h).FileName = $"buggy_file_{LLTools.TimestampMS()}.lrit";
+                        tmp.Skip(3).ToArray().Separate(new byte[] { 0x00 }).ToList().ForEach((barr) => {
+                            if (barr.Length > 0 && barr[0] == 0x1F) {
+                                ((Head9Header)h).FileName = System.Text.Encoding.UTF8.GetString(barr.Skip(1).ToArray());
+                                ((Head9Header)h).FileName = LLTools.StripNonPrintable(((Head9Header)h).FileName);
+                            }
+                        });
+                        UIConsole.Debug($"Got Head9 which may be a bug. Filename: {((Head9Header)h).FileName}");
+                        break;
                     default:
                         h = new XRITBaseHeader();
                         h.Type = HeaderType.Unknown;
@@ -154,8 +201,6 @@ namespace OpenSatelliteProject.Tools {
 
                 h.RawData = tmp;
                 headers.Add(h);
-                c += size;
-                data = data.Skip(size).ToArray();
             }
 
             return headers;
