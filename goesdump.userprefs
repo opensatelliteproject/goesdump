@@ -1,22 +1,8 @@
-﻿<Properties RefactoringSettings.EnableRefactorings="True" StartupConfiguration="{7692605F-AC81-4688-A7D2-F8B5C4E0C397}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/HeadlessMain.cs">
+﻿<Properties RefactoringSettings.EnableRefactorings="True" StartupConfiguration="{E1B44542-24FF-409C-A2A3-237A00A8520D}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/WebManager/WSHandler.cs">
     <Files>
-      <File FileName="LibraryTest/Program.cs" Line="138" Column="60" />
-      <File FileName="XRIT/Models/GroupData.cs" Line="1" Column="1" />
-      <File FileName="XRIT/PacketData/Head9Header.cs" Line="1" Column="1" />
-      <File FileName="XRIT/PacketData/Structs/UnknownHeaders.cs" Line="1" Column="1" />
-      <File FileName="XRIT/GOES/FileHandler.cs" Line="1" Column="1" />
-      <File FileName="XRIT/Tools/FileParser.cs" Line="191" Column="83" />
-      <File FileName="XRIT/GOES/Demuxer.cs" Line="1" Column="1" />
-      <File FileName="XRIT/Tools/ImageTools.cs" Line="1" Column="1" />
-      <File FileName="XRIT/Tools/Presets.cs" Line="78" Column="17" />
-      <File FileName="XRIT/Storage/ConfigurationManager.cs" Line="15" Column="9" />
-      <File FileName="XRIT/Storage/Database.cs" Line="1" Column="1" />
-      <File FileName="XRIT/Storage/DBConfig.cs" Line="1" Column="1" />
-      <File FileName="XRIT/Storage/StatisticsManager.cs" Line="1" Column="1" />
-      <File FileName="goesdump/Models/ConfigEntryModel.cs" Line="1" Column="1" />
-      <File FileName="goesdump/HeadlessMain.cs" Line="160" Column="51" />
-      <File FileName="goesdump/Models/ProgConfig.cs" Line="493" Column="18" />
+      <File FileName="goesdump/HeadlessMain.cs" Line="267" Column="24" />
+      <File FileName="goesdump/WebManager/WSHandler.cs" Line="37" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
@@ -25,6 +11,7 @@
       <Catchpoint enabled="false" exceptionName="System.ArgumentException" includeSubclasses="True" />
       <Catchpoint enabled="false" exceptionName="System.NullReferenceException" includeSubclasses="False" />
       <Catchpoint enabled="false" exceptionName="System.IndexOutOfRangeException" includeSubclasses="True" />
+      <Breakpoint file="/media/ELTN/Works/OpenSatelliteProject/split/goesdump/goesdump/WebManager/WSHandler.cs" relfile="goesdump/WebManager/WSHandler.cs" line="37" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches>

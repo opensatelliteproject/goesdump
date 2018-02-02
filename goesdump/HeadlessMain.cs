@@ -264,7 +264,7 @@ namespace OpenSatelliteProject {
             UIConsole.MessageAvailable += (data) => {
                 ConsoleModel cm = new ConsoleModel(data.Priority.ToString(), data.Message);
                 if (httpsv.IsListening) {
-                    httpsv.WebSocketServices["/mainws"].Sessions.Broadcast(cm.toJSON());
+                    // httpsv.WebSocketServices["/mainws"].Sessions.Broadcast(cm.toJSON());
                 }
 
                 messageListMutex.WaitOne();
