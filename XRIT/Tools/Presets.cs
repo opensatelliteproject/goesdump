@@ -153,6 +153,23 @@ namespace OpenSatelliteProject {
             ThermalOffset = 0;
         }
 
+        public static void LoadFalseColorLUT(string filename) {
+            UIConsole.Log($"Loading custom LUT from {filename}");
+            var bmp = (Bitmap)Image.FromFile(filename);
+            if (bmp.Width != 256 || bmp.Height != 256) {
+                throw new ArgumentException("The LUT image should be 256x256 px");
+            }
+
+            for (int y = 0; y < 256; y++) {
+                for (int x = 0; x < 256; x++) {
+                    FalseColorLUT[y * 256 + x] = bmp.GetPixel(x, y).ToArgb();
+                }
+            }
+
+            bmp.Dispose();
+            UIConsole.Log("Custom LUT loaded.");
+        }
+
         public static int FalseColorLUTVal(byte thermal, byte visible) {
             byte thermalFix = (byte) Math.Max(Math.Min (thermal + ThermalOffset, 255), 0);
             byte radianceFix = (byte)Math.Max (Math.Min (visible + RadianceOffset, 255), 0);

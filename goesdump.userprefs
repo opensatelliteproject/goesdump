@@ -1,13 +1,15 @@
-﻿<Properties RefactoringSettings.EnableRefactorings="True" StartupConfiguration="{7692605F-AC81-4688-A7D2-F8B5C4E0C397}|Default" StartupItem="LibraryTest/LibraryTest.csproj">
-  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/Tools/FileParser.cs">
+﻿<Properties RefactoringSettings.EnableRefactorings="True" StartupConfiguration="{7692605F-AC81-4688-A7D2-F8B5C4E0C397}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/Tools/Presets.cs">
     <Files>
       <File FileName="LibraryTest/Program.cs" Line="1" Column="1" />
       <File FileName="XRIT/Models/GroupData.cs" Line="1" Column="1" />
-      <File FileName="XRIT/PacketData/Head9Header.cs" Line="11" Column="23" />
-      <File FileName="XRIT/PacketData/Structs/UnknownHeaders.cs" Line="8" Column="26" />
-      <File FileName="XRIT/GOES/FileHandler.cs" Line="113" Column="46" />
-      <File FileName="XRIT/Tools/FileParser.cs" Line="58" Column="14" />
+      <File FileName="XRIT/PacketData/Head9Header.cs" Line="1" Column="1" />
+      <File FileName="XRIT/PacketData/Structs/UnknownHeaders.cs" Line="1" Column="1" />
+      <File FileName="XRIT/GOES/FileHandler.cs" Line="1" Column="1" />
+      <File FileName="XRIT/Tools/FileParser.cs" Line="191" Column="83" />
       <File FileName="XRIT/GOES/Demuxer.cs" Line="1" Column="1" />
+      <File FileName="XRIT/Tools/ImageTools.cs" Line="1" Column="1" />
+      <File FileName="XRIT/Tools/Presets.cs" Line="92" Column="31" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
@@ -15,6 +17,7 @@
     <BreakpointStore>
       <Catchpoint enabled="false" exceptionName="System.ArgumentException" includeSubclasses="True" />
       <Catchpoint exceptionName="System.NullReferenceException" includeSubclasses="False" />
+      <Catchpoint exceptionName="System.IndexOutOfRangeException" includeSubclasses="True" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches>
@@ -22,8 +25,8 @@
     <Watch file="XRIT/Tools/ImageTools.cs" line="56" offsetX="608" offsetY="880" expression="filename" liveUpdate="False" />
     <Watch file="goesdump/GoesDecoder/FileHandler.cs" line="81" offsetX="360" offsetY="1280" expression="e" liveUpdate="False" />
   </MonoDevelop.Ide.DebuggingService.PinnedWatches>
+  <MonoDevelop.Ide.ItemProperties.LibraryTest PreferredExecutionTarget="MonoDevelop.Default" />
   <AuthorInfo Name="Lucas Teske" Email="lucas@teske.com.br" Copyright="OpenSatelliteProject @ 2016" Company="OpenSatelliteProject" Trademark="" />
   <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.ItemProperties.GOES_220Dumper PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.ItemProperties.LibraryTest PreferredExecutionTarget="MonoDevelop.Default" />
 </Properties>

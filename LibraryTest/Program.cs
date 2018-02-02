@@ -138,6 +138,9 @@ namespace LibraryTest {
             Console.WriteLine ("Log: " + LibInfo.LogLines);
             Console.WriteLine ("Short Hash: " + LibInfo.ShortCommitID);
             Console.WriteLine ("Version: " + LibInfo.Version);
+
+            OpenSatelliteProject.Presets.LoadFalseColorLUT("falsecolor.png");
+
             //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
             //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1496790733.bin";
             //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1500179126.bin";
@@ -194,7 +197,7 @@ namespace LibraryTest {
             // */
             //*/
             // /*
-            ///*
+            /*
             DemuxManager dm = new DemuxManager ();
             FileHandler.SkipDCS = true;
             FileHandler.SkipEMWIN = true;
