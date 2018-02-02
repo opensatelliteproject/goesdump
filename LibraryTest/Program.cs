@@ -140,6 +140,7 @@ namespace LibraryTest {
             Console.WriteLine ("Version: " + LibInfo.Version);
 
             OpenSatelliteProject.Presets.LoadFalseColorLUT("falsecolor.png");
+            OpenSatelliteProject.Presets.LoadVisibleFalseColorCurve("curve.txt");
 
             //string debugFrames = "/media/ELTN/tmp/demuxdump-1490627438.bin";
             //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1496790733.bin";
