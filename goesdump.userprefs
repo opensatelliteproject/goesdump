@@ -1,8 +1,9 @@
 ﻿<Properties RefactoringSettings.EnableRefactorings="True" StartupConfiguration="{E1B44542-24FF-409C-A2A3-237A00A8520D}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="goesdump/WebManager/WSHandler.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/Tools/Presets.cs">
     <Files>
       <File FileName="goesdump/HeadlessMain.cs" Line="267" Column="24" />
       <File FileName="goesdump/WebManager/WSHandler.cs" Line="37" Column="1" />
+      <File FileName="XRIT/Tools/Presets.cs" Line="78" Column="58" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
@@ -11,7 +12,6 @@
       <Catchpoint enabled="false" exceptionName="System.ArgumentException" includeSubclasses="True" />
       <Catchpoint enabled="false" exceptionName="System.NullReferenceException" includeSubclasses="False" />
       <Catchpoint enabled="false" exceptionName="System.IndexOutOfRangeException" includeSubclasses="True" />
-      <Breakpoint file="/media/ELTN/Works/OpenSatelliteProject/split/goesdump/goesdump/WebManager/WSHandler.cs" relfile="goesdump/WebManager/WSHandler.cs" line="37" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches>

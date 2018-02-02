@@ -57,7 +57,7 @@ namespace OpenSatelliteProject {
         public static void LoadVisibleFalseColorCurve(string filename) {
             UIConsole.Log($"Loading false color visible curve from {filename}");
             var data = File.ReadAllText(filename);
-            var values = data.Replace("\r", "").Replace("\n", "").Trim().Split(',');
+            var values = data.Replace("f", "").Replace("F", "").Replace("\r", "").Replace("\n", "").Trim().Split(',');
             if (values.Length < 256) {
                 throw new ArgumentException("The curve should have 256 points.");
             }
