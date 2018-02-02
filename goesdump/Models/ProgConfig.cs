@@ -48,6 +48,8 @@ namespace OpenSatelliteProject {
         public const string KeyEraseFilesAfterGeneratingFalseColor = "EraseFilesAfterGeneratingFalseColor";
 
         public const string KeyUseNOAAFormat = "UseNOAAFormat";
+        public const string KeyLUTFilename = "LUTFilename";
+        public const string KeyCurveFilename = "CurveFilename";
         #endregion
         #region Packet Processing
         public const string KeyEnableDCS = "EnableDCS";
@@ -227,9 +229,23 @@ namespace OpenSatelliteProject {
         }
 
         [ConfigDescription("If NOAA Filename format should be used instead OSP format.", false)]
-        public static bool UseNOAAFormat {
+        public static bool UseNOAAFormat
+        {
             get { return ConfigurationManager.GetBool(KeyUseNOAAFormat); }
             set { ConfigurationManager.Set(KeyUseNOAAFormat, value); }
+        }
+
+        [ConfigDescription("File name for a custom LUT in False Color", null)]
+        public static string LUTFilename
+        {
+            get { return ConfigurationManager.Get(KeyLUTFilename); }
+            set { ConfigurationManager.Set(KeyLUTFilename, value); }
+        }
+
+        [ConfigDescription("File name for a custom Curve in False Color Visible Channel", null)]
+        public static string CurveFilename {
+            get { return ConfigurationManager.Get(KeyCurveFilename); }
+            set { ConfigurationManager.Set(KeyCurveFilename, value); }
         }
 
         #endregion
@@ -472,7 +488,7 @@ namespace OpenSatelliteProject {
                         Value = prop.GetValue (null),
                         Type = prop.PropertyType.Name,
                         Description = cd != null ? cd.Description : "",
-                        DefaultValue = cd != null ? cd.Default : null,
+                        DefaultValue = cd?.Default,
                     });
                 }
             }

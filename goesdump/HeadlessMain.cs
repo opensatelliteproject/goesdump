@@ -36,7 +36,7 @@ namespace OpenSatelliteProject {
         static List<ConsoleMessage> messageList = new List<ConsoleMessage>();
         static Mutex messageListMutex = new Mutex();
 
-        bool running = false;
+        bool running;
 
         public static List<ConsoleMessage> GetCachedMessages {
             get {
@@ -155,6 +155,14 @@ namespace OpenSatelliteProject {
                 } catch (SocketException) {
                     UIConsole.Warn("Your syslog is not enabled to receive UDP request. Please refer to https://opensatelliteproject.github.io/OpenSatelliteProject/");
                 }
+            }
+
+            if (ProgConfig.CurveFilename != null) {
+                Presets.LoadVisibleFalseColorCurve(ProgConfig.CurveFilename);
+            }
+
+            if (ProgConfig.LUTFilename != null) {
+                Presets.LoadFalseColorLUT(ProgConfig.LUTFilename);
             }
         }
 
