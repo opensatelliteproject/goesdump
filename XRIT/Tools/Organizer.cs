@@ -30,8 +30,8 @@ namespace OpenSatelliteProject {
 
         public void Update() {
             try {
-                List<string> files = Directory.GetFiles(folder).Where(f => f.EndsWith(".lrit")).ToList();
-                foreach (string file in files) {
+                var files = Directory.GetFiles(folder).Where(f => f.EndsWith(".lrit")).ToList();
+                foreach (var file in files) {
                     if (alreadyProcessed.Contains(file)) {
                         continue;
                     }
@@ -132,10 +132,6 @@ namespace OpenSatelliteProject {
                                 header.ImageNavigationHeader.LineScalingFactor != 0
                             ) {
                                 grp.HasNavigationData = true;
-                                grp.ColumnScalingFactor = header.ImageNavigationHeader.ColumnScalingFactor;
-                                grp.LineScalingFactor = header.ImageNavigationHeader.LineScalingFactor;
-                                grp.ColumnOffset = grp.ColumnOffset == -1 ? header.ImageNavigationHeader.ColumnOffset : grp.ColumnOffset;
-                                grp.LineOffset = grp.LineOffset == -1 ? header.ImageNavigationHeader.LineOffset : grp.LineOffset;
                             }
                         }
                         grp.Code = header.SegmentIdentificationHeader != null ? 
@@ -217,6 +213,10 @@ namespace OpenSatelliteProject {
                             od.PixelAspect = header.ImageNavigationHeader.ColumnScalingFactor / (float)header.ImageNavigationHeader.LineScalingFactor;
                             od.ColumnOffset = header.ImageNavigationHeader.ColumnOffset;
                             od.MaxSegments = header.SegmentIdentificationHeader != null ? header.SegmentIdentificationHeader.MaxSegments : 1;
+                            od.ColumnScalingFactor = header.ImageNavigationHeader.ColumnScalingFactor;
+                            od.LineScalingFactor = header.ImageNavigationHeader.LineScalingFactor;
+                            od.ColumnOffset = od.ColumnOffset == -1 ? header.ImageNavigationHeader.ColumnOffset : od.ColumnOffset;
+                            od.LineOffset = od.LineOffset == -1 ? header.ImageNavigationHeader.LineOffset : od.LineOffset;
                         } else {
                             od.Lines += header.ImageStructureHeader.Lines;
                         }
