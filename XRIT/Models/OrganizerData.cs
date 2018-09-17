@@ -13,6 +13,9 @@ namespace OpenSatelliteProject {
         public bool OK { get; set; }
         public int Timestamp { get; set; }
         public int FirstSegment { get; set; }
+        public int LineOffset { get; set; }
+        public float ColumnScalingFactor { get; set; }
+        public float LineScalingFactor { get; set; }
 
         /// <summary>
         /// Code used for desambiguation
@@ -34,6 +37,10 @@ namespace OpenSatelliteProject {
             FirstSegment = 999999;
             Code = DateTime.UtcNow.ToShortTimeString ();
             FileHeader = null;
+            ColumnOffset = -1;
+            LineOffset = -1;
+            ColumnScalingFactor = 0f;
+            LineScalingFactor = 0f;
         }
 
         public bool IsComplete { get { return Segments.Count == MaxSegments; }}

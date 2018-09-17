@@ -8,7 +8,11 @@ namespace OpenSatelliteProject {
             byte[] data = null;
             var assembly = Assembly.GetExecutingAssembly();
             try {
-                using (Stream stream = assembly.GetManifestResourceStream($"OpenSatelliteProject.ShapeFiles.{filename}")) {
+                Stream stream = assembly.GetManifestResourceStream($"OpenSatelliteProject.ShapeFiles.{filename}");
+                if (stream == null) {
+                    stream = assembly.GetManifestResourceStream($"OpenSatelliteProject.{filename}");
+                }
+                using (stream) {
                     data = new byte[stream.Length];
                     int position = 0;
                     while (position < stream.Length) {
@@ -17,8 +21,9 @@ namespace OpenSatelliteProject {
                         position += chunkSize;
                     }
                 }
-            } catch (Exception) {
+            } catch (Exception e) {
                 UIConsole.Warn ($"ShapeFiles -- Cannot load {filename} from library.");
+                UIConsole.Error($"ShapeFiles -- {e.Message}");
             }
 
             return data;

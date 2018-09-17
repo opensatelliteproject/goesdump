@@ -294,7 +294,7 @@ namespace OpenSatelliteProject {
         #region Image Functions and Tools
         private void GenerateImageOverlay(ref Bitmap bmp, GroupData gd, OrganizerData od) {
             if (gd.HasNavigationData) {
-                var gc = new GeoConverter (gd.SatelliteLongitude, gd.ColumnOffset, gd.LineOffset, gd.ColumnScalingFactor, gd.LineScalingFactor, true, od.Columns);
+                var gc = new GeoConverter (gd.SatelliteLongitude, od.ColumnOffset, od.LineOffset, od.ColumnScalingFactor, od.LineScalingFactor, true, od.Columns);
                 if (mapDrawer != null && GenerateMapOverlays) {
                     mapDrawer.DrawMap (ref bmp, gc, MapOverlayPenColor, MapOverlayPenThickness, gd.CropImage);
                 }

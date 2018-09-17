@@ -12,10 +12,6 @@ namespace OpenSatelliteProject {
         public string SatelliteName { get; set; }
         public string RegionName { get; set; }
         public float SatelliteLongitude { get; set; }
-        public int ColumnOffset { get; set; }
-        public int LineOffset { get; set; }
-        public float ColumnScalingFactor { get; set; }
-        public float LineScalingFactor { get; set; }
         public DateTime FrameTime { get; set; }
         public OrganizerData Visible { get; set; }
         public OrganizerData Infrared { get; set; }
@@ -103,10 +99,6 @@ namespace OpenSatelliteProject {
             RetryCount = 0;
             CropImage = false;
             Created = LLTools.Timestamp();
-            ColumnOffset = -1;
-            LineOffset = -1;
-            ColumnScalingFactor = 0f;
-            LineScalingFactor = 0f;
             Code = DateTime.UtcNow.ToString();
             HasNavigationData = false;
         }
