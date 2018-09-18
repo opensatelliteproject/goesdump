@@ -25,6 +25,11 @@ namespace OpenSatelliteProject {
         public bool IsWaterVapourProcessed { get; set; }
         public bool CropImage { get; set; }
         public bool HasNavigationData { get; set; }
+        
+        public int FallBackLineOffset { get; set; }
+        public int FallBackColumnOffset { get; set; }
+        public float FallBackColumnScalingFactor { get; set; }
+        public float FallBackLineScalingFactor { get; set; }
 
         public int RetryCount { get; set; }
         public bool Failed { get; set; }
@@ -101,6 +106,10 @@ namespace OpenSatelliteProject {
             Created = LLTools.Timestamp();
             Code = DateTime.UtcNow.ToString();
             HasNavigationData = false;
+            FallBackColumnOffset = -1;
+            FallBackLineOffset = -1;
+            FallBackColumnScalingFactor = 0f;
+            FallBackLineScalingFactor = 0f;
         }
 
         public override string ToString() {
