@@ -220,10 +220,21 @@ namespace OpenSatelliteProject {
                             od.PixelAspect = header.ImageNavigationHeader.ColumnScalingFactor / (float)header.ImageNavigationHeader.LineScalingFactor;
                             od.ColumnOffset = header.ImageNavigationHeader.ColumnOffset;
                             od.MaxSegments = header.SegmentIdentificationHeader != null ? header.SegmentIdentificationHeader.MaxSegments : 1;
-                            od.ColumnScalingFactor = header.ImageNavigationHeader.ColumnScalingFactor;
-                            od.LineScalingFactor = header.ImageNavigationHeader.LineScalingFactor;
-                            od.ColumnOffset = od.ColumnOffset == -1 ? header.ImageNavigationHeader.ColumnOffset : od.ColumnOffset;
-                            od.LineOffset = od.LineOffset == -1 ? header.ImageNavigationHeader.LineOffset : od.LineOffset;
+                            if (segmentId == 0) {
+                                od.ColumnScalingFactor = header.ImageNavigationHeader.ColumnScalingFactor;
+                                od.LineScalingFactor = header.ImageNavigationHeader.LineScalingFactor;
+                                od.ColumnOffset = od.ColumnOffset == -1
+                                    ? header.ImageNavigationHeader.ColumnOffset
+                                    : od.ColumnOffset;
+                                od.LineOffset = od.LineOffset == -1
+                                    ? header.ImageNavigationHeader.LineOffset
+                                    : od.LineOffset;
+                            } else {
+                                od.ColumnScalingFactor = grp.FallBackColumnScalingFactor;
+                                od.LineScalingFactor = grp.FallBackLineScalingFactor;
+                                od.ColumnOffset = grp.FallBackColumnOffset;
+                                od.LineOffset = grp.FallBackLineOffset;
+                            }
                         } else {
                             od.Lines += header.ImageStructureHeader.Lines;
                         }
