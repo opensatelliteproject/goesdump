@@ -27,7 +27,8 @@
       <dependency id="DotSpatial.Projections" version="[1.9]"/>
       <dependency id="DotSpatial.Serialization" version="[1.9]"/>
       <dependency id="DotSpatial.Topology" version="[1.9]"/>
-      <dependency id="SharpZipLib" version="[0.86.0]"/>
+      <dependency id="SharpZipLib" version="[1.0.0]"/>
+      <dependency id="Newtonsoft.Json" version="[11.0.2]"/>
     </dependencies>
   </metadata>
   <files>
