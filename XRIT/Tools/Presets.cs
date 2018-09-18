@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
 using System.Drawing;
+using System.Globalization;
 
 namespace OpenSatelliteProject {
     public static class Presets {
@@ -22,31 +23,8 @@ namespace OpenSatelliteProject {
         public static int RadianceOffset { get; set; }
 
         #region Intensity Curves
-        /// <summary>
-        /// Value Curve for False Color Visible
-        /// </summary>
-        public static readonly float[] VIS_FALSE_CURVE = {
-            0.000000f, 0.021753f, 0.043487f, 0.065183f, 0.086821f, 0.108383f, 0.129849f, 0.151200f, 0.172417f, 0.193480f, 0.214371f, 0.235070f, 0.255559f, 0.275817f, 0.295827f, 
-            0.315568f, 0.335022f, 0.354169f, 0.372990f, 0.391467f, 0.409579f, 0.427308f, 0.444635f, 0.461540f, 0.478004f, 0.494008f, 0.509534f, 0.524561f, 0.539071f, 0.553044f, 
-            0.566461f, 0.579304f, 0.591552f, 0.603187f, 0.614190f, 0.624542f, 0.634222f, 0.643213f, 0.651495f, 0.659048f, 0.665855f, 0.671894f, 0.677148f, 0.682171f, 0.686075f, 
-            0.689945f, 0.693782f, 0.697584f, 0.701353f, 0.705089f, 0.708791f, 0.712460f, 0.716096f, 0.719699f, 0.723269f, 0.726807f, 0.730313f, 0.733786f, 0.737228f, 0.740637f, 
-            0.744015f, 0.747361f, 0.750676f, 0.753960f, 0.757213f, 0.760435f, 0.763626f, 0.766786f, 0.769916f, 0.773016f, 0.776086f, 0.779126f, 0.782136f, 0.785116f, 0.788068f, 
-            0.790989f, 0.793882f, 0.796746f, 0.799581f, 0.802387f, 0.805165f, 0.807915f, 0.810636f, 0.813329f, 0.815995f, 0.818633f, 0.821244f, 0.823827f, 0.826383f, 0.828912f, 
-            0.831414f, 0.833889f, 0.836338f, 0.838761f, 0.841157f, 0.843528f, 0.845872f, 0.848191f, 0.850484f, 0.852752f, 0.854995f, 0.857213f, 0.859405f, 0.861573f, 0.863717f, 
-            0.865835f, 0.867930f, 0.870001f, 0.872047f, 0.874070f, 0.876070f, 0.878045f, 0.879998f, 0.881928f, 0.883834f, 0.885718f, 0.887579f, 0.889417f, 0.891234f, 0.893028f, 
-            0.894800f, 0.896550f, 0.898279f, 0.899986f, 0.901672f, 0.903336f, 0.904980f, 0.906603f, 0.908205f, 0.909786f, 0.911348f, 0.912889f, 0.914409f, 0.915911f, 0.917392f, 
-            0.918854f, 0.920296f, 0.921719f, 0.923123f, 0.924508f, 0.925875f, 0.927222f, 0.928552f, 0.929863f, 0.931156f, 0.932431f, 0.933688f, 0.934928f, 0.936150f, 0.937355f, 
-            0.938543f, 0.939713f, 0.940867f, 0.942005f, 0.943126f, 0.944230f, 0.945319f, 0.946391f, 0.947448f, 0.948488f, 0.949514f, 0.950524f, 0.951519f, 0.952498f, 0.953463f, 
-            0.954413f, 0.955349f, 0.956270f, 0.957177f, 0.958070f, 0.958950f, 0.959815f, 0.960667f, 0.961505f, 0.962330f, 0.963142f, 0.963942f, 0.964728f, 0.965502f, 0.966263f, 
-            0.967012f, 0.967749f, 0.968474f, 0.969187f, 0.969889f, 0.970579f, 0.971258f, 0.971925f, 0.972582f, 0.973228f, 0.973863f, 0.974488f, 0.975102f, 0.975706f, 0.976301f, 
-            0.976885f, 0.977460f, 0.978025f, 0.978580f, 0.979127f, 0.979664f, 0.980193f, 0.980713f, 0.981224f, 0.981727f, 0.982222f, 0.982709f, 0.983188f, 0.983659f, 0.984122f, 
-            0.984578f, 0.985027f, 0.985468f, 0.985903f, 0.986331f, 0.986752f, 0.987167f, 0.987576f, 0.987978f, 0.988375f, 0.988766f, 0.989151f, 0.989530f, 0.989904f, 0.990274f, 
-            0.990638f, 0.990997f, 0.991352f, 0.991702f, 0.992047f, 0.992389f, 0.992727f, 0.993060f, 0.993390f, 0.993717f, 0.994040f, 0.994360f, 0.994676f, 0.994990f, 0.995302f, 
-            0.995610f, 0.995916f, 0.996220f, 0.996522f, 0.996822f, 0.997120f, 0.997417f, 0.997712f, 0.998006f, 0.998299f, 0.998591f, 0.998882f, 0.999172f, 0.999462f, 0.999752f, 
-            1.000000f
-        };
 
-        public static readonly float[] NEW_VIS_FALSE_CURVE = {
+        public static float[] NEW_VIS_FALSE_CURVE = {
             0.000000f, 0.008996f, 0.017990f, 0.026980f, 0.035964f, 0.044941f, 0.053908f, 0.062864f, 0.071806f, 0.080733f, 0.089642f, 0.098533f, 0.107402f, 0.116248f, 0.125069f, 0.133864f,
             0.142629f, 0.151364f, 0.160067f, 0.168734f, 0.177366f, 0.185958f, 0.194511f, 0.203021f, 0.211488f, 0.219908f, 0.228280f, 0.236602f, 0.244873f, 0.253090f, 0.261251f, 0.269354f,
             0.277398f, 0.285381f, 0.293300f, 0.301154f, 0.308941f, 0.316659f, 0.324306f, 0.331880f, 0.339379f, 0.346801f, 0.354145f, 0.361408f, 0.368588f, 0.375684f, 0.382694f, 0.389615f,
@@ -64,53 +42,36 @@ namespace OpenSatelliteProject {
             0.969066f, 0.970152f, 0.971229f, 0.972300f, 0.973363f, 0.974419f, 0.975469f, 0.976512f, 0.977550f, 0.978581f, 0.979608f, 0.980628f, 0.981644f, 0.982655f, 0.983661f, 0.984664f,
             0.985662f, 0.986656f, 0.987647f, 0.988634f, 0.989619f, 0.990601f, 0.991580f, 0.992558f, 0.993533f, 0.994506f, 0.995478f, 0.996449f, 0.997419f, 0.998389f, 0.999357f, 1.000000f,
         };
-
-        public static readonly float[] IR_FALSE_CURVE = {
-            0.000000f, 0.000351f, 0.000705f, 0.001066f, 0.001437f, 0.001822f, 0.002223f, 0.002645f, 0.003091f, 0.003564f, 0.004067f, 0.004604f, 0.005178f, 0.005793f, 0.006452f, 0.007158f,
-            0.007915f, 0.008726f, 0.009595f, 0.010525f, 0.011519f, 0.012580f, 0.013713f, 0.014920f, 0.016206f, 0.017572f, 0.019023f, 0.020562f, 0.022192f, 0.023918f, 0.025741f, 0.027666f,
-            0.029696f, 0.031834f, 0.034084f, 0.036449f, 0.038933f, 0.041538f, 0.044269f, 0.047128f, 0.050119f, 0.053246f, 0.056511f, 0.059919f, 0.063472f, 0.067175f, 0.071029f, 0.075039f,
-            0.079209f, 0.083540f, 0.088038f, 0.092705f, 0.097545f, 0.102662f, 0.107822f, 0.113085f, 0.118448f, 0.123909f, 0.129467f, 0.135119f, 0.140862f, 0.146696f, 0.152617f, 0.158623f,
-            0.164713f, 0.170885f, 0.177135f, 0.183463f, 0.189866f, 0.196341f, 0.202887f, 0.209502f, 0.216183f, 0.222929f, 0.229737f, 0.236605f, 0.243531f, 0.250513f, 0.257549f, 0.264636f,
-            0.271773f, 0.278958f, 0.286188f, 0.293460f, 0.300774f, 0.308127f, 0.315517f, 0.322942f, 0.330399f, 0.337886f, 0.345402f, 0.352945f, 0.360511f, 0.368099f, 0.375707f, 0.383333f,
-            0.390975f, 0.398630f, 0.406297f, 0.413973f, 0.421656f, 0.429344f, 0.437035f, 0.444727f, 0.452418f, 0.460105f, 0.467786f, 0.475461f, 0.483125f, 0.490777f, 0.498416f, 0.506038f,
-            0.513642f, 0.521225f, 0.528787f, 0.536323f, 0.543833f, 0.551314f, 0.558764f, 0.566181f, 0.573563f, 0.580908f, 0.588213f, 0.595476f, 0.602696f, 0.609870f, 0.616997f, 0.624073f,
-            0.631097f, 0.638067f, 0.644980f, 0.651835f, 0.658629f, 0.665361f, 0.672028f, 0.678628f, 0.685158f, 0.691618f, 0.698004f, 0.704315f, 0.710548f, 0.716702f, 0.722774f, 0.728762f,
-            0.734663f, 0.740477f, 0.746201f, 0.751832f, 0.757368f, 0.762808f, 0.768149f, 0.773390f, 0.778527f, 0.783559f, 0.788485f, 0.793300f, 0.798005f, 0.802595f, 0.806084f, 0.810489f,
-            0.814819f, 0.819075f, 0.823258f, 0.827369f, 0.831408f, 0.835376f, 0.839274f, 0.843103f, 0.846863f, 0.850555f, 0.854181f, 0.857740f, 0.861234f, 0.864663f, 0.868028f, 0.871330f,
-            0.874569f, 0.877748f, 0.880865f, 0.883922f, 0.886920f, 0.889860f, 0.892742f, 0.895567f, 0.898336f, 0.901050f, 0.903709f, 0.906314f, 0.908867f, 0.911367f, 0.913816f, 0.916213f,
-            0.918562f, 0.920861f, 0.923111f, 0.925314f, 0.927470f, 0.929581f, 0.931646f, 0.933666f, 0.935643f, 0.937577f, 0.939469f, 0.941319f, 0.943129f, 0.944899f, 0.946631f, 0.948323f,
-            0.949979f, 0.951597f, 0.953180f, 0.954728f, 0.956241f, 0.957721f, 0.959168f, 0.960583f, 0.961967f, 0.963320f, 0.964643f, 0.965938f, 0.967204f, 0.968444f, 0.969656f, 0.970843f,
-            0.972004f, 0.973142f, 0.974256f, 0.975347f, 0.976416f, 0.977465f, 0.978493f, 0.979501f, 0.980490f, 0.981462f, 0.982416f, 0.983354f, 0.984275f, 0.985183f, 0.986075f, 0.986955f,
-            0.987822f, 0.988677f, 0.989521f, 0.990355f, 0.991179f, 0.991995f, 0.992803f, 0.993603f, 0.994397f, 0.995186f, 0.995970f, 0.996750f, 0.997526f, 0.998300f, 0.999072f, 1.000000f,
-        };
         #endregion
 
-        /// <summary>
-        /// Packed 24bpp RGB LUT for Thermal False Color
-        /// Based on GeoSatSignal LUT
-        /// </summary>
-        public static readonly byte[] THERMAL_FALSE_LUT = {
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x03, 0x02, 0x00, 0x04, 0x03, 0x01, 0x05, 0x04, 0x02, 0x06, 0x05, 0x03, 0x07, 0x06, 0x04, 0x08, 0x07, 0x05, 0x0B, 0x07, 0x04, 0x0C, 0x08, 0x05, 0x0D, 0x09, 0x06, 0x0E, 0x0A, 0x07, 0x0F, 0x0B, 0x08, 0x10, 0x0C, 0x09,
-            0x12, 0x0D, 0x0A, 0x13, 0x0E, 0x0B, 0x14, 0x0F, 0x0C, 0x15, 0x10, 0x0D, 0x16, 0x11, 0x0D, 0x17, 0x12, 0x0E, 0x1A, 0x12, 0x0F, 0x1B, 0x13, 0x10, 0x1C, 0x12, 0x10, 0x1D, 0x13, 0x11, 0x1E, 0x15, 0x10, 0x20, 0x17, 0x12, 0x22, 0x17, 0x13, 0x23, 0x18, 0x14, 0x24, 0x19, 0x15, 0x24, 0x19, 0x15,
-            0x27, 0x19, 0x16, 0x28, 0x1A, 0x17, 0x29, 0x1B, 0x18, 0x2A, 0x1C, 0x19, 0x2B, 0x1E, 0x18, 0x2C, 0x1F, 0x19, 0x2E, 0x21, 0x1B, 0x30, 0x23, 0x1D, 0x30, 0x23, 0x1D, 0x31, 0x24, 0x1E, 0x32, 0x25, 0x1F, 0x33, 0x26, 0x20, 0x35, 0x28, 0x20, 0x36, 0x29, 0x21, 0x37, 0x2A, 0x22, 0x38, 0x2B, 0x23,
-            0x37, 0x2D, 0x23, 0x38, 0x2E, 0x24, 0x3A, 0x30, 0x26, 0x3B, 0x31, 0x27, 0x3C, 0x32, 0x28, 0x3D, 0x33, 0x29, 0x3F, 0x35, 0x2B, 0x40, 0x36, 0x2C, 0x40, 0x38, 0x2B, 0x40, 0x38, 0x2B, 0x42, 0x3A, 0x2D, 0x43, 0x3B, 0x2E, 0x45, 0x3D, 0x30, 0x46, 0x3E, 0x31, 0x48, 0x40, 0x33, 0x48, 0x41, 0x31,
-            0x4A, 0x43, 0x33, 0x4B, 0x44, 0x32, 0x4B, 0x46, 0x33, 0x4C, 0x47, 0x34, 0x4E, 0x49, 0x36, 0x4F, 0x4A, 0x37, 0x50, 0x4B, 0x38, 0x51, 0x4C, 0x39, 0x53, 0x4E, 0x3A, 0x54, 0x4F, 0x3B, 0x54, 0x52, 0x3D, 0x56, 0x54, 0x3F, 0x56, 0x54, 0x3F, 0x57, 0x55, 0x40, 0x58, 0x56, 0x41, 0x59, 0x57, 0x42,
-            0x5B, 0x59, 0x42, 0x5C, 0x5A, 0x43, 0x5C, 0x5C, 0x44, 0x5D, 0x5D, 0x45, 0x5C, 0x5E, 0x46, 0x5C, 0x5E, 0x46, 0x5D, 0x5F, 0x49, 0x5C, 0x60, 0x49, 0x5D, 0x60, 0x4B, 0x5D, 0x62, 0x4C, 0x5E, 0x63, 0x4D, 0x5E, 0x63, 0x4D, 0x5D, 0x65, 0x50, 0x5D, 0x65, 0x50, 0x5D, 0x66, 0x51, 0x5E, 0x67, 0x52,
-            0x60, 0x67, 0x55, 0x61, 0x68, 0x56, 0x61, 0x6A, 0x57, 0x61, 0x6A, 0x57, 0x61, 0x6D, 0x59, 0x61, 0x6D, 0x59, 0x62, 0x6E, 0x5A, 0x63, 0x6F, 0x5B, 0x64, 0x6F, 0x5E, 0x64, 0x6F, 0x5E, 0x65, 0x70, 0x62, 0x66, 0x71, 0x63, 0x68, 0x70, 0x65, 0x69, 0x71, 0x66, 0x6B, 0x70, 0x69, 0x6B, 0x70, 0x6A,
-            0x6E, 0x70, 0x6D, 0x6F, 0x71, 0x70, 0x6F, 0x71, 0x70, 0x70, 0x72, 0x71, 0x6F, 0x73, 0x72, 0x71, 0x75, 0x74, 0x72, 0x76, 0x75, 0x73, 0x77, 0x76, 0x73, 0x79, 0x79, 0x74, 0x7A, 0x7A, 0x75, 0x7B, 0x7B, 0x76, 0x7C, 0x7C, 0x76, 0x7F, 0x7E, 0x77, 0x80, 0x7F, 0x78, 0x81, 0x80, 0x78, 0x82, 0x81,
-            0x79, 0x85, 0x85, 0x78, 0x86, 0x86, 0x79, 0x87, 0x87, 0x7B, 0x89, 0x89, 0x7C, 0x8A, 0x8B, 0x7D, 0x8B, 0x8C, 0x7E, 0x8C, 0x8D, 0x7E, 0x8C, 0x8D, 0x7E, 0x8D, 0x90, 0x7F, 0x8E, 0x91, 0x80, 0x8F, 0x94, 0x80, 0x8F, 0x94, 0x82, 0x91, 0x96, 0x82, 0x91, 0x96, 0x83, 0x92, 0x97, 0x84, 0x93, 0x98,
-            0x84, 0x92, 0x9B, 0x85, 0x93, 0x9C, 0x86, 0x94, 0x9D, 0x87, 0x95, 0x9E, 0x88, 0x96, 0x9F, 0x88, 0x96, 0x9F, 0x89, 0x97, 0xA0, 0x89, 0x97, 0xA0, 0x8B, 0x97, 0xA3, 0x8C, 0x98, 0xA4, 0x8D, 0x99, 0xA5, 0x8D, 0x99, 0xA5, 0x8F, 0x9B, 0xA7, 0x8F, 0x9B, 0xA7, 0x90, 0x9C, 0xA8, 0x91, 0x9D, 0xA9,
-            0x93, 0x9C, 0xAB, 0x94, 0x9D, 0xAC, 0x95, 0x9E, 0xAD, 0x95, 0x9E, 0xAD, 0x98, 0x9F, 0xB1, 0x98, 0x9F, 0xB1, 0x99, 0xA0, 0xB2, 0x9A, 0xA1, 0xB3, 0x9B, 0xA0, 0xB3, 0x9C, 0xA1, 0xB4, 0x9F, 0xA2, 0xB5, 0xA0, 0xA3, 0xB6, 0xA1, 0xA3, 0xB8, 0xA1, 0xA3, 0xB8, 0xA2, 0xA4, 0xB9, 0xA2, 0xA4, 0xB9,
-            0xA3, 0xA5, 0xBA, 0xA4, 0xA6, 0xBB, 0xA6, 0xA7, 0xBC, 0xA7, 0xA8, 0xBD, 0xAB, 0xA8, 0xBD, 0xAC, 0xA9, 0xBE, 0xB0, 0xAB, 0xC1, 0xB1, 0xAC, 0xC2, 0xB4, 0xAC, 0xC1, 0xB5, 0xAD, 0xC2, 0xB8, 0xAF, 0xC2, 0xB9, 0xB0, 0xC3, 0xB9, 0xB2, 0xC4, 0xBA, 0xB3, 0xC5, 0xBC, 0xB5, 0xC7, 0xBD, 0xB6, 0xC8,
-            0xBF, 0xB6, 0xC7, 0xC1, 0xB8, 0xC9, 0xC4, 0xB9, 0xC9, 0xC6, 0xBB, 0xCB, 0xC7, 0xBB, 0xC9, 0xC9, 0xBD, 0xCB, 0xCB, 0xBD, 0xCA, 0xCD, 0xC0, 0xCA, 0xCE, 0xC1, 0xCB, 0xCF, 0xC2, 0xCB, 0xCF, 0xC4, 0xCA, 0xD0, 0xC5, 0xCB, 0xD0, 0xC7, 0xCA, 0xD1, 0xC8, 0xCB, 0xD0, 0xCA, 0xCC, 0xD1, 0xCB, 0xCD,
-            0xD2, 0xCC, 0xCE, 0xD3, 0xCD, 0xCF, 0xD4, 0xCE, 0xD0, 0xD5, 0xCF, 0xD1, 0xD6, 0xD0, 0xD2, 0xD7, 0xD1, 0xD3, 0xD8, 0xD2, 0xD4, 0xD9, 0xD3, 0xD5, 0xDA, 0xD4, 0xD6, 0xDB, 0xD5, 0xD7, 0xDC, 0xD6, 0xD8, 0xDD, 0xD7, 0xD9, 0xDE, 0xD8, 0xDA, 0xDF, 0xD9, 0xDB, 0xE0, 0xDA, 0xDC, 0xE1, 0xDB, 0xDD,
-            0xE1, 0xDD, 0xDE, 0xE2, 0xDE, 0xDF, 0xE3, 0xDF, 0xE0, 0xE4, 0xE0, 0xE1, 0xE5, 0xE1, 0xE2, 0xE6, 0xE2, 0xE3, 0xE7, 0xE3, 0xE4, 0xE8, 0xE4, 0xE5, 0xE9, 0xE5, 0xE6, 0xEA, 0xE6, 0xE7, 0xEB, 0xE7, 0xE8, 0xEC, 0xE8, 0xE9, 0xED, 0xE9, 0xEA, 0xEE, 0xEA, 0xEB, 0xF0, 0xEC, 0xED, 0xF2, 0xEE, 0xEF,
-            0xF0, 0xEE, 0xEF, 0xF1, 0xEF, 0xF0, 0xF2, 0xF0, 0xF1, 0xF3, 0xF1, 0xF2, 0xF4, 0xF2, 0xF3, 0xF5, 0xF3, 0xF4, 0xF6, 0xF4, 0xF5, 0xF7, 0xF5, 0xF6, 0xF7, 0xF7, 0xF7, 0xF8, 0xF8, 0xF8, 0xF9, 0xF9, 0xF9, 0xFA, 0xFA, 0xFA, 0xFB, 0xFB, 0xFB, 0xFC, 0xFC, 0xFC, 0xFD, 0xFD, 0xFD, 0xFE, 0xFE, 0xFE,
-        };
+        static int[] FalseColorLUT = new int[256*256]; // 256x256 LUT
 
-        private static int[] FalseColorLUT = new int[256*256]; // 256x256 LUT
+        public static void SetVisibleFalseColorCurve(float[] visCurve) {
+            if (visCurve.Length != 256) {
+                throw new ArgumentException("The Curve should have 256 points.");
+            }
+            NEW_VIS_FALSE_CURVE = visCurve;
+            UIConsole.Log("New false color visible curve set.");
+        }
 
-        private static byte[] ReadFileFromAssembly(string filename) {
+        public static void LoadVisibleFalseColorCurve(string filename) {
+            UIConsole.Log($"Loading false color visible curve from {filename}");
+            var data = File.ReadAllText(filename);
+            var values = data.Replace("f", "").Replace("F", "").Replace("\r", "").Replace("\n", "").Trim().Split(',');
+            if (values.Length < 256) {
+                throw new ArgumentException("The curve should have 256 points.");
+            }
+            float[] newCurve = new float[256];
+            for (var i = 0; i < 256; i ++) {
+                newCurve[i] = 0;
+                if (!float.TryParse(values[i], NumberStyles.Any, CultureInfo.InvariantCulture, out newCurve[i])) {
+                    UIConsole.Error($"Invalid values {values[i]} at number position {i}. Defaulting to 0");
+                }
+            }
+            SetVisibleFalseColorCurve(newCurve);
+        }
+
+        static byte[] ReadFileFromAssembly(string filename) {
             byte[] data = null;
             var assembly = Assembly.GetExecutingAssembly();
             try {
@@ -151,6 +112,23 @@ namespace OpenSatelliteProject {
             }
             RadianceOffset = 0;
             ThermalOffset = 0;
+        }
+
+        public static void LoadFalseColorLUT(string filename) {
+            UIConsole.Log($"Loading custom LUT from {filename}");
+            var bmp = (Bitmap)Image.FromFile(filename);
+            if (bmp.Width != 256 || bmp.Height != 256) {
+                throw new ArgumentException("The LUT image should be 256x256 px");
+            }
+
+            for (int y = 0; y < 256; y++) {
+                for (int x = 0; x < 256; x++) {
+                    FalseColorLUT[y * 256 + x] = bmp.GetPixel(x, y).ToArgb();
+                }
+            }
+
+            bmp.Dispose();
+            UIConsole.Log("Custom LUT loaded.");
         }
 
         public static int FalseColorLUTVal(byte thermal, byte visible) {

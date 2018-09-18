@@ -78,7 +78,7 @@ namespace OpenSatelliteProject.Geo {
 
                             // Search if any of the points are inside the image
                             foreach (var p in points) {
-                                if (p.X > 0 && p.X < bmp.Width && p.Y > 0 && p.Y < bmp.Height) {
+                                if (p.X >= 0 && p.X < bmp.Width && p.Y >= 0 && p.Y < bmp.Height) {
                                     graphics.FillPolygon(polyBrush, points.ToArray());
                                     break;
                                 }

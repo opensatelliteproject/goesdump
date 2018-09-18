@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
+    <StartAction>Project</StartAction>
+    <ExternalConsole>false</ExternalConsole>
+    <ConsolePause>true</ConsolePause>
+    <TargetRuntimeId>Mono 5.2.0</TargetRuntimeId>
+  </PropertyGroup>
+</Project>

@@ -2,55 +2,55 @@
 
 namespace OpenSatelliteProject {
     public static class ConfigurationManager {
-        private const string ConfigFileName = "config.db";
-        private static Database db;
+        const string ConfigFileName = "config.db";
+        static readonly Database db;
 
         static ConfigurationManager() {
-            ConfigurationManager.db = new Database (ConfigFileName);
+            db = new Database (ConfigFileName);
         }
 
         public static void PutStatistics(DBStatistics statistics, bool autoTimestamp = true) {
-            ConfigurationManager.db.PutStatistic (statistics, autoTimestamp);
+            db.PutStatistic (statistics, autoTimestamp);
         }
 
         public static string Get(string key, string def = null) {
-            return ConfigurationManager.db [key] ?? def;
+            return db[key] ?? def;
         }
 
         public static void Set(string key, string value) {
-            ConfigurationManager.db [key] = value;
+            db[key] = value;
         }
 
         public static void Set(string key, bool value) {
-            ConfigurationManager.db.Set (key, value);
+            db.Set (key, value);
         }
 
         public static void Set(string key, int value) {
-            ConfigurationManager.db.Set (key, value);
+            db.Set (key, value);
         }
 
         public static void Set(string key, float value) {
-            ConfigurationManager.db.Set (key, value);
+            db.Set (key, value);
         }
 
         public static void Set(string key, double value) {
-            ConfigurationManager.db.Set (key, value);
+            db.Set (key, value);
         }
 
         public static int GetInt(string key) {
-            return  ConfigurationManager.db.GetInt (key);
+            return db.GetInt (key);
         }
 
         public static bool GetBool(string key) {
-            return  ConfigurationManager.db.GetBool (key);
+            return db.GetBool (key);
         }
 
         public static float GetFloat(string key) {
-            return  ConfigurationManager.db.GetFloat (key);
+            return db.GetFloat (key);
         }
 
         public static double GetDouble(string key) {
-            return  ConfigurationManager.db.GetDouble (key);
+            return db.GetDouble (key);
         }
     }
 }

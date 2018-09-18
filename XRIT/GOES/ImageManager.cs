@@ -116,6 +116,12 @@ namespace OpenSatelliteProject {
         /// <see cref="FileHandler.DaysToArchive"/>
         public static bool EnableArchive { get; set; }
 
+        /// <summary>
+        /// Enables Reprojection to Linear of the Images
+        /// </summary>
+        /// <value><c>true</c> if enable reproject; otherwise, <c>false</c>.</value>
+        public static bool EnableReproject { get; set; }
+
         Thread imageThread;
         bool running;
         readonly Organizer organizer;
@@ -144,6 +150,7 @@ namespace OpenSatelliteProject {
             SaveNonOverlay = false;
             defaultShapeFile = ShapeFiles.InitShapeFiles ();
             EnableArchive = true;
+            EnableReproject = false;
         }
         #region ImageManager Base Methods
         public ImageManager(string folder) {
@@ -201,9 +208,10 @@ namespace OpenSatelliteProject {
         public void Start() {
             if (!running) {
                 running = true;
-                imageThread = new Thread(new ThreadStart(ThreadLoop));
-                imageThread.IsBackground = true;
-                imageThread.Priority = ThreadPriority.BelowNormal;
+                imageThread = new Thread (new ThreadStart (ThreadLoop)) {
+                    IsBackground = true,
+                    Priority = ThreadPriority.BelowNormal
+                };
                 imageThread.Start();
             }
         }
@@ -306,6 +314,11 @@ namespace OpenSatelliteProject {
                 if (GenerateLatLonOverlays) {
                     ImageTools.DrawLatLonLines (ref bmp, gc, LatLonOverlayPenColor, LatLonOverlayPenThickness, gd.CropImage);
                 }
+                if (EnableReproject) {
+                    var reprojBmp = ImageTools.ReprojectLinear (bmp, gc, gd.CropImage);
+                    bmp.Dispose ();
+                    bmp = reprojBmp;
+                }
                 if (GenerateLabels) {
                     ImageTools.ImageLabel (ref bmp, gd, od, gc, GenerateLatLonLabel);
                 }
@@ -381,7 +394,7 @@ namespace OpenSatelliteProject {
                                     mData.OtherData.Select( x => x.Value ).ToList().ForEach(k => { k.OK = true; });
                                 }
 
-                                if (ImageManager.GenerateVisible && mData.Visible.IsComplete && mData.Visible.MaxSegments != 0 && !mData.IsVisibleProcessed) {
+                                if (GenerateVisible && mData.Visible.IsComplete && mData.Visible.MaxSegments != 0 && !mData.IsVisibleProcessed) {
                                     string ofilename = Path.Combine (folder, GenFilename (mData.SatelliteName, mData.RegionName, "VIS", z.Key, mData.Visible.Segments [mData.Visible.FirstSegment]));
                                     if (File.Exists (ofilename)) {
                                         UIConsole.Debug ($"Skipping generating Visible for {Path.GetFileName(ofilename)}. Image already exists.");
@@ -424,7 +437,7 @@ namespace OpenSatelliteProject {
                                     mData.Visible.OK = true;
                                 }
 
-                                if (ImageManager.GenerateInfrared && mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
+                                if (GenerateInfrared && mData.Infrared.IsComplete && mData.Infrared.MaxSegments != 0 && !mData.IsInfraredProcessed) {
                                     string ofilename = Path.Combine (folder, GenFilename (mData.SatelliteName, mData.RegionName, "IR", z.Key, mData.Infrared.Segments [mData.Infrared.FirstSegment]));
                                     if (File.Exists (ofilename)) {
                                         UIConsole.Debug ($"Skipping generating Infrared for {Path.GetFileName(ofilename)}. Image already exists.");

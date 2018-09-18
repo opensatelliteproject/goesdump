@@ -11,6 +11,7 @@ namespace OpenSatelliteProject.PacketData.Enums {
         TimestampRecord = 5,
         AncillaryTextRecord = 6,
         KeyRecord = 7,
+        Head9 = 9, // Weird
 
         SegmentIdentificationRecord = 128,
         NOAASpecificHeader = 129,

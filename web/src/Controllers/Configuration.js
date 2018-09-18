@@ -89,7 +89,7 @@ class Configuration extends Component {
 
   onSaveClick(field) {
     const val = this.cache[field];
-    if (val === undefined) {
+    if (val === undefined && val === null) {
       console.log(`Field ${field} not changed.`);
     } else {
       console.log(`Saving ${field}: ${val}`);
@@ -117,7 +117,7 @@ class Configuration extends Component {
               <Col xs={2} style={styles.valColStyle}>
                 <TextField
                   id={entry.Name}
-                  defaultValue={entry.Value}
+                  defaultValue={entry.Value !== null ? entry.Value : 'null'}
                   onChange={this.onChangeField}
                   type="number"
                 />
@@ -135,7 +135,7 @@ class Configuration extends Component {
                 {entry.Description}
               </Col>
               <Col xs={2} style={styles.colStyle}>
-                <i>{entry.DefaultValue.toString()}</i>
+                <i>{entry.DefaultValue !== null ? entry.DefaultValue.toString() : 'null'}</i>
               </Col>
             </Row>
           );
@@ -166,7 +166,7 @@ class Configuration extends Component {
                 {entry.Description}
               </Col>
               <Col xs={2} style={styles.colStyle}>
-                <i>{entry.DefaultValue.toString()}</i>
+                <i>{entry.DefaultValue !== null ? entry.DefaultValue.toString() : 'null'}</i>
               </Col>
             </Row>
           );
