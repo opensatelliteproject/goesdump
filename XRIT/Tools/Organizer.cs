@@ -131,7 +131,11 @@ namespace OpenSatelliteProject {
                                 header.ImageNavigationHeader.ColumnScalingFactor != 0 &&
                                 header.ImageNavigationHeader.LineScalingFactor != 0
                             ) {
-                                grp.HasNavigationData = true;
+                                grp.HasNavigationData = true;                            
+                                grp.FallBackColumnScalingFactor = header.ImageNavigationHeader.ColumnScalingFactor;
+                                grp.FallBackLineScalingFactor = header.ImageNavigationHeader.LineScalingFactor;
+                                grp.FallBackColumnOffset = grp.FallBackColumnOffset == -1 ? header.ImageNavigationHeader.ColumnOffset : grp.FallBackColumnOffset;
+                                grp.FallBackLineOffset = grp.FallBackLineOffset == -1 ? header.ImageNavigationHeader.LineOffset : grp.FallBackLineOffset;
                             }
                         }
                         grp.Code = header.SegmentIdentificationHeader != null ? 
