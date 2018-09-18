@@ -147,11 +147,8 @@ namespace LibraryTest {
             //string debugFrames = "/media/ELTN/tmp/G16JuneTest/demuxdump-1500179126.bin";
             //string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";
             //string debugFrames = "/media/ELTN/tmp/debug16/demuxdump-1504736974.bin";
-            //string debugFrames = "/media/ELTN/tmp/debug17/demuxdump-1505145094.bin";
-            string debugFrames = "/media/ELTN/tmp/debug20/demuxdump-1515034962.bin";
-            //string debugFrames = "/media/ELTN/tmp/debug18/demuxdump-1508511311.bin";
-            //string debugFrames = "/media/ELTN/Satellite/GOES 13/Demux Records/demuxdump-1492970581.bin";
-            //string debugFrames = "/media/ELTN/tmp/msg3/demuxdump-1511384476.bin";
+//	        string debugFrames = "/media/ELTN/tmp/debug17/demuxdump-1505145094.bin";
+	        string debugFrames = "/media/ELTN/tmp/G16Bug/demuxdump-1537119165.bin";
             //var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
 
             var im0 = new ImageManager ("output/Images/Full Disk/");
@@ -198,7 +195,7 @@ namespace LibraryTest {
             // */
             //*/
             // /*
-            /*
+            ///*
             DemuxManager dm = new DemuxManager ();
             FileHandler.SkipDCS = true;
             FileHandler.SkipEMWIN = true;
