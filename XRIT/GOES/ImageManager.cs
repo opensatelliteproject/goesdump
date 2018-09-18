@@ -301,8 +301,13 @@ namespace OpenSatelliteProject {
         #endregion
         #region Image Functions and Tools
         private void GenerateImageOverlay(ref Bitmap bmp, GroupData gd, OrganizerData od) {
+            var columnOffset = od.ColumnOffset != -1 ? od.ColumnOffset : gd.FallBackColumnOffset;
+            var lineOffset = od.LineOffset != -1 ? od.LineOffset : gd.FallBackLineOffset;
+            var columnScalingFactor = od.ColumnScalingFactor != 0 ? od.ColumnScalingFactor : gd.FallBackColumnScalingFactor;
+            var lineScalingFactor = od.LineScalingFactor != 0 ? od.LineScalingFactor : gd.FallBackLineScalingFactor;
+            
             if (gd.HasNavigationData) {
-                var gc = new GeoConverter (gd.SatelliteLongitude, gd.ColumnOffset, gd.LineOffset, gd.ColumnScalingFactor, gd.LineScalingFactor, true, od.Columns);
+                var gc = new GeoConverter (gd.SatelliteLongitude, columnOffset, lineOffset, columnScalingFactor, lineScalingFactor, true, od.Columns);
                 if (mapDrawer != null && GenerateMapOverlays) {
                     mapDrawer.DrawMap (ref bmp, gc, MapOverlayPenColor, MapOverlayPenThickness, gd.CropImage);
                 }

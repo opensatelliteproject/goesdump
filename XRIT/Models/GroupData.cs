@@ -12,10 +12,6 @@ namespace OpenSatelliteProject {
         public string SatelliteName { get; set; }
         public string RegionName { get; set; }
         public float SatelliteLongitude { get; set; }
-        public int ColumnOffset { get; set; }
-        public int LineOffset { get; set; }
-        public float ColumnScalingFactor { get; set; }
-        public float LineScalingFactor { get; set; }
         public DateTime FrameTime { get; set; }
         public OrganizerData Visible { get; set; }
         public OrganizerData Infrared { get; set; }
@@ -29,6 +25,11 @@ namespace OpenSatelliteProject {
         public bool IsWaterVapourProcessed { get; set; }
         public bool CropImage { get; set; }
         public bool HasNavigationData { get; set; }
+        
+        public int FallBackLineOffset { get; set; }
+        public int FallBackColumnOffset { get; set; }
+        public float FallBackColumnScalingFactor { get; set; }
+        public float FallBackLineScalingFactor { get; set; }
 
         public int RetryCount { get; set; }
         public bool Failed { get; set; }
@@ -103,12 +104,12 @@ namespace OpenSatelliteProject {
             RetryCount = 0;
             CropImage = false;
             Created = LLTools.Timestamp();
-            ColumnOffset = -1;
-            LineOffset = -1;
-            ColumnScalingFactor = 0f;
-            LineScalingFactor = 0f;
             Code = DateTime.UtcNow.ToString();
             HasNavigationData = false;
+            FallBackColumnOffset = -1;
+            FallBackLineOffset = -1;
+            FallBackColumnScalingFactor = 0f;
+            FallBackLineScalingFactor = 0f;
         }
 
         public override string ToString() {
