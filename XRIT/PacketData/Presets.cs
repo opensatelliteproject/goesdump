@@ -108,6 +108,26 @@ namespace OpenSatelliteProject.PacketData {
                 {                           16,                         new NOAASubproduct(                    16,                          "Channel 16") }
             }));
 
+            noaaProducts.Add((int)NOAAProductID.GOES17_ABI, new NOAAProduct(NOAAProductID.GOES17_ABI, "GOES 17 ABI", new Dictionary<int, NOAASubproduct>() {
+                { (int) ScannerSubProduct.NONE,                         new NOAASubproduct(ScannerSubProduct.NONE,                          "None") },
+                {                            1,                         new NOAASubproduct(                     1,                          "Channel 1") },
+                {                            2,                         new NOAASubproduct(                     2,                          "Channel 2") },
+                {                            3,                         new NOAASubproduct(                     3,                          "Channel 3") },
+                {                            4,                         new NOAASubproduct(                     4,                          "Channel 4") },
+                {                            5,                         new NOAASubproduct(                     5,                          "Channel 5") },
+                {                            6,                         new NOAASubproduct(                     6,                          "Channel 6") },
+                {                            7,                         new NOAASubproduct(                     7,                          "Channel 7") },
+                {                            8,                         new NOAASubproduct(                     8,                          "Channel 8") },
+                {                            9,                         new NOAASubproduct(                     9,                          "Channel 9") },
+                {                           10,                         new NOAASubproduct(                    10,                          "Channel 10") },
+                {                           11,                         new NOAASubproduct(                    11,                          "Channel 11") },
+                {                           12,                         new NOAASubproduct(                    12,                          "Channel 12") },
+                {                           13,                         new NOAASubproduct(                    13,                          "Channel 13") },
+                {                           14,                         new NOAASubproduct(                    14,                          "Channel 14") },
+                {                           15,                         new NOAASubproduct(                    15,                          "Channel 15") },
+                {                           16,                         new NOAASubproduct(                    16,                          "Channel 16") }
+            }));
+
             noaaProducts.Add((int)NOAAProductID.HIMAWARI8_ABI, new NOAAProduct(NOAAProductID.HIMAWARI8_ABI, "HIMAWARI8 ABI", new Dictionary<int, NOAASubproduct>() {
                 { (int) ScannerSubProduct.NONE,                         new NOAASubproduct(ScannerSubProduct.NONE,                          "None") },
                 {                            1,                         new NOAASubproduct(                     1,                          "Channel 1") },

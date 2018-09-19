@@ -33,7 +33,7 @@ namespace OpenSatelliteProject {
         public static string GetFolderByProduct(NOAAProductID product, int subProduct) {
             // TODO: Unify with other functions that use the same thing
             string folderName = UnknownDataFolder;
-            if (product == NOAAProductID.GOES16_ABI) {
+            if (product == NOAAProductID.GOES16_ABI || product == NOAAProductID.GOES17_ABI) {
                 folderName = Path.Combine(ImagesFolder, "FM1");
             } else  if (product == NOAAProductID.GOES13_ABI || product == NOAAProductID.GOES15_ABI || product == NOAAProductID.ABI_RELAY) {
                 switch (subProduct) {

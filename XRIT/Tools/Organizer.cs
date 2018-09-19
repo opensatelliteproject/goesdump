@@ -152,7 +152,7 @@ namespace OpenSatelliteProject {
                                 od = grp.Visible;
                                 break;
                             case 2: // Visible for G16
-                                if (satellite == "G16") {
+                                if (satellite == "G16" || satellite == "G17") {
                                     od = grp.Visible;
                                 } else {
                                     string p = $"{timestamp%1000}-{((NOAAProductID)header.Product.ID).ToString()}-{header.SubProduct.Name}";

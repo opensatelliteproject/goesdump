@@ -220,7 +220,7 @@ namespace OpenSatelliteProject {
             bmp.UnlockBits(pdata);
 
             // Crop
-            if (crop) {
+            if (crop && data.ColumnOffset > 0) {
                 int sc = (int)data.ColumnOffset;
                 int hw = (int)Math.Min(data.Columns - sc, sc);
                 int cl = (int)data.ColumnOffset - hw;
@@ -276,8 +276,10 @@ namespace OpenSatelliteProject {
         /// <param name="h">The height.</param>
         /// <param name="disposeOld">If set to <c>true</c> dispose old.</param>
         public static Bitmap Crop(this Bitmap bitmap, int x, int y, int w, int h, bool disposeOld) {
-            Bitmap cropped = bitmap.Clone(new Rectangle(x, y, w, h), bitmap.PixelFormat);
-
+//            Bitmap cropped = bitmap.Clone(new Rectangle(x, y, w, h), bitmap.PixelFormat);
+            Bitmap cropped = new Bitmap(w, h);
+            Graphics g = Graphics.FromImage(cropped);
+            g.DrawImage(bitmap, -x, -y);
             if (disposeOld) {
                 bitmap.Dispose();
             }

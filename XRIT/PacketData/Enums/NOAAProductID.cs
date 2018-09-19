@@ -12,6 +12,7 @@ namespace OpenSatelliteProject.PacketData.Enums {
         GOES13_ABI = 13,
         GOES15_ABI = 15,
         GOES16_ABI = 16,
+        GOES17_ABI = 17,
         EMWIN = 42,
         HIMAWARI8_ABI = 43
     }
