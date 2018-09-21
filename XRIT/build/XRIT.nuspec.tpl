@@ -12,14 +12,9 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>xRIT File / Packet Processing Library</description>
     <releaseNotes>
-	Added LogLevel Enable Control and reduced some log messages to contain only filename and not the full path
-	Added new False Color LUT system
-	Added better error handling when loading ShapeFiles / MapDrawer Verified
-	Added Debug Message Prefix and some more Debug Messages Regarding ShapeFiles
-	Added Revsion to LibInfo.Version
-	Changed False Color LUT to be less yellow-ish and added Thermal / Radiance Offset Tunning
+        |{|RELEASE|}|
     </releaseNotes>
-    <copyright>Copyright 2017</copyright>
+    <copyright>Copyright 2018</copyright>
     <tags>GOES XRIT NOAA Satellite OpenSatelliteProject OSP SDR Ingestor</tags>
     <dependencies>
       <dependency id="DotSpatial.Data" version="[1.9]"/>

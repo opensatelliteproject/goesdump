@@ -70,6 +70,7 @@ namespace OpenSatelliteProject.GOES {
             UIConsole.Log("MultiImage Thread running.");
             while (running) {
                 imageManagers.ForEach(ManageImageManager);
+                Thread.Sleep(2);
             }
             UIConsole.Log("MultiImage Thread stopped.");
         }
