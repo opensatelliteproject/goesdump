@@ -7,3 +7,4 @@ build/lib/*
 git-hash.txt
 git-log.txt
 build/XRIT-rc.nuspec
+build/XRIT.nuspec

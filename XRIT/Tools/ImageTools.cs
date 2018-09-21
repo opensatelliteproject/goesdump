@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using OpenSatelliteProject.Tools;
@@ -18,15 +19,15 @@ namespace OpenSatelliteProject {
         public static string OSPLABEL = $"OpenSatelliteProject {LibInfo.Version}";
 
         public static Bitmap ReprojectLinear(Bitmap bmp, GeoConverter gc, bool fixCrop = false) {
-            Bitmap output = new Bitmap (bmp.Width, bmp.Height, PixelFormat.Format32bppArgb);
+            var output = new Bitmap (bmp.Width, bmp.Height, PixelFormat.Format32bppArgb);
             var pdata = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             var odata = output.LockBits(new Rectangle(0, 0, output.Width, output.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
             unsafe {
-                byte* dPtr = (byte*)odata.Scan0.ToPointer();
-                byte* pPtr = (byte*)pdata.Scan0.ToPointer ();
-                int stride = odata.Stride;
-                for (int y = 0; y < output.Height; y++) {
-                    for (int x = 0; x < output.Width; x++) {
+                var dPtr = (byte*)odata.Scan0.ToPointer();
+                var pPtr = (byte*)pdata.Scan0.ToPointer ();
+                var stride = odata.Stride;
+                for (var y = 0; y < output.Height; y++) {
+                    for (var x = 0; x < output.Width; x++) {
                         var lat = (gc.MaxLatitude - gc.TrimLatitude) - ((y * (gc.LatitudeCoverage - gc.TrimLatitude * 2)) / output.Height);
                         var lon = ((x * (gc.LongitudeCoverage - gc.TrimLongitude * 2)) / output.Width) + (gc.MinLongitude + gc.TrimLongitude);
                         if (lat > gc.MaxLatitude || lat < gc.MinLatitude || lon > gc.MaxLongitude || lon < gc.MinLongitude) {
@@ -52,26 +53,26 @@ namespace OpenSatelliteProject {
             return output;
         }
 
-        private unsafe static byte val(byte *data, int x, int y, int mw)   {
+        private static unsafe byte val(byte *data, int x, int y, int mw)   {
             return data[y * mw + x * 4 + 1];
         }
 
-        private unsafe static byte ValueAtImage(byte *data, int x, int y, int mw, int colorChannel) {
+        private static unsafe byte ValueAtImage(byte *data, int x, int y, int mw, int colorChannel) {
             return data[y * mw + x * 4 + colorChannel];
         }
 
-        private unsafe static byte BilinearInterp(byte *data, double x, double y, int mw, int colorChannel)   {
-            int rx = (int)(x);
-            int ry = (int)(y);
-            float fracX = (float) (x - rx);
-            float fracY = (float) (y - ry);
-            float invfracX = 1f - fracX;
-            float invfracY = 1f - fracY;
+        private static unsafe byte BilinearInterp(byte *data, double x, double y, int mw, int colorChannel)   {
+            var rx = (int)(x);
+            var ry = (int)(y);
+            var fracX = (float) (x - rx);
+            var fracY = (float) (y - ry);
+            var invfracX = 1f - fracX;
+            var invfracY = 1f - fracY;
 
-            byte a = ValueAtImage(data, rx,     ry,     mw, colorChannel);
-            byte b = ValueAtImage(data, rx + 1, ry,     mw, colorChannel);
-            byte c = ValueAtImage(data, rx    , ry + 1, mw, colorChannel);
-            byte d = ValueAtImage(data, rx + 1, ry + 1, mw, colorChannel);
+            var a = ValueAtImage(data, rx,     ry,     mw, colorChannel);
+            var b = ValueAtImage(data, rx + 1, ry,     mw, colorChannel);
+            var c = ValueAtImage(data, rx    , ry + 1, mw, colorChannel);
+            var d = ValueAtImage(data, rx + 1, ry + 1, mw, colorChannel);
 
             return (byte) (( a * invfracX + b * fracX) * invfracY + ( c * invfracX + d * fracX) * fracY);
         }
@@ -88,33 +89,34 @@ namespace OpenSatelliteProject {
             var bgBrush = new SolidBrush (Color.Black);
             var font = new Font ("Arial", usedFontSize);
             var fontBrush = new SolidBrush (Color.White);
-            string upperText = $"{gd.SatelliteName} ({gd.SatelliteLongitude}) - {gd.RegionName}";
+            var upperText = $"{gd.SatelliteName} ({gd.SatelliteLongitude}) - {gd.RegionName}";
 
             var usedLabelSize = PADDING * 2;
 
-            using (Graphics g = Graphics.FromImage (inbmp)) {
+            using (var g = Graphics.FromImage (inbmp)) {
                 usedLabelSize += (int) Math.Round(g.MeasureString (upperText, font).Height);
             }
 
-            Bitmap bmp = new Bitmap(inbmp.Width, inbmp.Height + ((genLatLonLabel && gc != null) ? usedLabelSize * 3 : usedLabelSize * 2), inbmp.PixelFormat);
-            StringFormat sf = new StringFormat();
-            sf.LineAlignment = StringAlignment.Center;
-            sf.Alignment = StringAlignment.Center;
+            var bmp = new Bitmap(inbmp.Width, inbmp.Height + ((genLatLonLabel && gc != null) ? usedLabelSize * 3 : usedLabelSize * 2), inbmp.PixelFormat);
+            var sf = new StringFormat {
+                LineAlignment = StringAlignment.Center,
+                Alignment = StringAlignment.Center
+            };
 
             if (od.FileHeader != null && od.FileHeader.SubProduct.Name != "None") {
                 upperText = upperText + " - " + od.FileHeader.SubProduct.Name;
             }
 
             var dt = LLTools.UnixTimeStampToDateTime (od.Timestamp);
-            string lowerText = $"{dt.ToShortDateString ()} {dt.ToLongTimeString()} UTC - {OSPLABEL}";
+            var lowerText = $"{dt.ToShortDateString ()} {dt.ToLongTimeString()} UTC - {OSPLABEL}";
 
-            using(Graphics g = Graphics.FromImage(bmp)) {
+            using(var g = Graphics.FromImage(bmp)) {
                 g.CompositingQuality = CompositingQuality.HighQuality;
                 g.FillRectangle (bgBrush, 0, 0, bmp.Width, bmp.Height);
                 g.DrawImage(inbmp, 0, usedLabelSize, inbmp.Width, inbmp.Height);
 
                 // Upper Label
-                var textSize = g.MeasureString (upperText, font);
+//                var textSize = g.MeasureString (upperText, font);
                 var rect = new RectangleF (PADDING, 0, bmp.Width - PADDING * 2, usedLabelSize);
                 g.DrawString (upperText, font, fontBrush, rect, sf);
 
@@ -123,13 +125,13 @@ namespace OpenSatelliteProject {
                     var latlon = gc.xy2latlon (inbmp.Width / 2, inbmp.Height / 2);
                     var lat = latlon.Item1.ToString ("##.000000", CultureInfo.InvariantCulture);
                     var lon = latlon.Item2.ToString ("##.000000", CultureInfo.InvariantCulture);
-                    string latLonText = $"Center Coord: ({lat}; {lon})";
+                    var latLonText = $"Center Coord: ({lat}; {lon})";
                     lowerText += $"\r\n{latLonText}";
-                    textSize = g.MeasureString (lowerText, font);
+//                    textSize = g.MeasureString (lowerText, font);
                     rect = new RectangleF (PADDING, usedLabelSize + inbmp.Height, bmp.Width - PADDING * 2, usedLabelSize * 2);
                     g.DrawString (lowerText, font, fontBrush, rect, sf);
                 } else { // Lower Label without Lat/Lon
-                    textSize = g.MeasureString (lowerText, font);
+//                    textSize = g.MeasureString (lowerText, font);
                     rect = new RectangleF (PADDING, usedLabelSize + inbmp.Height, bmp.Width - PADDING * 2, usedLabelSize);
                     g.DrawString (lowerText, font, fontBrush, rect, sf);
                 }
@@ -157,14 +159,8 @@ namespace OpenSatelliteProject {
             if (data.Visible.IsComplete && data.Visible.MaxSegments != 0 && data.Infrared.IsComplete && data.Infrared.MaxSegments != 0) {
                 var visible = GenerateFullImage(data.Visible, data.CropImage);
                 var infrared = GenerateFullImage(data.Infrared, data.CropImage);
-                /*
-                // Old False Color System
-                ImageTools.ApplyCurve(Presets.VIS_FALSE_CURVE, ref visible);
-                ImageTools.ApplyLUT(Presets.THERMAL_FALSE_LUT, ref infrared, 3);
-                ImageTools.CombineHStoV(ref infrared, visible);
-                */
-                ImageTools.ApplyCurve (Presets.NEW_VIS_FALSE_CURVE, ref visible);
-                ImageTools.Apply2DLut (Presets.FalseColorLUTVal, ref visible, infrared);
+                ApplyCurve (Presets.NEW_VIS_FALSE_CURVE, ref visible);
+                Apply2DLut (Presets.FalseColorLUTVal, ref visible, infrared);
                 infrared.Dispose ();
                 return visible;
             } else {
@@ -178,20 +174,20 @@ namespace OpenSatelliteProject {
         /// <returns>The full image</returns>
         /// <param name="data">The Organizer Data</param>
         public static Bitmap GenerateFullImage(OrganizerData data, bool crop = false) {
-            Bitmap bmp = new Bitmap(data.Columns, data.Lines, PixelFormat.Format8bppIndexed);
+            var bmp = new Bitmap(data.Columns, data.Lines, PixelFormat.Format8bppIndexed);
 
-            ColorPalette pal = bmp.Palette;
+            var pal = bmp.Palette;
             // Standard grayscale palette
-            for(int i=0;i<=255;i++) {
+            for (var i=0;i<=255;i++) {
                 pal.Entries[i] = Color.FromArgb(i, i, i);
             }
             bmp.Palette = pal;
 
-            int lineOffset = 0;
+            var lineOffset = 0;
 
             var pdata = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, PixelFormat.Format8bppIndexed);
             // Dump files to bitmap
-            for (int i = 0; i < data.Segments.Count; i++) {
+            for (var i = 0; i < data.Segments.Count; i++) {
                 var filename = data.Segments[data.FirstSegment + i];
                 var header = FileParser.GetHeaderFromFile(filename);
                 var width = header.ImageStructureHeader.Columns;
@@ -211,7 +207,7 @@ namespace OpenSatelliteProject {
                     lineOffset += height;
                 } else {
                     // So our stride is bigger than our width (alignment issues). So let's copy line by line.
-                    for (int z = 0; z < height; z++) {
+                    for (var z = 0; z < height; z++) {
                         Marshal.Copy(buffer, width * z, IntPtr.Add(pdata.Scan0, lineOffset * pdata.Stride), width);
                         lineOffset += 1;
                     }
@@ -221,15 +217,15 @@ namespace OpenSatelliteProject {
 
             // Crop
             if (crop && data.ColumnOffset > 0) {
-                int sc = (int)data.ColumnOffset;
-                int hw = (int)Math.Min(data.Columns - sc, sc);
-                int cl = (int)data.ColumnOffset - hw;
-                int cf = cl + 2 * hw;
+                var sc = (int)data.ColumnOffset;
+                var hw = (int)Math.Min(data.Columns - sc, sc);
+                var cl = (int)data.ColumnOffset - hw;
+                var cf = cl + 2 * hw;
 
                 bmp = bmp.Crop(cl, 0, cf - cl, bmp.Height, true);
             }
             // Resize to match pixel aspect
-            int newHeight = (int) Math.Round(bmp.Height * data.PixelAspect);
+            var newHeight = (int) Math.Round(bmp.Height * data.PixelAspect);
             bmp = ResizeImage(bmp, bmp.Width, newHeight, true);
 
             return bmp;
@@ -277,8 +273,8 @@ namespace OpenSatelliteProject {
         /// <param name="disposeOld">If set to <c>true</c> dispose old.</param>
         public static Bitmap Crop(this Bitmap bitmap, int x, int y, int w, int h, bool disposeOld) {
 //            Bitmap cropped = bitmap.Clone(new Rectangle(x, y, w, h), bitmap.PixelFormat);
-            Bitmap cropped = new Bitmap(w, h);
-            Graphics g = Graphics.FromImage(cropped);
+            var cropped = new Bitmap(w, h);
+            var g = Graphics.FromImage(cropped);
             g.DrawImage(bitmap, -x, -y);
             if (disposeOld) {
                 bitmap.Dispose();
@@ -292,19 +288,9 @@ namespace OpenSatelliteProject {
         /// <returns>The converted bitmap</returns>
         /// <param name="orig">Original bitmap</param>
         /// <param name="newFormat">New format</param>
-        public static Bitmap ToFormat(this Bitmap orig, PixelFormat newFormat) {
-            return ToFormat(orig, newFormat, false);
-        }
-
-        /// <summary>
-        /// Converts the bitmap from one format to another.
-        /// </summary>
-        /// <returns>The converted bitmap</returns>
-        /// <param name="orig">Original bitmap</param>
-        /// <param name="newFormat">New format</param>
-        public static Bitmap ToFormat(this Bitmap orig, PixelFormat newFormat, bool disposeOld) {
-            Bitmap newBmp = new Bitmap(orig.Width, orig.Height, newFormat);
-            using (Graphics gr = Graphics.FromImage(newBmp)) {
+        public static Bitmap ToFormat(this Bitmap orig, PixelFormat newFormat, bool disposeOld = false) {
+            var newBmp = new Bitmap(orig.Width, orig.Height, newFormat);
+            using (var gr = Graphics.FromImage(newBmp)) {
                 gr.DrawImage(orig, new Rectangle(0, 0, newBmp.Width, newBmp.Height));
             }
 
@@ -319,37 +305,38 @@ namespace OpenSatelliteProject {
         /// </summary>
         /// <param name="lut">Raw Lookup Table</param>
         /// <param name="bitmap">Bitmap to be applied</param>
+        /// <param name="lutPointSize"></param>
         public static void ApplyLUT(byte[] lut, ref Bitmap bitmap, int lutPointSize) {
             if (bitmap.PixelFormat == PixelFormat.Format8bppIndexed) {
-                ColorPalette pal = bitmap.Palette;
-                for (int i = 0; i <= 255; i++) {
+                var pal = bitmap.Palette;
+                for (var i = 0; i <= 255; i++) {
                     pal.Entries[i] = Color.FromArgb(lut[i * lutPointSize], lut[i * lutPointSize + 1 % lutPointSize], lut[i * lutPointSize + 2 % lutPointSize]);
                 }
 
                 bitmap.Palette = pal;
             } else if (bitmap.PixelFormat == PixelFormat.Format24bppRgb) {
                 var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
-                int totalPoints = data.Stride * bitmap.Height;
+                var totalPoints = data.Stride * bitmap.Height;
                 unsafe {
-                    byte* dPtr = (byte*)data.Scan0.ToPointer();
-                    for (int c = 0; c < totalPoints; c++) {
-                        int subPixel = c % 3;
-                        int lutPoint = (lutPointSize - subPixel - 1) % lutPointSize;
-                        byte d = dPtr[c];
+                    var dPtr = (byte*)data.Scan0.ToPointer();
+                    for (var c = 0; c < totalPoints; c++) {
+                        var subPixel = c % 3;
+                        var lutPoint = (lutPointSize - subPixel - 1) % lutPointSize;
+                        var d = dPtr[c];
                         dPtr[c] = lut[d*lutPointSize + lutPoint];
                     }
                 }
                 bitmap.UnlockBits(data);
             } else if (bitmap.PixelFormat == PixelFormat.Format32bppArgb) {
                 var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
-                int totalPoints = data.Stride * bitmap.Height;
+                var totalPoints = data.Stride * bitmap.Height;
                 unsafe {
-                    byte* dPtr = (byte*)data.Scan0.ToPointer();
-                    for (int c = 0; c < totalPoints; c++) {
-                        int subPixel = c % 4;
-                        int lutPoint = (lutPointSize - subPixel - 1) % lutPointSize;
+                    var dPtr = (byte*)data.Scan0.ToPointer();
+                    for (var c = 0; c < totalPoints; c++) {
+                        var subPixel = c % 4;
+                        var lutPoint = (lutPointSize - subPixel - 1) % lutPointSize;
                         if (subPixel != 3) { // Ignore Alpha
-                            byte d = dPtr[c];
+                            var d = dPtr[c];
                             dPtr[c] = lut[d * lutPointSize + lutPoint];
                         } else {
                             dPtr[c] = 0xFF;
@@ -372,10 +359,10 @@ namespace OpenSatelliteProject {
                 throw new Exception("Curve should contain exactly 256 floats.");
             }
 
-            byte[] cLut = new byte[256];
+            var cLut = new byte[256];
 
-            for (int i = 0; i < 256; i++) {
-                float v = 255 * curve[i];
+            for (var i = 0; i < 256; i++) {
+                var v = 255 * curve[i];
                 cLut[i] = (byte) (((int)Math.Floor(v)) & 0xFF);
             }
 
@@ -407,37 +394,45 @@ namespace OpenSatelliteProject {
 
             var vdata = visible.LockBits(new Rectangle(0, 0, visible.Width, visible.Height), ImageLockMode.ReadWrite, visible.PixelFormat);
             var idata = infrared.LockBits(new Rectangle(0, 0, infrared.Width, infrared.Height), ImageLockMode.ReadOnly, visible.PixelFormat);
-            int totalPoints = Math.Min(vdata.Stride * visible.Height, idata.Stride * infrared.Height); // Avoids crash on corrupted images
+            var totalPoints = Math.Min(vdata.Stride * visible.Height, idata.Stride * infrared.Height); // Avoids crash on corrupted images
 
-            if (visible.PixelFormat == PixelFormat.Format24bppRgb) {
-                unsafe {
-                    byte* vPtr = (byte*)vdata.Scan0.ToPointer();
-                    byte* iPtr = (byte*)idata.Scan0.ToPointer();
-                    for (int stridePos = 0; stridePos < totalPoints; stridePos+=3) {
-                        // Assume Grayscale in RGB
-                        byte visVal = vPtr[stridePos];
-                        byte irVal = iPtr[stridePos];
-                        int color = lookup (irVal, visVal);
-                        vPtr [stridePos + 0] = (byte) ((color >> 0) & 0xFF);
-                        vPtr [stridePos + 1] = (byte) ((color >> 8) & 0xFF);
-                        vPtr [stridePos + 2] = (byte) ((color >> 16) & 0xFF);
+            switch (visible.PixelFormat) {
+                case PixelFormat.Format24bppRgb:
+                    unsafe {
+                        var vPtr = (byte*)vdata.Scan0.ToPointer();
+                        var iPtr = (byte*)idata.Scan0.ToPointer();
+                        for (var stridePos = 0; stridePos < totalPoints; stridePos+=3) {
+                            // Assume Grayscale in RGB
+                            var visVal = vPtr[stridePos];
+                            var irVal = iPtr[stridePos];
+                            var color = lookup (irVal, visVal);
+                            vPtr [stridePos + 0] = (byte) ((color >> 0) & 0xFF);
+                            vPtr [stridePos + 1] = (byte) ((color >> 8) & 0xFF);
+                            vPtr [stridePos + 2] = (byte) ((color >> 16) & 0xFF);
+                        }
                     }
-                }
-            } else if (visible.PixelFormat == PixelFormat.Format32bppArgb) {
-                unsafe {
-                    byte* vPtr = (byte*)vdata.Scan0.ToPointer();
-                    byte* iPtr = (byte*)idata.Scan0.ToPointer();
-                    for (int stridePos = 0; stridePos < totalPoints; stridePos+=4) {
-                        // Assume Grayscale in ARGB
-                        byte visVal = vPtr[stridePos];
-                        byte irVal = iPtr [stridePos];
-                        int color = lookup (irVal, visVal);
-                        vPtr [stridePos + 0] = (byte) ((color >> 0) & 0xFF);
-                        vPtr [stridePos + 1] = (byte) ((color >> 8) & 0xFF);
-                        vPtr [stridePos + 2] = (byte) ((color >> 16) & 0xFF);
-                        vPtr [stridePos + 3] = (byte) ((color >> 24) & 0xFF);
+
+                    break;
+                case PixelFormat.Format32bppArgb:
+                    unsafe {
+                        var vPtr = (byte*)vdata.Scan0.ToPointer();
+                        var iPtr = (byte*)idata.Scan0.ToPointer();
+                        for (var stridePos = 0; stridePos < totalPoints; stridePos+=4) {
+                            // Assume Grayscale in ARGB
+                            var visVal = vPtr[stridePos];
+                            var irVal = iPtr [stridePos];
+                            var color = lookup (irVal, visVal);
+                            vPtr [stridePos + 0] = (byte) ((color >> 0) & 0xFF);
+                            vPtr [stridePos + 1] = (byte) ((color >> 8) & 0xFF);
+                            vPtr [stridePos + 2] = (byte) ((color >> 16) & 0xFF);
+                            vPtr [stridePos + 3] = (byte) ((color >> 24) & 0xFF);
+                        }
                     }
-                }
+
+                    break;
+                default:
+                    UIConsole.Error ($"ImageTools received an unsuported image type: {visible.PixelFormat}");
+                    break;
             }
             visible.UnlockBits(vdata);
             infrared.UnlockBits(idata);
@@ -447,17 +442,16 @@ namespace OpenSatelliteProject {
         /// Converts RGB to HSV
         /// </summary>
         /// <param name="rgb">Rgb.</param>
-        public static float[] rgb2hsv(byte[] rgb) {
+        private static float[] rgb2hsv(IReadOnlyList<byte> rgb) {
             float h = 0, s = 0, v = 0;
-            float r, g, b;
 
-            r = rgb[0] / 255f;
-            g = rgb[1] / 255f;
-            b = rgb[2] / 255f;
+            var r = rgb[0] / 255f;
+            var g = rgb[1] / 255f;
+            var b = rgb[2] / 255f;
 
-            float mx = Math.Max(Math.Max(r, g), b);
-            float mn = Math.Min(Math.Min(r, g), b);
-            float df = mx - mn;
+            var mx = Math.Max(Math.Max(r, g), b);
+            var mn = Math.Min(Math.Min(r, g), b);
+            var df = mx - mn;
             if (mx == mn) {
                 h = 0;
             } else if (mx == r) {
@@ -483,15 +477,15 @@ namespace OpenSatelliteProject {
         /// Converts HSV to RGB
         /// </summary>
         /// <param name="hsv">Hsv.</param>
-        public static byte[] hsv2rgb (float[] hsv) {
+        private static byte[] hsv2rgb (IReadOnlyList<float> hsv) {
             float h = hsv[0], s = hsv[1], v = hsv[2];
-            float h60 = h / 60f;
-            float h60f = (float) Math.Floor(h60);
-            int hi = ((int)h60f) % 6;
-            float f = h60 - h60f;
-            float p = v * (1 - s);
-            float q = v * (1 - f * s);
-            float t = v * (1 - (1 - f) * s);
+            var h60 = h / 60f;
+            var h60f = (float) Math.Floor(h60);
+            var hi = ((int)h60f) % 6;
+            var f = h60 - h60f;
+            var p = v * (1 - s);
+            var q = v * (1 - f * s);
+            var t = v * (1 - (1 - f) * s);
             float r = 0, g = 0, b = 0;
 
             switch (hi) {
@@ -525,9 +519,9 @@ namespace OpenSatelliteProject {
                     g = p;
                     b = q;
                     break;
-            } 
-                    
-            return new byte[] {
+            }
+
+            return new [] {
                 (byte) (r * 255),
                 (byte) (g * 255),
                 (byte) (b * 255)
@@ -551,45 +545,45 @@ namespace OpenSatelliteProject {
 
             var overlaydata = overlay.LockBits(new Rectangle(0, 0, overlay.Width, overlay.Height), ImageLockMode.ReadOnly, overlay.PixelFormat);
             var bmpdata = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
-            int readWidth = Math.Min(overlay.Width, bmp.Width);
-            int readHeight = Math.Min(overlay.Height, bmp.Height);
+            var readWidth = Math.Min(overlay.Width, bmp.Width);
+            var readHeight = Math.Min(overlay.Height, bmp.Height);
 
             if (bmp.PixelFormat == PixelFormat.Format24bppRgb) {
                 unsafe {
-                    byte* ovPtr = (byte*)overlaydata.Scan0.ToPointer();
-                    byte* bPtr = (byte*)bmpdata.Scan0.ToPointer();
+                    var ovPtr = (byte*)overlaydata.Scan0.ToPointer();
+                    var bPtr = (byte*)bmpdata.Scan0.ToPointer();
 
-                    for (int y = 0; y < readHeight; y++) {
-                        for (int x = 0; x < readWidth; x++) {
-                            int c = ((bmpdata.Stride / 3) * y + x) * 3;
-                            if (ovPtr[c] > OVERLAY_THRESHOLD || ovPtr[c + 1] > OVERLAY_THRESHOLD || ovPtr[c + 2] > OVERLAY_THRESHOLD) {
-                                float alpha = ovPtr[c] / OVERLAY_ALPHA_HOLD; 
-                                alpha = alpha > 1 ? 1 : alpha < 0 ? 0 : alpha;
-                                byte v = (byte) ((ovPtr[c] * 2 > 255) ? 255 : ovPtr[c] * 2);
-                                bPtr[c] =  (byte) ((int)(v * alpha + bPtr[c+0] * (1-alpha)));
-                                bPtr[c+1] =(byte) ((int)(v * alpha + bPtr[c+1] * (1-alpha)));
-                                bPtr[c+2] =(byte) ((int)(v * alpha + bPtr[c+2] * (1-alpha)));
-                            }
+                    for (var y = 0; y < readHeight; y++) {
+                        for (var x = 0; x < readWidth; x++) {
+                            var c = ((bmpdata.Stride / 3) * y + x) * 3;
+                            if (ovPtr[c] <= OVERLAY_THRESHOLD && ovPtr[c + 1] <= OVERLAY_THRESHOLD &&
+                                ovPtr[c + 2] <= OVERLAY_THRESHOLD) continue;
+                            var alpha = ovPtr[c] / OVERLAY_ALPHA_HOLD; 
+                            alpha = alpha > 1 ? 1 : alpha < 0 ? 0 : alpha;
+                            var v = (byte) ((ovPtr[c] * 2 > 255) ? 255 : ovPtr[c] * 2);
+                            bPtr[c] =  (byte) ((int)(v * alpha + bPtr[c+0] * (1-alpha)));
+                            bPtr[c+1] =(byte) ((int)(v * alpha + bPtr[c+1] * (1-alpha)));
+                            bPtr[c+2] =(byte) ((int)(v * alpha + bPtr[c+2] * (1-alpha)));
                         }
                     }
                 }
             } else { // 32 ARGB
                 unsafe {
-                    byte* ovPtr = (byte*)overlaydata.Scan0.ToPointer();
-                    byte* bPtr = (byte*)bmpdata.Scan0.ToPointer();
+                    var ovPtr = (byte*)overlaydata.Scan0.ToPointer();
+                    var bPtr = (byte*)bmpdata.Scan0.ToPointer();
 
-                    for (int y = 0; y < readHeight; y++) {
-                        for (int x = 0; x < readWidth; x++) {
+                    for (var y = 0; y < readHeight; y++) {
+                        for (var x = 0; x < readWidth; x++) {
                             // TODO: Improve this
-                            int c = ((bmpdata.Stride / 4) * y + x) * 4;
-                            if (ovPtr[c] > OVERLAY_THRESHOLD || ovPtr[c + 1] > OVERLAY_THRESHOLD || ovPtr[c + 2] > OVERLAY_THRESHOLD) {
-                                float alpha = ovPtr[c] / OVERLAY_ALPHA_HOLD; 
-                                alpha = alpha > 1 ? 1 : alpha < 0 ? 0 : alpha;
-                                byte v = (byte) ((ovPtr[c] * 2 > 255) ? 255 : ovPtr[c] * 2);
-                                bPtr[c] =  (byte) ((int)(v * alpha + bPtr[c+0] * (1-alpha)));
-                                bPtr[c+1] =(byte) ((int)(v * alpha + bPtr[c+1] * (1-alpha)));
-                                bPtr[c+2] =(byte) ((int)(v * alpha + bPtr[c+2] * (1-alpha)));
-                            }
+                            var c = ((bmpdata.Stride / 4) * y + x) * 4;
+                            if (ovPtr[c] <= OVERLAY_THRESHOLD && ovPtr[c + 1] <= OVERLAY_THRESHOLD &&
+                                ovPtr[c + 2] <= OVERLAY_THRESHOLD) continue;
+                            var alpha = ovPtr[c] / OVERLAY_ALPHA_HOLD; 
+                            alpha = alpha > 1 ? 1 : alpha < 0 ? 0 : alpha;
+                            var v = (byte) ((ovPtr[c] * 2 > 255) ? 255 : ovPtr[c] * 2);
+                            bPtr[c] =  (byte) ((int)(v * alpha + bPtr[c+0] * (1-alpha)));
+                            bPtr[c+1] =(byte) ((int)(v * alpha + bPtr[c+1] * (1-alpha)));
+                            bPtr[c+2] =(byte) ((int)(v * alpha + bPtr[c+2] * (1-alpha)));
                         }
                     }
                 }
@@ -614,23 +608,23 @@ namespace OpenSatelliteProject {
                 vbmp = vbmp.ToFormat(hsbmp.PixelFormat);
             }
 
-            int readWidth = Math.Min(vbmp.Width, hsbmp.Width);
-            int readHeight = Math.Min(vbmp.Height, hsbmp.Height);
+            var readWidth = Math.Min(vbmp.Width, hsbmp.Width);
+            var readHeight = Math.Min(vbmp.Height, hsbmp.Height);
 
             var vdata = vbmp.LockBits(new Rectangle(0, 0, vbmp.Width, vbmp.Height), ImageLockMode.ReadOnly, vbmp.PixelFormat);
             var hsdata = hsbmp.LockBits(new Rectangle(0, 0, hsbmp.Width, hsbmp.Height), ImageLockMode.ReadWrite, hsbmp.PixelFormat);
 
             if (hsbmp.PixelFormat == PixelFormat.Format24bppRgb) {
                 unsafe {
-                    byte* hsPtr = (byte*)hsdata.Scan0.ToPointer();
-                    byte* vPtr = (byte*)vdata.Scan0.ToPointer();
+                    var hsPtr = (byte*)hsdata.Scan0.ToPointer();
+                    var vPtr = (byte*)vdata.Scan0.ToPointer();
 
-                    for (int y = 0; y < readHeight; y++) {
-                        for (int x = 0; x < readWidth; x++) {
+                    for (var y = 0; y < readHeight; y++) {
+                        for (var x = 0; x < readWidth; x++) {
                             // TODO: Improve this
-                            int c = ((hsdata.Stride / 3) * y + x) * 3;
-                            byte[] rgb = new byte[] { hsPtr[c], hsPtr[c + 1], hsPtr[c + 2] };
-                            float[] hsv = rgb2hsv(rgb);
+                            var c = ((hsdata.Stride / 3) * y + x) * 3;
+                            var rgb = new byte[] { hsPtr[c], hsPtr[c + 1], hsPtr[c + 2] };
+                            var hsv = rgb2hsv(rgb);
                             hsv[2] = vPtr[c] / 255f;
                             rgb = hsv2rgb(hsv);
                             hsPtr[c + 0] = rgb[0];
@@ -641,15 +635,15 @@ namespace OpenSatelliteProject {
                 }
             } else { // 32 ARGB
                 unsafe {
-                    byte* hsPtr = (byte*)hsdata.Scan0.ToPointer();
-                    byte* vPtr = (byte*)vdata.Scan0.ToPointer();
+                    var hsPtr = (byte*)hsdata.Scan0.ToPointer();
+                    var vPtr = (byte*)vdata.Scan0.ToPointer();
 
-                    for (int y = 0; y < readHeight; y++) {
-                        for (int x = 0; x < readWidth; x++) {
+                    for (var y = 0; y < readHeight; y++) {
+                        for (var x = 0; x < readWidth; x++) {
                             // TODO: Improve this
-                            int c = ((hsdata.Stride / 4) * y + x) * 4;
-                            byte[] rgb = new byte[] { hsPtr[c+0], hsPtr[c + 1], hsPtr[c + 2] };
-                            float[] hsv = rgb2hsv(rgb);
+                            var c = ((hsdata.Stride / 4) * y + x) * 4;
+                            var rgb = new byte[] { hsPtr[c+0], hsPtr[c + 1], hsPtr[c + 2] };
+                            var hsv = rgb2hsv(rgb);
                             hsv[2] = vPtr[c] / 255f;
                             rgb = hsv2rgb(hsv);
                             hsPtr[c + 0] = rgb[0];
@@ -673,14 +667,14 @@ namespace OpenSatelliteProject {
         /// <param name = "lineWidth"></param>
         /// <param name = "fixCrop"></param>
         public static void DrawLatLonLines(ref Bitmap bmp, GeoConverter gc, Color color, int lineWidth = 5, bool fixCrop = false) {
-            Pen pen = new Pen(color, lineWidth);
-            float lastX;
-            float lastY;
+            var pen = new Pen(color, lineWidth);
             using (var graphics = Graphics.FromImage(bmp)) {
-                for (float lat = gc.MinLatitude; lat < gc.MaxLatitude; lat += 10f) {
+                float lastX;
+                float lastY;
+                for (var lat = gc.MinLatitude; lat < gc.MaxLatitude; lat += 10f) {
                     lastX = float.NaN;
                     lastY = float.NaN;
-                    for (float lon = gc.MinLongitude; lon < gc.MaxLongitude; lon += 0.1f) {
+                    for (var lon = gc.MinLongitude; lon < gc.MaxLongitude; lon += 0.1f) {
                         var xy = gc.latlon2xy(lat, lon);
 
                         if (fixCrop) {
@@ -694,10 +688,10 @@ namespace OpenSatelliteProject {
                     }
 
                 }
-                for (float lon = gc.MinLongitude; lon < gc.MaxLongitude; lon += 10f) {
+                for (var lon = gc.MinLongitude; lon < gc.MaxLongitude; lon += 10f) {
                     lastX = float.NaN;
                     lastY = float.NaN;
-                    for (float lat = gc.MinLatitude; lat < gc.MaxLatitude; lat += 0.1f) {
+                    for (var lat = gc.MinLatitude; lat < gc.MaxLatitude; lat += 0.1f) {
                         var xy = gc.latlon2xy(lat, lon);
 
                         if (fixCrop) {

@@ -59,6 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GOES\MultiImageManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PacketData\AncillaryHeader.cs" />
     <Compile Include="PacketData\AnnotationHeader.cs" />

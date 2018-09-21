@@ -5,7 +5,7 @@ using OpenSatelliteProject.PacketData.Enums;
 namespace OpenSatelliteProject.PacketData {
     public static class Presets {
 
-        private readonly static Dictionary<int, NOAAProduct> noaaProducts;
+        private static readonly Dictionary<int, NOAAProduct> noaaProducts;
 
         static Presets() {
             noaaProducts = new Dictionary<int, NOAAProduct>();

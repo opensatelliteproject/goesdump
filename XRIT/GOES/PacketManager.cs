@@ -99,7 +99,7 @@ namespace OpenSatelliteProject {
             if (product != null && product.ID != -1) {
                 // New way
                 string folderName = UnknownDataFolder;
-                if (product.ID == (int)NOAAProductID.GOES16_ABI) {
+                if (product.ID == (int)NOAAProductID.GOES16_ABI || product.ID == (int)NOAAProductID.GOES17_ABI) {
                     folderName = Path.Combine(ImagesFolder, "FM1");
                 } else if (product.ID == (int)NOAAProductID.HIMAWARI8_ABI) {
                     folderName = Path.Combine(ImagesFolder, "Full Disk");

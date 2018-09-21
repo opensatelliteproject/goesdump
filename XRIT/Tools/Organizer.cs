@@ -14,12 +14,12 @@ namespace OpenSatelliteProject {
         readonly Dictionary<int, GroupData> groupData;
         readonly List<string> alreadyProcessed;
 
-        readonly string folder;
+        public string Folder { get; }
 
         public Dictionary<int, GroupData> GroupData { get { return groupData; } }
 
         public Organizer(string folder) {
-            this.folder = folder;    
+            this.Folder = folder;    
             this.groupData = new Dictionary<int, GroupData>();
             this.alreadyProcessed = new List<string>();
         }
@@ -30,7 +30,7 @@ namespace OpenSatelliteProject {
 
         public void Update() {
             try {
-                var files = Directory.GetFiles(folder).Where(f => f.EndsWith(".lrit")).ToList();
+                var files = Directory.GetFiles(Folder).Where(f => f.EndsWith(".lrit")).ToList();
                 foreach (var file in files) {
                     if (alreadyProcessed.Contains(file)) {
                         continue;
