@@ -32,14 +32,15 @@ namespace OpenSatelliteProject {
             this.signalQuality = data.signalQuality;
             this.syncCorrelation = data.syncCorrelation;
             if (data.syncWord != null) {
-                this.syncWord = string.Format("{0:X02}{1:X02}{2:X02}{3:X02}", data.syncWord[0], data.syncWord[1], data.syncWord[2], data.syncWord[3]);
+                this.syncWord =
+                    $"{data.syncWord[0]:X02}{data.syncWord[1]:X02}{data.syncWord[2]:X02}{data.syncWord[3]:X02}";
             } else {
                 this.syncWord = "00000000";
             }
             this.reedSolomon = data.rsErrors;
             this.frameLock = data.frameLock > 0;
             this.startTime = LLTools.UnixTimeStampToDateTime(data.startTime);
-            this.runningTime = DateTime.Now.Subtract(startTime);
+            this.runningTime = DateTime.UtcNow.Subtract(startTime);
         }
     }
 }
