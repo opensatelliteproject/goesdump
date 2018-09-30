@@ -40,9 +40,8 @@ namespace OpenSatelliteProject {
 
         public static List<ConsoleMessage> GetCachedMessages {
             get {
-                List<ConsoleMessage> tmp;
                 messageListMutex.WaitOne();
-                tmp = messageList.Clone<ConsoleMessage>();
+                var tmp = messageList.Clone();
                 messageListMutex.ReleaseMutex();
                 return tmp;
             }
@@ -53,7 +52,7 @@ namespace OpenSatelliteProject {
             if (ConfigurationManager.Get ("migratedXML") == null) {
                 // We need.
                 UIConsole.Log("First run on SQLite mode. Migrating XML");
-                XMLProgConfig config = new XMLProgConfig ();
+                var config = new XMLProgConfig ();
                 ProgConfig.SetConfigDefaults ();
                 ProgConfig.RecordIntermediateFile = config.RecordIntermediateFile;
 
@@ -179,13 +178,13 @@ namespace OpenSatelliteProject {
 
             SetConfigVars ();
 
-            string fdFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_FULLDISK);
-            string xxFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST);
-            string nhFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_NORTHERN);
-            string shFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_SOUTHERN);
-            string usFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_UNITEDSTATES);
-            string fmFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES16_ABI, (int)ScannerSubProduct.NONE);
-            string unkFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.NONE); // Same for any unknown ABI
+            var fdFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_FULLDISK);
+            var xxFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_AREA_OF_INTEREST);
+            var nhFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_NORTHERN);
+            var shFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_SOUTHERN);
+            var usFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.INFRARED_UNITEDSTATES);
+            var fmFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES16_ABI, (int)ScannerSubProduct.NONE);
+            var unkFolder = PacketManager.GetFolderByProduct(NOAAProductID.GOES13_ABI, (int)ScannerSubProduct.NONE); // Same for any unknown ABI
 
             FDImageManager = new ImageManager(fdFolder, "Full Disk");
             XXImageManager = new ImageManager(xxFolder, "Area of Interest");
@@ -208,8 +207,7 @@ namespace OpenSatelliteProject {
             mtx = new Mutex();
             cn = new Connector();
 
-            demuxManager = new DemuxManager();
-            demuxManager.RecordToFile = ProgConfig.RecordIntermediateFile;
+            demuxManager = new DemuxManager {RecordToFile = ProgConfig.RecordIntermediateFile};
             cn.StatisticsAvailable += data => {
                 mtx.WaitOne();
                 statistics = data;
@@ -233,7 +231,8 @@ namespace OpenSatelliteProject {
                         AverageVitCorrections = data.averageVitCorrections,
                         AverageRSCorrections = data.averageRSCorrections,
                         DroppedPackets = (long)data.droppedPackets,
-                        SyncWord = string.Format ("{0:X02}{1:X02}{2:X02}{3:X02}", data.syncWord [0], data.syncWord [1], data.syncWord [2], data.syncWord [3]),
+                        SyncWord =
+                            $"{data.syncWord[0]:X02}{data.syncWord[1]:X02}{data.syncWord[2]:X02}{data.syncWord[3]:X02}",
                         FrameLock = data.frameLock > 0,
                     }));
                 }
@@ -253,18 +252,18 @@ namespace OpenSatelliteProject {
             statistics = new Statistics_st();
             stModel = new StatisticsModel(statistics);
             UIConsole.Log("Headless Main Created");
-            httpsv = new HttpServer(ProgConfig.HTTPPort);
+            UIConsole.Log($"HTTP Server at port {ProgConfig.HTTPPort}");
+            httpsv = new HttpServer(ProgConfig.HTTPPort) {RootPath = Path.GetFullPath(Path.Combine(".", "web"))};
 
-            httpsv.RootPath = Path.GetFullPath(Path.Combine(".", "web"));
             httpsv.OnGet += HandleHTTPGet;
             httpsv.AddWebSocketService("/mainws", () => new WSHandler {
                 dh = directoryHandler
             });
 
             UIConsole.MessageAvailable += (data) => {
-                ConsoleModel cm = new ConsoleModel(data.Priority.ToString(), data.Message);
+                var cm = new ConsoleModel(data.Priority.ToString(), data.Message);
                 if (httpsv.IsListening) {
-                    // httpsv.WebSocketServices["/mainws"].Sessions.Broadcast(cm.toJSON());
+                    httpsv.WebSocketServices["/mainws"].Sessions.Broadcast(cm.toJSON());
                 }
 
                 messageListMutex.WaitOne();
@@ -278,7 +277,7 @@ namespace OpenSatelliteProject {
 
         private byte[] GetFile(string path) {
             // TODO: Make it better.
-            string absPath = Path.GetFullPath (Path.Combine (httpsv.RootPath, "./" + path));
+            var absPath = Path.GetFullPath (Path.Combine (httpsv.RootPath, "./" + path));
             if (!absPath.StartsWith(httpsv.RootPath) || !File.Exists(absPath)) {
                 return null;
             }
@@ -313,7 +312,7 @@ namespace OpenSatelliteProject {
                 try {
                     directoryHandler.HandleAccess(httpsv, e);
                 } catch (Exception ex) {
-                    string output = string.Format("Error reading file: {0}", ex);
+                    var output = $"Error reading file: {ex}";
                     res.StatusCode = (int)HttpStatusCode.InternalServerError;
                     res.WriteContent(Encoding.UTF8.GetBytes(output));
                 }

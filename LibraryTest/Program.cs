@@ -13,6 +13,7 @@ using OpenSatelliteProject.PacketData;
 using OpenSatelliteProject.Tools;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using OpenSatelliteProject.GOES;
 
 namespace LibraryTest {
     class MainClass {
@@ -148,25 +149,24 @@ namespace LibraryTest {
             //string debugFrames = "/media/ELTN/tmp/debug14/demuxdump-1495166529.bin";
             //string debugFrames = "/media/ELTN/tmp/debug16/demuxdump-1504736974.bin";
 //	        string debugFrames = "/media/ELTN/tmp/debug17/demuxdump-1505145094.bin";
-	        string debugFrames = "/media/ELTN/tmp/G16Bug/demuxdump-1537119165.bin";
+//	        string debugFrames = "/media/ELTN/tmp/G16Bug/demuxdump-1537197025.bin";
+//	        string debugFrames = "/media/ELTN/tmp/G16Bug/demuxdump-1537119165.bin";
+	        string debugFrames = "/media/ELTN/tmp/G16Bug/demuxdump-1537365333.bin";
+	       
             //var mapDrawer = new MapDrawer("/home/lucas/Works/OpenSatelliteProject/split/borders/ne_10m_admin_1_states_provinces.shp");
-
-            var im0 = new ImageManager ("output/Images/Full Disk/");
-            var im1 = new ImageManager ("output/Images/Northern Hemisphere/");
-            var im2 = new ImageManager ("output/Images/Southern Hemisphere/");
-            var im3 = new ImageManager ("output/Images/Area of Interest/");
-            var im4 = new ImageManager ("output/Images/United States/");
-            var im5 = new ImageManager ("output/Images/FM1/");
-            var im6 = new ImageManager ("output/Images/Unknown/");
-
-            im0.InitMapDrawer ();
-            im1.InitMapDrawer ();
-            im2.InitMapDrawer ();
-            im3.InitMapDrawer ();
-            im4.InitMapDrawer ();
-            im5.InitMapDrawer ();
-            im6.InitMapDrawer ();
-
+			var mim = new MultiImageManager(new []
+	        {
+		        "output/Images/Full Disk/",
+		        "output/Images/Northern Hemisphere/",
+		        "output/Images/Southern Hemisphere/",
+		        "output/Images/Area of Interest/",
+		        "output/Images/United States/",
+		        "output/Images/FM1/",
+		        "output/Images/Unknown/",
+	        }, false);
+	        
+	        mim.InitMapDrawer();
+            
             UIConsole.GlobalEnableDebug = true;
 
             FileHandler.SkipWeatherData = true;
@@ -185,17 +185,11 @@ namespace LibraryTest {
             ImageManager.GenerateLatLonLabel = true;
             ImageManager.SaveNonOverlay = false;
             // ImageManager.EnableReproject = true;
-            im0.Start ();
-            im1.Start ();
-            im2.Start ();
-            im3.Start ();
-            im4.Start ();
-            im5.Start ();
-            im6.Start ();
+            mim.Start();
             // */
             //*/
             // /*
-            ///*
+            /*
             DemuxManager dm = new DemuxManager ();
             FileHandler.SkipDCS = true;
             FileHandler.SkipEMWIN = true;

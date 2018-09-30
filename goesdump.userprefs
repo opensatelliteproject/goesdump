@@ -1,12 +1,13 @@
-﻿<Properties RefactoringSettings.EnableRefactorings="True" StartupConfiguration="{E1B44542-24FF-409C-A2A3-237A00A8520D}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/Tools/Presets.cs">
+﻿<Properties RefactoringSettings.EnableRefactorings="True" StartupConfiguration="{7692605F-AC81-4688-A7D2-F8B5C4E0C397}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="XRIT/packages.config">
     <Files>
       <File FileName="goesdump/HeadlessMain.cs" Line="267" Column="24" />
       <File FileName="goesdump/WebManager/WSHandler.cs" Line="37" Column="1" />
-      <File FileName="XRIT/Tools/Presets.cs" Line="78" Column="58" />
+      <File FileName="XRIT/Tools/Presets.cs" Line="99" Column="65" />
+      <File FileName="XRIT/packages.config" Line="8" Column="48" />
     </Files>
   </MonoDevelop.Ide.Workbench>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
       <Catchpoint enabled="false" exceptionName="System.ArgumentException" includeSubclasses="True" />
